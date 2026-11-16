@@ -403,11 +403,15 @@ textarea.field { resize: vertical; min-height: 96px; }
 /* ---------- 7. Contact ---------- */
 .contact-in { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
 .contact-text h2 { color: #fff; }
-.contact-text p { margin-top: 16px; font-size: 1.125rem; color: #dbe5f3; max-width: 30rem; }
-.direct { margin-top: 26px; display: grid; gap: 10px; }
+.contact-text > p { margin-top: 16px; font-size: 1.125rem; color: #dbe5f3; max-width: 30rem; }
+.kaartje { margin-top: 34px; max-width: 370px; padding: 22px 24px 24px; border-radius: 14px; background: #fff; color: var(--inkt); box-shadow: 0 24px 44px -26px rgba(0,0,0,.6); transform: rotate(-1.5deg); }
+.kaartje-naam { margin-top: 16px; font-weight: 600; font-size: 1.1rem; }
+.kaartje-wat { color: var(--inkt-2); font-size: .95rem; }
+.direct { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--lijn-2); display: grid; gap: 8px; }
 .direct:empty { display: none; }
-.direct a { color: #fff; font-weight: 600; font-size: 1.1rem; }
-.direct span { display: block; font-size: .875rem; color: #bcd0ea; }
+.direct p { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.direct a { color: var(--sein); font-weight: 600; }
+.direct span { font-size: .875rem; color: var(--inkt-2); }
 .contact-form { background: #fff; color: var(--inkt); border-radius: 18px; padding: clamp(20px, 3vw, 30px); display: grid; gap: 16px; box-shadow: 0 30px 60px -30px rgba(0,0,0,.5); }
 .contact-form .btn--wit { background: var(--sein); color: #fff; }
 .contact-form .btn--wit:hover { background: var(--sein-diep); }
@@ -417,7 +421,7 @@ textarea.field { resize: vertical; min-height: 96px; }
 .wensen legend { grid-column: 1 / -1; }
 @media (max-width: 520px) { .wensen { grid-template-columns: 1fr; } }
 .check { display: flex; align-items: center; gap: 10px; min-height: 40px; cursor: pointer; line-height: 1.3; }
-.check input { width: 20px; height: 20px; accent-color: var(--sein); margin: 0; }
+.check input { flex: none; width: 20px; height: 20px; accent-color: var(--sein); margin: 0; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .privacy { color: var(--inkt-2); }
 .form-status { font-weight: 600; }

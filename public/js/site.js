@@ -8,6 +8,8 @@
   function euro(n) { return eurFmt.format(n); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
   function tijd(h) { var u = Math.floor(h), m = Math.round((h - u) * 60); return u + "." + (m < 10 ? "0" : "") + m; }
+  var modusMeta = document.querySelector('meta[name="vs-modus"]');
+  var voorvertoning = !!modusMeta && modusMeta.getAttribute("content") === "voorbeeld";
   var DAGEN = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"];
 
   /* ---------------- Iconen per vak ---------------- */
@@ -197,6 +199,7 @@
 
   // Deel-link: handig om een zaak een eigen voorbeeld te sturen
   var deel = $("#deel-link");
+  if (voorvertoning) deel.hidden = true;
   deel.addEventListener("click", function () {
     var p = new URLSearchParams();
     if (state.naam.trim()) p.set("zaak", state.naam.trim());
@@ -358,6 +361,7 @@
     e.preventDefault();
     var url = checkInput.value.trim();
     if (!url) { checkRes.innerHTML = '<div class="check-fout">Vul het adres van je website in, bijvoorbeeld jouwzaak.nl.</div>'; checkInput.focus(); return; }
+    if (voorvertoning) { checkRes.innerHTML = '<div class="check-fout">In deze voorvertoning werkt de websitecheck nog niet. Op de live site haalt hij je pagina echt op.</div>'; return; }
     var host = url.replace(/^https?:\/\//i, "").split("/")[0];
     checkRes.innerHTML = '<div class="check-laden"><span class="spinner" aria-hidden="true"></span><span>Ik haal ' + esc(host) + " op en kijk hem na…</span></div>";
     checkBtn.disabled = true;
@@ -416,6 +420,7 @@
       wensen: $$('input[name="wensen"]:checked', form).map(function (x) { return x.value; }),
       vak: state.vak, voorbeeld: state.naam.trim(), check_url: laatsteCheck, fax: form.elements.fax.value, t: Date.now() - geopend
     };
+    if (voorvertoning) { status.className = "form-status is-fout"; status.textContent = "Dit is een voorvertoning: er wordt nog niets verstuurd. Op de live site komt je bericht wel aan."; return; }
     verstuur.disabled = true; verstuur.textContent = "Versturen…"; status.textContent = ""; status.className = "form-status";
     fetch("/api/aanvraag", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw j; return j; }); })

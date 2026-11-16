@@ -159,8 +159,12 @@ function originOf(req) {
 function readBody(req, limit) {
   return new Promise((resolve, reject) => {
     let size = 0; const chunks = [];
-    req.on("data", (c) => { size += c.length; if (size > limit) { reject(Object.assign(new Error("te groot"), { status: 413 })); req.destroy(); } else chunks.push(c); });
-    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    req.on("data", (c) => {
+      size += c.length;
+      if (size <= limit) chunks.push(c);
+      else if (size > limit * 8) req.destroy(); // veel te groot: verbinding dicht
+    });
+    req.on("end", () => size > limit ? reject(Object.assign(new Error("te groot"), { status: 413 })) : resolve(Buffer.concat(chunks).toString("utf8")));
     req.on("error", reject);
   });
 }
