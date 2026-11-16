@@ -217,7 +217,11 @@ function loadStatic() {
   for (const f of walk(PUBLIC_DIR)) {
     const rel = "/" + path.relative(PUBLIC_DIR, f).split(path.sep).join("/");
     const buf = fs.readFileSync(f);
-    if (rel === "/index.html") { indexTemplate = buf.toString("utf8").replaceAll("{{V}}", VERSION).replace("{{CONTACT}}", contactBlock()); continue; }
+    if (rel === "/index.html") {
+      const foto = fs.existsSync(path.join(PUBLIC_DIR, "img", "floris.jpg")) ? `<img src="/img/floris.jpg" alt="" width="440" height="440">` : "FvS";
+      indexTemplate = buf.toString("utf8").replaceAll("{{V}}", VERSION).replace("{{CONTACT}}", contactBlock()).replace("{{FOTO}}", foto);
+      continue;
+    }
     files.set(rel, packFile(buf, TYPES[path.extname(f).toLowerCase()] || "application/octet-stream"));
   }
   log(`${files.size + 1} bestanden geladen`);
