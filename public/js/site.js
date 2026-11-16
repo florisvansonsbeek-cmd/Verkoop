@@ -20,6 +20,8 @@
     bakkerij: '<path d="M20 74c0-24 18-36 40-36s40 12 40 36v8c0 3-3 6-6 6H26c-3 0-6-3-6-6z"/><path d="M42 52l-7 14M60 48l-7 16M78 52l-7 14"/>',
     ijzerwaren: '<path d="M80 20a20 20 0 0 0-18 28L24 86a8 8 0 0 0 11 11l38-38a20 20 0 0 0 28-18l-12 12-12-3-3-12z"/>',
     lijstenmaker: '<rect x="20" y="24" width="80" height="72" rx="2"/><rect x="33" y="37" width="54" height="46"/><path d="M20 24l13 13M100 24 87 37M20 96l13-13M100 96 87 83M38 78l14-16 10 10 8-7 12 13"/>',
+    kleding: '<path d="M44 22 26 32 14 54l16 8 6-10v46h48V52l6 10 16-8-12-22-18-10c-2 8-8 12-16 12s-14-4-16-12z"/>',
+    streek: '<path d="M16 54h88l-12 42H28z"/><path d="M40 54 54 28M80 54 66 28M32 70h56M36 84h48"/>',
     anders: '<path d="M26 52v42h68V52"/><path d="M20 34h80l-6 18H26z"/><path d="M50 94V70h20v24M32 62h10v10H32zM78 62h10v10H78z"/>'
   };
   function icon(vak, cls) {
@@ -68,6 +70,18 @@
       uren: [null, [10, 17.5], [10, 17.5], [10, 17.5], [10, 17.5], [10, 17], null],
       verhaal: "Elk werk verdient de juiste lijst. Kom langs met je foto of schilderij, dan kiezen we samen.",
       mail: { lev1: "Lijstprofielen Groothandel", lev2: "Glashandel Kuipers", klant: "Noor", vraag: "Kunnen jullie een poster van 50 x 70 inlijsten met museumglas?", antwoord: "Hoi Noor, dat kan. Kom gerust langs om samen een lijst uit te kiezen.", promo: "passe-partoutkarton" } },
+    kleding: { label: "Kledingwinkel", kleur: ["#3d3a5c", "#e7b7a5", "#f7f3f1"], tag: "Nieuwe collectie binnen. Kom passen, of reserveer online.",
+      knoppen: ["Bekijk de collectie", "Route"],
+      prijzen: [["Jurken", 59.95, "vanaf"], ["Jeans", 79.95, "vanaf"], ["Truien", 49.95, "vanaf"], ["Broek inkorten", 12.5]],
+      uren: [[12, 18], [10, 18], [10, 18], [10, 21], [10, 18], [10, 17.5], [12, 17]],
+      verhaal: "Een zorgvuldig gekozen collectie en eerlijk advies. Wat je niet past, leggen we graag even voor je apart.",
+      mail: { lev1: "Modehuis Groothandel", lev2: "Textiel Kuipers", klant: "Lisa", vraag: "Hebben jullie die blauwe jurk nog in maat 38?", antwoord: "Hoi Lisa, maat 38 is er nog. Ik leg hem tot zaterdag voor je apart.", promo: "de voorjaarscollectie" } },
+    streek: { label: "Streekproducten", kleur: ["#4d6b2f", "#e8c25a", "#f6f3e8"], tag: "Vers van het land: groente, kaas en eieren uit de buurt.",
+      knoppen: ["Bestel je pakket", "Route"],
+      prijzen: [["Groentepakket", 14.95], ["Boerenkaas, per kilo", 17.5], ["Scharreleieren, 10 stuks", 4.25], ["Appelsap, liter", 3.5]],
+      uren: [null, [9, 18], [9, 18], [9, 18], [9, 18], [8, 17], null],
+      verhaal: "Alles komt van ons eigen land of van boeren uit de buurt. Bestel je pakket en haal het zaterdag op.",
+      mail: { lev1: "Kaasboerderij De Hoeve", lev2: "Akkerbouw Kuipers", klant: "Ahmed", vraag: "Kan ik voor zaterdag twee groentepakketten bestellen?", antwoord: "Hoi Ahmed, staat genoteerd: twee pakketten, zaterdag vanaf 8.00 uur klaar.", promo: "fruitkratten" } },
     anders: { label: "Iets anders", kleur: ["#164a8a", "#ffd166", "#f3f6fa"], tag: "Vakwerk uit Utrecht. Kom langs of bel even.",
       knoppen: ["Neem contact op", "Bel direct"],
       prijzen: [["Eerste advies", 0, "gratis"], ["Reparatie", 25, "vanaf"], ["Spoedservice", 15, "meerprijs"], ["Ophalen en bezorgen", 7.5]],
@@ -433,6 +447,58 @@
         fout(err && err.field, (err && err.message) || "Versturen lukte niet. Probeer het nog eens.");
       });
   });
+
+
+  /* ---------------- Plattegrond ---------------- */
+  var PLEKKEN = [
+    { id: "kleding", naam: "Kledingwinkel", x: 17.5, y: 9, kleur: "#3d3a5c", vak: "kleding",
+      intro: "Een boetiek met een vaste klantenkring en een nieuwe collectie elk seizoen.",
+      punten: [["Website", "Collectie met maten en prijzen, en reserveren om te komen passen"], ["Dashboard", "Wat er deze week verkocht is en welke maten bijna op zijn"], ["Automatisch", "Facturen van leveranciers nagekeken voordat je betaalt"]] },
+    { id: "bakkerij", naam: "Bakkerij", x: 40.8, y: 12.5, kleur: "#9a4a17", vak: "bakkerij",
+      intro: "Elke ochtend vers brood, met een paar tafeltjes voor koffie.",
+      punten: [["Website", "Assortiment, openingstijden en bestellen voor morgen"], ["Dashboard", "Alle bestellingen per dag op één lijst, klaar voor de oven"], ["Automatisch", "Meel- en verpakkingsfacturen vergeleken met je bestelling"]] },
+    { id: "groothandel", naam: "Groothandel", x: 67, y: 7, kleur: "#1f5138", werk: true,
+      intro: "Zoals Campo International: inkoop bij kwekers, verkoop aan winkels door heel Europa.",
+      punten: [["Website", "In meerdere talen, waar klanten hun bestelling volgen"], ["Dashboard", "Offertes, facturen en pakbonnen uit de mail naast elkaar"], ["Automatisch", "Waarschuwt bij een nieuw rekeningnummer of een dubbele factuur"]] },
+    { id: "kapper", naam: "Kapper", x: 11.5, y: 64, kleur: "#1d4a3a", vak: "kapper",
+      intro: "Een kapsalon met drie stoelen en klanten die vaak spontaan binnenlopen.",
+      punten: [["Website", "Prijzen en online een afspraak maken"], ["Dashboard", "Agenda en omzet per dag in één oogopslag"], ["Automatisch", "Vragen van klanten met een concept-antwoord klaar"]] },
+    { id: "schoenmaker", naam: "Schoenmaker", x: 30, y: 65.5, kleur: "#5e3521", vak: "schoenmaker",
+      intro: "Hakken, zolen en sleutels, vaak klaar terwijl je wacht.",
+      punten: [["Website", "Prijzen, belknop en route, goed te vinden in Google"], ["Dashboard", "Reparaties met de datum dat ze klaar zijn"], ["Automatisch", "Een appje of mail zodra de schoenen klaar zijn"]] },
+    { id: "streek", naam: "Boerderijwinkel", x: 63.5, y: 66, kleur: "#4d6b2f", vak: "streek",
+      intro: "Streekproducten van eigen land, aan de rand van de stad.",
+      punten: [["Website", "Wat er deze week van het land komt, met een bestelformulier"], ["Dashboard", "Bestellingen per ophaaldag en wat er nog op voorraad is"], ["Automatisch", "Facturen van leveranciers en boeren nagekeken en klaargezet"]] }
+  ];
+  var pinsEl = $("#pins"), uitleg = $("#kaart-uitleg");
+  var PIJL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 2l17 8-7 2.5L10 20z"/></svg>';
+  function toonPlek(id, focus) {
+    var p = PLEKKEN.filter(function (x) { return x.id === id; })[0];
+    $$(".pin", pinsEl).forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.id === id)); });
+    uitleg.style.setProperty("--pin", p.kleur);
+    uitleg.innerHTML = '<div class="ku-kop"><i></i><h2>' + esc(p.naam) + "</h2></div>" +
+      '<p class="ku-intro">' + esc(p.intro) + "</p>" +
+      '<ul class="ku-lijst">' + p.punten.map(function (q) { return "<li><b>" + esc(q[0]) + "</b>" + esc(q[1]) + "</li>"; }).join("") + "</ul>" +
+      '<div class="ku-actie"><button type="button" class="btn" id="ku-knop">' + (p.werk ? "Bekijk wat ik voor Campo bouwde" : "Bekijk de voorbeeldsite") + "</button>" +
+      '<p class="kaart-hint">Klik op een andere zaak in de plattegrond.</p></div>';
+    $("#ku-knop").addEventListener("click", function () {
+      if (p.werk) { $("#werk").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); return; }
+      var r = $('input[name="vak"][value="' + p.vak + '"]');
+      if (r && !r.checked) { r.checked = true; r.dispatchEvent(new Event("change", { bubbles: true })); }
+      $("#voorbeeld").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+    });
+  }
+  if (pinsEl) {
+    pinsEl.innerHTML = PLEKKEN.map(function (p) {
+      return '<button type="button" class="pin" data-id="' + p.id + '" aria-pressed="false">' + PIJL + "<span>" + esc(p.naam) + "</span></button>";
+    }).join("");
+    $$(".pin", pinsEl).forEach(function (b, i) {
+      var p = PLEKKEN[i];
+      b.style.left = p.x + "%"; b.style.top = p.y + "%"; b.style.setProperty("--pin", p.kleur);
+      b.addEventListener("click", function () { toonPlek(p.id); });
+    });
+    toonPlek("kleding");
+  }
 
   /* ---------------- Start ---------------- */
   var jaar = $("#jaar"); if (jaar) jaar.textContent = String(new Date().getFullYear());

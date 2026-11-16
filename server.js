@@ -25,7 +25,7 @@ const APP_PASSWORD = process.env.APP_PASSWORD || "";
 const SITE_URL = (process.env.SITE_URL || "").replace(/\/+$/, "");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const VERSION = (process.env.RAILWAY_GIT_COMMIT_SHA || Date.now().toString(36)).slice(0, 10);
-const VAKKEN = ["kapper", "schoenmaker", "stomerij", "bakkerij", "ijzerwaren", "lijstenmaker", "anders"];
+const VAKKEN = ["kapper", "schoenmaker", "stomerij", "bakkerij", "ijzerwaren", "lijstenmaker", "kleding", "streek", "anders"];
 const WENSEN = ["Nieuwe website", "Website vernieuwen", "Dashboard mail en facturen", "Weet ik nog niet"];
 const STATUSSEN = [["nieuw", "Nieuw"], ["gebeld", "Contact gehad"], ["afspraak", "Afspraak gepland"], ["offerte", "Offerte gestuurd"], ["klant", "Klant"], ["geen", "Geen interesse"]];
 
@@ -345,7 +345,7 @@ async function apiCheck(req, res) {
 
 /* ---------------- /beheer ---------------- */
 const fmtDatum = new Intl.DateTimeFormat("nl-NL", { timeZone: "Europe/Amsterdam", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-const VAK_LABEL = { kapper: "Kapper", schoenmaker: "Schoenmaker", stomerij: "Stomerij", bakkerij: "Bakkerij", ijzerwaren: "IJzerwaren", lijstenmaker: "Lijstenmaker", anders: "Iets anders" };
+const VAK_LABEL = { kapper: "Kapper", schoenmaker: "Schoenmaker", stomerij: "Stomerij", bakkerij: "Bakkerij", ijzerwaren: "IJzerwaren", lijstenmaker: "Lijstenmaker", kleding: "Kledingwinkel", streek: "Streekproducten", anders: "Iets anders" };
 function cookieOpts(req, maxAge) { return `Path=/beheer; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${isHttps(req) ? "; Secure" : ""}`; }
 function contactLink(c) {
   if (c.includes("@")) return `<a href="mailto:${esc(c)}">${esc(c)}</a>`;
