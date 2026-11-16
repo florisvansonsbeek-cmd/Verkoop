@@ -1,0 +1,36 @@
+/* Beheerpagina: aanvragen en websitechecks */
+.beheer .top .bh-uit { margin-left: auto; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.login { display: grid; place-items: center; min-height: calc(100vh - 69px); padding-top: 24px; padding-bottom: 48px; }
+.login-form { width: min(100%, 380px); display: grid; gap: 12px; background: #fff; border: 1px solid var(--lijn); border-radius: 16px; padding: 28px; }
+.login-form h1 { font-size: 2rem; }
+.login-msg { padding: 10px 12px; border-radius: 8px; background: var(--rood-bg); color: var(--rood); font-weight: 600; }
+.bh { padding-top: 36px; padding-bottom: 72px; }
+.bh-titel { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-bottom: 20px; }
+.bh-titel h1 { font-size: 2.4rem; }
+.bh-waarschuwing { margin-bottom: 20px; padding: 12px 14px; border-radius: 10px; background: var(--amber-bg); color: var(--amber); font-weight: 600; }
+.bh-lijst { display: grid; gap: 12px; }
+.bh-item { border: 1px solid var(--lijn); border-radius: 14px; padding: 18px 20px; background: #fff; scroll-margin-top: 90px; }
+.bh-item.is-nieuw { border-left: 4px solid var(--sein); }
+.bh-item:target { box-shadow: 0 0 0 3px var(--sein-licht); }
+.bh-kop { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; align-items: baseline; }
+.bh-kop h2 { font-size: 1.25rem; font-stretch: 92%; }
+.bh-kop h2 .muted { font-family: var(--f-tekst); font-weight: 400; font-size: 1rem; }
+.bh-kop time { color: var(--inkt-2); font-size: .9rem; }
+.bh-dl { margin: 12px 0 0; display: grid; gap: 4px; }
+.bh-dl div { display: grid; grid-template-columns: 120px 1fr; gap: 12px; }
+.bh-dl dt { color: var(--inkt-2); font-size: .9rem; }
+.bh-dl dd { margin: 0; overflow-wrap: anywhere; }
+.bh-form { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+.bh-form .field { min-height: 40px; padding: 7px 10px; font-size: .95rem; }
+.bh-form select.field { width: auto; }
+.bh-notitie { flex: 1 1 220px; }
+.bh-h2 { font-size: 1.6rem; margin: 48px 0 14px; }
+.bh-scroll { overflow-x: auto; border: 1px solid var(--lijn); border-radius: 12px; }
+.bh-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.bh-table th, .bh-table td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--lijn); white-space: nowrap; }
+.bh-table th { background: var(--was); font-weight: 600; }
+.bh-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.bh-table tr:last-child td { border-bottom: 0; }
+.leeg-pagina { padding-top: 80px; padding-bottom: 120px; display: grid; gap: 18px; justify-items: start; }
+@media (max-width: 600px) { .bh-dl div { grid-template-columns: 1fr; gap: 0; } }

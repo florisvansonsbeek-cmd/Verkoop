@@ -1,0 +1,17 @@
+{
+  "name": "verkoopwebsite",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Verkoopwebsite van Floris van Sonsbeek: voorbeeldsite per zaak, dashboard-demo, websitecheck en contactformulier. Draait op Railway met Postgres.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check lib/check.js && node --check public/js/site.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "pg": "8.23.1"
+  }
+}
