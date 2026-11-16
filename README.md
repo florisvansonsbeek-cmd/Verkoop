@@ -13,7 +13,7 @@ Eén Node-server (`server.js`) met Postgres, zonder framework. De lettertypen (B
 
 ## Op Railway zetten
 
-1. Zet deze code in een GitHub-repo, bijvoorbeeld `Verkoopwebsite`.
+1. Zet deze code in een GitHub-repo, zoals `Verkoop`.
 2. Ga naar [railway.com](https://railway.com) en kies **New Project → Deploy from GitHub repo** en kies de repo.
 3. Voeg in hetzelfde project een database toe: **Create → Database → PostgreSQL**.
 4. Open de service en zet bij **Variables**:
