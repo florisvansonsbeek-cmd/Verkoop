@@ -554,23 +554,56 @@ a { color: var(--sein); }
 .intro-kop { max-width: 50rem; }
 .intro-kop .lead { margin-top: 18px; font-size: clamp(1.1rem, 1rem + .35vw, 1.3rem); }
 .intro-acties { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 26px; }
-.plan { margin: clamp(28px, 4vw, 44px) 0 0; }
-.plan-vlak { border-radius: 20px; overflow: hidden; border: 1px solid var(--lijn); background: #f7f2e8; box-shadow: 0 40px 70px -50px rgba(60,45,20,.6); }
-.hoeve { display: block; width: 100%; height: auto; }
+.plan { margin: 18px 0 0; }
+.plan-vlak { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--lijn); background: #f7f2e8; box-shadow: 0 40px 70px -50px rgba(60,45,20,.6); }
+.plan-vlak.wissel .plan-doek { animation: fadein .4s var(--ease); }
+.plan-doek { position: relative; }
+.plan-doek img { display: block; width: 100%; height: auto; }
+.plan-lijnen { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pl-lijn { fill: none; stroke: var(--warm); stroke-width: 1.8; }
+.pl-eind { fill: var(--warm); }
+.pl-halo { fill: var(--warm); opacity: .22; }
+.pl-kern { fill: var(--sein); stroke: #fffdf8; stroke-width: 2.5; }
+.pl-pin text { fill: #fff; font: 700 15px var(--f-tekst); }
+.plan-labels { position: absolute; inset: 0; pointer-events: none; }
+.plan-label { position: absolute; width: 18.57%; min-height: 6%; display: flex; align-items: center; gap: .55em; padding: .55em .75em; border-radius: 10px; background: #fffdf8; border: 1px solid #e1d6c3; box-shadow: 0 8px 18px -14px rgba(60,45,20,.6); font: 600 clamp(.72rem, .45rem + .55vw, 1rem)/1.2 var(--f-tekst); color: var(--inkt); }
+.plan-label .nr { display: grid; place-items: center; flex: none; width: 1.7em; height: 1.7em; border-radius: 50%; background: var(--sein); color: #fff; font-size: .85em; }
+.plan-pijl { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--lijn); background: rgba(255,253,248,.92); display: grid; place-items: center; cursor: pointer; box-shadow: 0 8px 16px -10px rgba(60,45,20,.6); }
+.plan-pijl svg { width: 20px; height: 20px; fill: none; stroke: var(--sein); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.plan-pijl:hover { background: #fff; }
+.plan-pijl--vorige { left: 12px; } .plan-pijl--volgende { right: 12px; }
 .plan figcaption { margin-top: 10px; font-size: .9rem; color: var(--inkt-2); }
-.plan-lijst { list-style: none; margin: clamp(28px, 4vw, 40px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px 28px; }
+.plan-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; margin-top: clamp(28px, 4vw, 44px); scrollbar-width: thin; }
+.plan-tabs [role="tab"] { flex: none; border: 1px solid var(--lijn-2); background: #fffdf9; color: var(--inkt); border-radius: 999px; padding: 8px 16px; font: 600 .95rem/1.2 var(--f-tekst); cursor: pointer; white-space: nowrap; }
+.plan-tabs [role="tab"]:hover { border-color: var(--sein); }
+.plan-tabs [role="tab"][aria-selected="true"] { background: var(--sein); border-color: var(--sein); color: #fff; }
+.plan-kop { margin-top: 18px; max-width: 52rem; }
+.plan-kop h2 { font-size: clamp(1.7rem, 1.3rem + 1.4vw, 2.4rem); }
+.plan-kop p { margin-top: 8px; color: var(--inkt-2); }
+.plan-lijst { list-style: none; margin: clamp(28px, 4vw, 40px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 28px; }
 .plan-lijst li { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; }
 .plan-lijst .nr { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--sein); color: #fff; font-weight: 700; font-size: .9rem; }
-.plan-lijst h3 { font-size: 1.3rem; }
+.plan-lijst h3 { font-size: 1.35rem; }
 .plan-lijst p { margin-top: 4px; color: var(--inkt-2); font-size: 1rem; }
 @media (max-width: 1100px) { .plan-lijst { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 760px) {
   /* op de telefoon alleen de tekening met de nummers; de uitleg staat eronder */
-  .plan-vlak { overflow: hidden; }
-  .hoeve { width: 189.2%; max-width: none; margin-left: -44.6%; }
-  .hoeve .ann-lbl { display: none; }
+  .plan-doek { width: 189.2%; margin-left: -44.6%; }
+  .plan-labels, .pl-lijn, .pl-eind { display: none; }
+  .plan-pijl { width: 38px; height: 38px; }
   .plan-lijst { grid-template-columns: 1fr; }
 }
+
+/* taalkeuze */
+.taal { position: relative; margin-left: 4px; }
+.taal-knop { display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 10px; border: 1px solid var(--lijn-2); border-radius: 6px; background: #fffdf9; color: var(--inkt); font: 700 .82rem/1 var(--f-tekst); letter-spacing: .08em; cursor: pointer; }
+.taal-knop svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+.taal-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 170px; margin: 0; padding: 6px; list-style: none; background: #fffdf9; border: 1px solid var(--lijn); border-radius: 10px; box-shadow: 0 18px 30px -18px rgba(60,45,20,.5); }
+.taal-menu li { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: .95rem; }
+.taal-menu li b { width: 24px; font-size: .78rem; letter-spacing: .08em; color: var(--warm); }
+.taal-menu li:hover, .taal-menu li:focus { background: var(--was); outline: none; }
+.taal-menu li[aria-selected="true"] { font-weight: 600; }
+@media (max-width: 1020px) { .taal { margin-left: auto; } .top .btn { margin-left: 8px; } }
 
 /* mogelijkheden */
 .mogelijkheden { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
@@ -646,3 +679,6 @@ a { color: var(--sein); }
   .logo-txt i { font-size: .5rem; letter-spacing: .18em; }
   .top .btn { padding: .45em .8em; font-size: .9rem; }
 }
+.plan-pijl { top: 14px; transform: none; }
+.plan-pijl--vorige { left: auto; right: 64px; } .plan-pijl--volgende { right: 14px; }
+@media (max-width: 560px) { .top .btn { display: none; } .taal { margin-left: auto; } }

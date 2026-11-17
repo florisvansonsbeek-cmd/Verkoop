@@ -10,6 +10,7 @@
   function tijd(h) { var u = Math.floor(h), m = Math.round((h - u) * 60); return u + "." + (m < 10 ? "0" : "") + m; }
   var modusMeta = document.querySelector('meta[name="vs-modus"]');
   var voorvertoning = !!modusMeta && modusMeta.getAttribute("content") === "voorbeeld";
+  var T = function (k, v) { return window.T ? window.T(k, v) : k; };
   var DAGEN = ["Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag", "Zondag"];
 
   /* ---------------- Iconen per vak ---------------- */
@@ -220,8 +221,8 @@
     p.set("vak", state.vak);
     var link = location.origin + location.pathname + "?" + p.toString() + "#voorbeeld";
     var klaar = function (ok) {
-      deel.textContent = ok ? "Link gekopieerd" : link;
-      setTimeout(function () { deel.textContent = "Kopieer link naar dit voorbeeld"; }, ok ? 2200 : 8000);
+      deel.textContent = ok ? T("gekopieerd") : link;
+      setTimeout(function () { deel.textContent = T("kopieer"); }, ok ? 2200 : 8000);
     };
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(link).then(function () { klaar(true); }, function () { klaar(false); });
     else klaar(false);
@@ -265,7 +266,7 @@
   function renderMails() {
     mailsEl.innerHTML = demo.mails.map(function (m) {
       var klaar = demo.done[m.id];
-      var tag = klaar ? '<span class="pill pill--soort">' + esc(m.soort) + '</span><span class="pill pill--' + m.status[0] + '">' + esc(m.status[1]) + "</span>" : "Nog niet gelezen";
+      var tag = klaar ? '<span class="pill pill--soort">' + esc(m.soort) + '</span><span class="pill pill--' + m.status[0] + '">' + esc(m.status[1]) + "</span>" : esc(T("ongelezen"));
       return '<li><button type="button" class="mail' + (klaar ? "" : " is-new") + '" data-id="' + m.id + '" aria-pressed="' + (demo.sel === m.id) + '">' +
         '<span class="mail-from">' + esc(m.van) + '</span><span class="mail-time">' + m.tijd + '</span><span class="mail-subj">' + esc(m.onderwerp) + "</span>" +
         '<span class="mail-tag">' + tag + "</span></button></li>";
@@ -273,7 +274,7 @@
   }
   var IC = { goed: "✓", stop: "!", let: "!", info: "i", grijs: "–" };
   function renderBon(m, pop) {
-    if (!m) { bon.innerHTML = '<p class="bon-leeg">Druk op <strong>Lees mijn mail</strong>. Daarna zie je hier per bericht wat het dashboard eruit haalde en wat het controleerde.</p>'; return; }
+    if (!m) { bon.innerHTML = '<p class="bon-leeg">' + T("bonLeeg") + "</p>"; return; }
     bon.innerHTML =
       '<div class="bon-kop"><strong>' + esc(m.soort) + '</strong><span class="pill pill--' + m.status[0] + '">' + esc(m.status[1]) + "</span></div>" +
       '<dl class="bon-rows">' + m.rijen.map(function (r) { return "<div><dt>" + esc(r[0]) + "</dt><dd>" + esc(r[1]) + "</dd></div>"; }).join("") + "</dl>" +
@@ -299,7 +300,7 @@
     var order = { stop: 0, let: 1, info: 2, goed: 3 };
     items.sort(function (a, b) { return order[a.todo[0]] - order[b.todo[0]]; });
     todo.innerHTML = items.length ? items.map(function (m) { return '<li class="t--' + m.todo[0] + (m.justDone ? " in" : "") + '">' + esc(m.todo[1]) + "</li>"; }).join("")
-      : '<li class="todo-leeg">Nog niets. Het dashboard zet hier wat jij vandaag moet doen.</li>';
+      : '<li class="todo-leeg">' + esc(T("todoLeeg")) + "</li>";
     demo.mails.forEach(function (m) { m.justDone = false; });
   }
   function verwerk(m) {
@@ -316,11 +317,11 @@
   function runAll() {
     if (demo.running) return;
     if (demo.mails.every(function (m) { return demo.done[m.id]; })) { resetDemo(); }
-    demo.running = true; runBtn.disabled = true; runBtn.textContent = "Bezig met lezen";
+    demo.running = true; runBtn.disabled = true; runBtn.textContent = T("lezen");
     var rest = demo.mails.filter(function (m) { return !demo.done[m.id]; });
     (function next(i) {
       if (i >= rest.length) {
-        demo.running = false; runBtn.disabled = false; runBtn.textContent = "Opnieuw";
+        demo.running = false; runBtn.disabled = false; runBtn.textContent = T("opnieuw");
         var m2 = demo.mails[1]; demo.sel = m2.id; renderMails(); renderBon(m2, false);
         return;
       }
@@ -331,14 +332,14 @@
     demo.timers.forEach(clearTimeout); demo.timers = [];
     demo.mails = maakMails(state.vak); demo.done = {}; demo.sel = null; demo.running = false;
     ["aandacht", "betalen", "tegen"].forEach(function (k) { demo.kpi[k] = 0; $('[data-kpi="' + k + '"]').textContent = k === "aandacht" ? "0" : euro(0); });
-    runBtn.disabled = false; runBtn.textContent = "Lees mijn mail";
+    runBtn.disabled = false; runBtn.textContent = T("leesMail");
     renderMails(); renderBon(null); renderTodo();
   }
   runBtn.addEventListener("click", runAll);
   mailsEl.addEventListener("click", function (e) {
     var b = e.target.closest(".mail"); if (!b || demo.running) return;
     var m = demo.mails.filter(function (x) { return x.id === b.dataset.id; })[0];
-    if (!demo.done[m.id]) { demo.running = true; lees(m, function () { demo.running = false; if (demo.mails.every(function (x) { return demo.done[x.id]; })) runBtn.textContent = "Opnieuw"; }); return; }
+    if (!demo.done[m.id]) { demo.running = true; lees(m, function () { demo.running = false; if (demo.mails.every(function (x) { return demo.done[x.id]; })) runBtn.textContent = T("opnieuw"); }); return; }
     demo.sel = m.id; renderMails(); renderBon(m, false);
   });
 
@@ -355,18 +356,18 @@
         return '<li><span class="ic ic--' + ic[0] + '" aria-hidden="true">' + ic[1] + "</span><span>" + esc(it.label) + (it.uitleg ? "<small>" + esc(it.uitleg) + "</small>" : "") + "</span></li>";
       }).join("") + "</ul></div>";
     }).join("");
-    var actie = r.score >= 80 ? "Je site staat er goed voor. Wil je er een dashboard bij, of een frisse look?" : "Wil je dat ik dit oplos? Ik maak er graag een voorstel voor, met een vaste prijs.";
+    var actie = r.score >= 80 ? T("checkGoed") : T("checkSlecht");
     checkRes.innerHTML = '<div class="rapport">' +
-      '<div class="rapport-kop"><h3>' + esc(r.host) + '</h3><p class="rapport-oordeel">' + esc(r.oordeel) + " Score: <strong>" + r.score + "</strong> van de 100.</p>" +
+      '<div class="rapport-kop"><h3>' + esc(r.host) + '</h3><p class="rapport-oordeel">' + esc(r.oordeel) + " " + T("score", { n: r.score }) + "</p>" +
       '<div class="meter meter--' + (r.score >= 80 ? "goed" : r.score >= 55 ? "let" : "stop") + '" role="img" aria-label="Score ' + r.score + ' van de 100">' + segs + "</div>" +
       '<div class="meter-label"><span>0</span><span>100</span></div></div>' +
       '<div class="rapport-groepen">' + groepen + "</div>" +
-      '<div class="rapport-actie"><p>' + esc(actie) + '</p><button type="button" class="btn" id="check-voorstel">Vraag een voorstel</button></div></div>';
+      '<div class="rapport-actie"><p>' + esc(actie) + '</p><button type="button" class="btn" id="check-voorstel">' + esc(T("voorstel")) + '</button></div></div>';
     $(".meter", checkRes).style.setProperty("--meter", kleur);
     $("#check-voorstel").addEventListener("click", function () {
       laatsteCheck = r.url;
       var ver = $('input[name="wensen"][value="Website vernieuwen"]'); if (ver) ver.checked = true;
-      var ber = $("#c-bericht"); if (ber && !ber.value) ber.value = "Ik heb " + r.host + " gecheckt (score " + r.score + ").";
+      var ber = $("#c-bericht"); if (ber && !ber.value) ber.value = T("gecheckt", { host: r.host, n: r.score });
       $("#contact").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
       setTimeout(function () { $("#c-naam").focus({ preventScroll: true }); }, reduce ? 0 : 500);
     });
@@ -374,16 +375,16 @@
   checkForm.addEventListener("submit", function (e) {
     e.preventDefault();
     var url = checkInput.value.trim();
-    if (!url) { checkRes.innerHTML = '<div class="check-fout">Vul het adres van je website in, bijvoorbeeld jouwzaak.nl.</div>'; checkInput.focus(); return; }
-    if (voorvertoning) { checkRes.innerHTML = '<div class="check-fout">In deze voorvertoning werkt de websitecheck nog niet. Op de live site haalt hij je pagina echt op.</div>'; return; }
+    if (!url) { checkRes.innerHTML = '<div class="check-fout">' + esc(T("checkLeeg")) + "</div>"; checkInput.focus(); return; }
+    if (voorvertoning) { checkRes.innerHTML = '<div class="check-fout">' + esc(T("checkPreview")) + "</div>"; return; }
     var host = url.replace(/^https?:\/\//i, "").split("/")[0];
-    checkRes.innerHTML = '<div class="check-laden"><span class="spinner" aria-hidden="true"></span><span>Ik haal ' + esc(host) + " op en kijk hem na…</span></div>";
+    checkRes.innerHTML = '<div class="check-laden"><span class="spinner" aria-hidden="true"></span><span>' + esc(T("checkBezig", { host: host })) + "</span></div>";
     checkBtn.disabled = true;
     fetch("/api/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: url }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw j; return j; }); })
       .then(function (j) { laatsteCheck = j.url || url; rapport(j); })
       .catch(function (err) {
-        var msg = (err && err.message) || "De check lukte niet. Is je internet in orde?";
+        var msg = (err && err.message) || T("checkFout");
         checkRes.innerHTML = '<div class="check-fout">' + esc(msg) + "</div>";
       })
       .then(function () { checkBtn.disabled = false; });
@@ -426,28 +427,111 @@
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     var naam = form.elements.naam.value.trim(), contact = form.elements.contact.value.trim();
-    if (!naam) return fout("naam", "Vul je naam in.");
+    if (!naam) return fout("naam", T("naamNodig"));
     var cijfers = contact.replace(/\D/g, "");
-    if (!(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact) || (/^[\d\s()+\-./]+$/.test(contact) && cijfers.length >= 9))) return fout("contact", "Vul een telefoonnummer of e-mailadres in waarop ik je kan bereiken.");
+    if (!(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact) || (/^[\d\s()+\-./]+$/.test(contact) && cijfers.length >= 9))) return fout("contact", T("contactNodig"));
     var data = {
       naam: naam, zaak: form.elements.zaak.value.trim(), contact: contact, bericht: form.elements.bericht.value.trim(),
       wensen: $$('input[name="wensen"]:checked', form).map(function (x) { return x.value; }),
       vak: state.vak, voorbeeld: state.naam.trim(), check_url: laatsteCheck, fax: form.elements.fax.value, t: Date.now() - geopend
     };
-    if (voorvertoning) { status.className = "form-status is-fout"; status.textContent = "Dit is een voorvertoning: er wordt nog niets verstuurd. Op de live site komt je bericht wel aan."; return; }
-    verstuur.disabled = true; verstuur.textContent = "Versturen…"; status.textContent = ""; status.className = "form-status";
+    if (voorvertoning) { status.className = "form-status is-fout"; status.textContent = T("preview"); return; }
+    verstuur.disabled = true; verstuur.textContent = T("versturen"); status.textContent = ""; status.className = "form-status";
     fetch("/api/aanvraag", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw j; return j; }); })
       .then(function () {
-        form.innerHTML = '<div class="bedankt" tabindex="-1"><h3>Dank je, ' + esc(naam.split(" ")[0]) + ".</h3><p>Je bericht is binnen. Ik neem zo snel mogelijk contact met je op.</p></div>";
+        form.innerHTML = '<div class="bedankt" tabindex="-1"><h3>' + esc(T("bedankt", { naam: naam.split(" ")[0] })) + "</h3><p>" + esc(T("bedanktTekst")) + "</p></div>";
         $(".bedankt", form).focus();
       })
       .catch(function (err) {
-        verstuur.disabled = false; verstuur.textContent = "Stuur bericht";
-        fout(err && err.field, (err && err.message) || "Versturen lukte niet. Probeer het nog eens.");
+        verstuur.disabled = false; verstuur.textContent = T("stuur");
+        fout(err && err.field, (err && err.message) || T("fout"));
       });
   });
 
+
+  /* ---------------- Plattegronden per soort bedrijf ---------------- */
+  var PL = window.PLANNEN || [], planIdx = 0;
+  var tabsEl = $("#plan-tabs"), imgEl = $("#plan-img"), lijnenEl = $("#plan-lijnen"), labelsEl = $("#plan-labels"), lijstEl = $("#plan-lijst"), vlakEl = $(".plan-vlak");
+  function tt(o) { var l = window.TAAL ? window.TAAL() : "nl"; return (o && (o[l] || o.nl)) || ""; }
+  function indeling(punten) {
+    var items = punten.map(function (p, i) { return { p: p, n: i + 1, side: p.x < 700 ? "l" : "r" }; });
+    var tel = function (s) { return items.filter(function (it) { return it.side === s; }).length; };
+    while (Math.abs(tel("l") - tel("r")) > 1) {               // kolommen in balans
+      var groot = tel("l") > tel("r") ? "l" : "r";
+      var kand = items.filter(function (it) { return it.side === groot; }).sort(function (a, b) { return Math.abs(a.p.x - 700) - Math.abs(b.p.x - 700); })[0];
+      kand.side = groot === "l" ? "r" : "l";
+    }
+    ["l", "r"].forEach(function (s) {
+      var c = items.filter(function (it) { return it.side === s; }).sort(function (a, b) { return a.p.y - b.p.y; });
+      var gap = 104, top = 80, bodem = 830;
+      c.forEach(function (it, i) { it.ly = Math.max(Math.min(Math.max(it.p.y, top), bodem), i ? c[i - 1].ly + gap : top); });
+      for (var i = c.length - 1; i >= 0; i--) { var max = i === c.length - 1 ? bodem : c[i + 1].ly - gap; if (c[i].ly > max) c[i].ly = max; }
+    });
+    return items;
+  }
+  function renderTabs() {
+    if (!tabsEl) return;
+    tabsEl.innerHTML = PL.map(function (pl, i) {
+      return '<button type="button" role="tab" id="plan-tab-' + i + '" aria-controls="plan-paneel" aria-selected="' + (i === planIdx) + '" tabindex="' + (i === planIdx ? 0 : -1) + '">' + esc(tt(pl.naam)) + "</button>";
+    }).join("");
+  }
+  function toonPlan(i, focus) {
+    if (!PL.length || !imgEl) return;
+    planIdx = (i + PL.length) % PL.length;
+    var pl = PL[planIdx];
+    $$('[role="tab"]', tabsEl).forEach(function (b, k) { var on = k === planIdx; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; if (on) { if (focus) b.focus({ preventScroll: true }); tabsEl.scrollTo({ left: b.offsetLeft - tabsEl.clientWidth / 2 + b.clientWidth / 2, behavior: reduce ? "auto" : "smooth" }); } });
+    $("#plan-paneel").setAttribute("aria-labelledby", "plan-tab-" + planIdx);
+    $("#plan-titel").textContent = tt(pl.titel);
+    $("#plan-intro").textContent = tt(pl.intro);
+    $("#plan-onderschrift").textContent = T("onderschrift");
+    imgEl.src = "/img/plannen/" + pl.id + ".svg";
+    imgEl.alt = tt(pl.titel);
+    var items = indeling(pl.punten), svg = "";
+    labelsEl.innerHTML = "";
+    items.forEach(function (it) {
+      var links = it.side === "l", rand = links ? 290 : 1110;
+      svg += '<path class="pl-lijn" d="M' + it.p.x + " " + it.p.y + "L" + (rand + (links ? 16 : -16)) + " " + it.ly + "H" + rand + '"/><circle class="pl-eind" cx="' + rand + '" cy="' + it.ly + '" r="3.5"/>';
+      var lab = document.createElement("div");
+      lab.className = "plan-label plan-label--" + it.side;
+      lab.innerHTML = '<span class="nr">' + it.n + "</span>" + esc(tt(it.p.t));
+      lab.style.left = ((links ? 30 : 1110) / 14) + "%";
+      lab.style.top = ((it.ly - 27) / 9) + "%";
+      labelsEl.appendChild(lab);
+    });
+    items.forEach(function (it) {
+      svg += '<g class="pl-pin"><circle class="pl-halo" cx="' + it.p.x + '" cy="' + it.p.y + '" r="21"/><circle class="pl-kern" cx="' + it.p.x + '" cy="' + it.p.y + '" r="14"/><text x="' + it.p.x + '" y="' + (it.p.y + 5) + '" text-anchor="middle">' + it.n + "</text></g>";
+    });
+    lijnenEl.innerHTML = svg;
+    lijstEl.innerHTML = pl.punten.map(function (p, k) {
+      return '<li><span class="nr">' + (k + 1) + "</span><div><h3>" + esc(tt(p.t)) + "</h3><p>" + esc(tt(p.u)) + "</p></div></li>";
+    }).join("");
+    if (vlakEl && !reduce) { vlakEl.classList.remove("wissel"); void vlakEl.offsetWidth; vlakEl.classList.add("wissel"); }
+    var volgend = PL[(planIdx + 1) % PL.length]; (new Image()).src = "/img/plannen/" + volgend.id + ".svg";
+  }
+  if (tabsEl && PL.length) {
+    renderTabs();
+    tabsEl.addEventListener("click", function (e) { var b = e.target.closest('[role="tab"]'); if (b) toonPlan(Number(b.id.replace("plan-tab-", ""))); });
+    tabsEl.addEventListener("keydown", function (e) {
+      var d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      if (e.key === "Home") { e.preventDefault(); toonPlan(0, true); } else if (e.key === "End") { e.preventDefault(); toonPlan(PL.length - 1, true); }
+      else if (d) { e.preventDefault(); toonPlan(planIdx + d, true); }
+    });
+    $("#plan-vorige").addEventListener("click", function () { toonPlan(planIdx - 1); });
+    $("#plan-volgende").addEventListener("click", function () { toonPlan(planIdx + 1); });
+    var sx = null, sy = null;
+    vlakEl.addEventListener("touchstart", function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    vlakEl.addEventListener("touchend", function (e) {
+      if (sx === null) return;
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) toonPlan(planIdx + (dx < 0 ? 1 : -1));
+    });
+    toonPlan(0);
+  }
+  document.addEventListener("taal", function () {
+    if (tabsEl && PL.length) { renderTabs(); toonPlan(planIdx); }
+    if (!demo.running) resetDemo();
+  });
 
   /* ---------------- Start ---------------- */
   var jaar = $("#jaar"); if (jaar) jaar.textContent = String(new Date().getFullYear());
