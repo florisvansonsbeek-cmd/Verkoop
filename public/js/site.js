@@ -449,57 +449,6 @@
   });
 
 
-  /* ---------------- Plattegrond ---------------- */
-  var PLEKKEN = [
-    { id: "kleding", naam: "Kledingwinkel", x: 17.5, y: 9, kleur: "#3d3a5c", vak: "kleding",
-      intro: "Een boetiek met een vaste klantenkring en een nieuwe collectie elk seizoen.",
-      punten: [["Website", "Collectie met maten en prijzen, en reserveren om te komen passen"], ["Dashboard", "Wat er deze week verkocht is en welke maten bijna op zijn"], ["Automatisch", "Facturen van leveranciers nagekeken voordat je betaalt"]] },
-    { id: "bakkerij", naam: "Bakkerij", x: 40.8, y: 12.5, kleur: "#9a4a17", vak: "bakkerij",
-      intro: "Elke ochtend vers brood, met een paar tafeltjes voor koffie.",
-      punten: [["Website", "Assortiment, openingstijden en bestellen voor morgen"], ["Dashboard", "Alle bestellingen per dag op één lijst, klaar voor de oven"], ["Automatisch", "Meel- en verpakkingsfacturen vergeleken met je bestelling"]] },
-    { id: "groothandel", naam: "Groothandel", x: 67, y: 7, kleur: "#1f5138", werk: true,
-      intro: "Zoals Campo International: inkoop bij kwekers, verkoop aan winkels door heel Europa.",
-      punten: [["Website", "In meerdere talen, waar klanten hun bestelling volgen"], ["Dashboard", "Offertes, facturen en pakbonnen uit de mail naast elkaar"], ["Automatisch", "Waarschuwt bij een nieuw rekeningnummer of een dubbele factuur"]] },
-    { id: "kapper", naam: "Kapper", x: 11.5, y: 64, kleur: "#1d4a3a", vak: "kapper",
-      intro: "Een kapsalon met drie stoelen en klanten die vaak spontaan binnenlopen.",
-      punten: [["Website", "Prijzen en online een afspraak maken"], ["Dashboard", "Agenda en omzet per dag in één oogopslag"], ["Automatisch", "Vragen van klanten met een concept-antwoord klaar"]] },
-    { id: "schoenmaker", naam: "Schoenmaker", x: 30, y: 65.5, kleur: "#5e3521", vak: "schoenmaker",
-      intro: "Hakken, zolen en sleutels, vaak klaar terwijl je wacht.",
-      punten: [["Website", "Prijzen, belknop en route, goed te vinden in Google"], ["Dashboard", "Reparaties met de datum dat ze klaar zijn"], ["Automatisch", "Een appje of mail zodra de schoenen klaar zijn"]] },
-    { id: "streek", naam: "Boerderijwinkel", x: 63.5, y: 66, kleur: "#4d6b2f", vak: "streek",
-      intro: "Streekproducten van eigen land, aan de rand van de stad.",
-      punten: [["Website", "Wat er deze week van het land komt, met een bestelformulier"], ["Dashboard", "Bestellingen per ophaaldag en wat er nog op voorraad is"], ["Automatisch", "Facturen van leveranciers en boeren nagekeken en klaargezet"]] }
-  ];
-  var pinsEl = $("#pins"), uitleg = $("#kaart-uitleg");
-  var PIJL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 2l17 8-7 2.5L10 20z"/></svg>';
-  function toonPlek(id, focus) {
-    var p = PLEKKEN.filter(function (x) { return x.id === id; })[0];
-    $$(".pin", pinsEl).forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.id === id)); });
-    uitleg.style.setProperty("--pin", p.kleur);
-    uitleg.innerHTML = '<div class="ku-kop"><i></i><h2>' + esc(p.naam) + "</h2></div>" +
-      '<p class="ku-intro">' + esc(p.intro) + "</p>" +
-      '<ul class="ku-lijst">' + p.punten.map(function (q) { return "<li><b>" + esc(q[0]) + "</b>" + esc(q[1]) + "</li>"; }).join("") + "</ul>" +
-      '<div class="ku-actie"><button type="button" class="btn" id="ku-knop">' + (p.werk ? "Bekijk wat ik voor Campo bouwde" : "Bekijk de voorbeeldsite") + "</button>" +
-      '<p class="kaart-hint">Klik op een andere zaak in de plattegrond.</p></div>';
-    $("#ku-knop").addEventListener("click", function () {
-      if (p.werk) { $("#werk").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); return; }
-      var r = $('input[name="vak"][value="' + p.vak + '"]');
-      if (r && !r.checked) { r.checked = true; r.dispatchEvent(new Event("change", { bubbles: true })); }
-      $("#voorbeeld").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
-    });
-  }
-  if (pinsEl) {
-    pinsEl.innerHTML = PLEKKEN.map(function (p) {
-      return '<button type="button" class="pin" data-id="' + p.id + '" aria-pressed="false">' + PIJL + "<span>" + esc(p.naam) + "</span></button>";
-    }).join("");
-    $$(".pin", pinsEl).forEach(function (b, i) {
-      var p = PLEKKEN[i];
-      b.style.left = p.x + "%"; b.style.top = p.y + "%"; b.style.setProperty("--pin", p.kleur);
-      b.addEventListener("click", function () { toonPlek(p.id); });
-    });
-    toonPlek("kleding");
-  }
-
   /* ---------------- Start ---------------- */
   var jaar = $("#jaar"); if (jaar) jaar.textContent = String(new Date().getFullYear());
   renderMock(true);
