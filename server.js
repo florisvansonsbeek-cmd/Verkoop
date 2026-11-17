@@ -286,7 +286,9 @@ function inkorten(t, n) { if (t.length <= n) return t; const k = t.slice(0, n - 
 function loadBranches() {
   const ctx = { window: {} };
   vm.runInNewContext(fs.readFileSync(path.join(PUBLIC_DIR, "js", "plannen.js"), "utf8"), ctx);
+  vm.runInNewContext(fs.readFileSync(path.join(PUBLIC_DIR, "js", "voorbeelden.js"), "utf8"), ctx);
   PLANNEN = ctx.window.PLANNEN || [];
+  const VB = ctx.window.VOORBEELDEN || {};
   const tpl = fs.readFileSync(path.join(TEMPLATE_DIR, "branche.html"), "utf8");
   const delen = {
     KOP: naarVoorpagina(stuk(indexTemplate, '<header class="top">')),
@@ -299,7 +301,8 @@ function loadBranches() {
   PLANNEN.forEach((pl, i) => {
     if (!pl.slug) return;
     const groep = pl.groep.nl;
-    const legenda = pl.punten.map((p, k) => `<li data-n="${k + 1}"><span class="nr">${k + 1}</span><div><h3>${esc(p.t.nl)}</h3><p>${esc(p.u.nl)}</p></div></li>`).join("");
+    const wie = (k) => ((VB[pl.id] || {}).punten || [])[k]?.wie || "k";
+    const legenda = pl.punten.map((p, k) => `<li class="pk" data-n="${k + 1}" data-wie="${wie(k)}"><div class="pk-rij"><div class="pk-kop"><span class="nr">${k + 1}</span><span class="pk-tekst"><b>${esc(p.t.nl)}</b><span>${esc(p.u.nl)}</span></span></div></div></li>`).join("");
     const andere = PLANNEN.filter((x) => x.slug && x.id !== pl.id).map((x) => `<li><a data-groep="${esc(x.id)}" href="/voor/${esc(x.slug)}">${esc(hoofdletter(x.groep.nl))}</a></li>`).join("");
     const pad = "/voor/" + pl.slug;
     const jsonld = JSON.stringify({ "@context": "https://schema.org", "@type": "Service", name: `Websites en slimme systemen voor ${groep}`,

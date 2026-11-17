@@ -20,6 +20,7 @@
 <link as="font" crossorigin="" href="/fonts/source-sans-3-latin-wght-normal.woff2" rel="preload" type="font/woff2"/>
 <link href="/css/site.css?v={{V}}" rel="stylesheet"/>
 <script defer="" src="/js/plannen.js?v={{V}}"></script>
+<script defer="" src="/js/voorbeelden.js?v={{V}}"></script>
 <script defer="" src="/js/i18n.js?v={{V}}"></script>
 <script defer="" src="/js/plan.js?v={{V}}"></script>
 <script type="application/ld+json">{{JSONLD}}</script>
@@ -57,13 +58,25 @@
 <div class="blad-titel">
 <h2 id="plan-titel">{{PLAN_TITEL}}</h2>
 <p id="plan-intro">{{PLAN_INTRO}}</p>
+</div>
+<div class="blad-lijst">
+<p class="plan-sleutel" id="plan-sleutel"></p>
+<ol class="plan-lijst" id="plan-lijst">{{LEGENDA}}</ol>
+</div>
+<div class="blad-keuze">
+<p class="keuze-hint" id="keuze-hint"></p>
 <dl class="titelblok">
 <div><dt data-i18n="t235">Project</dt><dd id="tb-project">{{PLAN_TITEL}}</dd></div>
 <div><dt data-i18n="t236">Blad</dt><dd id="tb-blad">{{BLAD}}</dd></div>
+<div class="tb-keuze"><dt data-i18n="t294">Keuze</dt><dd id="tb-keuze"></dd></div>
+<div class="tb-keuze"><dt data-i18n="t295">Pakket</dt><dd id="tb-pakket"></dd></div>
+<div class="tb-keuze"><dt data-i18n="t296">Vanaf</dt><dd id="tb-vanaf"></dd></div>
 <div><dt data-i18n="t237">Getekend</dt><dd>F. van Sonsbeek</dd></div>
 </dl>
+<div class="keuze-acties">
+<a class="btn" data-i18n="t297" href="/#contact" id="keuze-knop">Vraag dit aan</a>
 </div>
-<ol class="plan-lijst" id="plan-lijst">{{LEGENDA}}</ol>
+</div>
 </div>
 </figure>
 <p class="blad-onderschrift" data-i18n="t015" id="plan-onderschrift">Voorbeelden van wat kan, geen vast pakket. We kiezen samen wat bij jouw zaak past en beginnen met één onderdeel.</p>
