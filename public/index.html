@@ -7,7 +7,7 @@
 <meta content="live" name="vs-modus"/>
 <title>Websites voor kleine zaken in Utrecht | Floris van Sonsbeek</title>
 <meta content="Ik maak websites voor kleine zaken in Utrecht, met je prijzen, openingstijden en een belknop. Wil je meer, dan bouw ik er een dashboard bij dat je mail leest en je facturen nakijkt." name="description"/>
-<meta content="#2f4a37" name="theme-color"/>
+<meta content="#1f3628" name="theme-color"/>
 <link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
 <link href="{{ORIGIN}}/" rel="canonical"/>
 <meta content="website" property="og:type"/>
@@ -15,7 +15,9 @@
 <meta content="Een mooie website en slimme hulp achter de schermen" property="og:title"/>
 <meta content="Websites voor kleine zaken in Utrecht. Typ de naam van je zaak en zie meteen een voorbeeld." property="og:description"/>
 <meta content="{{ORIGIN}}/" property="og:url"/>
-<meta content="{{ORIGIN}}/img/og.png" property="og:image"/>
+<meta content="{{ORIGIN}}/img/og.jpg" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
 <link as="font" crossorigin="" href="/fonts/cormorant-garamond-latin-600-normal.woff2" rel="preload" type="font/woff2"/>
 <link as="font" crossorigin="" href="/fonts/source-sans-3-latin-wght-normal.woff2" rel="preload" type="font/woff2"/>
 <link href="/css/site.css?v={{V}}" rel="stylesheet"/>
@@ -46,35 +48,48 @@
 <main id="main">
 <!-- 0. Begin: de boerderijwinkel -->
 <section aria-labelledby="intro-titel" class="intro" id="begin">
+<div class="intro-tafel" id="intro-tafel">
 <div class="wrap">
 <div class="intro-kop">
 <h1 data-i18n="t011" id="intro-titel">Een mooie website, en slimme hulp achter de schermen</h1>
+<div class="intro-zij">
 <p class="lead" data-i18n="t012">Ik bouw websites en systemen met AI voor zaken met karakter. Ze lezen je mail, kijken facturen na en houden bestellingen bij, zodat jij tijd hebt voor je klanten. Kies hieronder een soort bedrijf en zie wat dat in de praktijk betekent.</p>
 <div class="intro-acties">
-<a class="btn" data-i18n="t013" href="#contact">Plan een kennismaking</a>
-<a class="textlink" data-i18n="t014" href="#mogelijkheden">Bekijk alle mogelijkheden</a>
+<a class="btn btn--room" data-i18n="t013" href="#contact">Plan een kennismaking</a>
+<a class="textlink textlink--licht" data-i18n="t014" href="#mogelijkheden">Bekijk alle mogelijkheden</a>
 </div>
 </div>
-<div class="plannen" id="plannen">
+</div>
 <div aria-label="Kies een soort bedrijf" class="plan-tabs" data-i18n-aria="t216" id="plan-tabs" role="tablist"></div>
-<div class="plan-kop">
-<h2 id="plan-titel"></h2>
-<p id="plan-intro"></p>
 </div>
-<figure class="plan" id="plan-paneel" role="tabpanel">
+</div>
+<div class="wrap">
+<figure class="blad" id="plan-paneel" role="tabpanel">
 <div class="plan-vlak">
 <div class="plan-doek">
 <img alt="" height="900" id="plan-img" src="/img/plannen/boerderij.svg" width="1400"/>
 <svg aria-hidden="true" class="plan-lijnen" id="plan-lijnen" viewbox="0 0 1400 900"></svg>
 </div>
 <div aria-hidden="true" class="plan-labels" id="plan-labels"></div>
-<button aria-label="Vorig bedrijf" class="plan-pijl plan-pijl--vorige" data-i18n-aria="t217" id="plan-vorige" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M15 5l-7 7 7 7"></path></svg></button>
-<button aria-label="Volgend bedrijf" class="plan-pijl plan-pijl--volgende" data-i18n-aria="t218" id="plan-volgende" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></button>
+<div class="blad-nav">
+<button aria-label="Vorig bedrijf" class="plan-pijl" data-i18n-aria="t217" id="plan-vorige" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<button aria-label="Volgend bedrijf" class="plan-pijl" data-i18n-aria="t218" id="plan-volgende" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></button>
 </div>
-<figcaption data-i18n="t015" id="plan-onderschrift">Voorbeelden van wat kan, geen vast pakket. We kiezen samen wat bij jouw zaak past en beginnen met één onderdeel.</figcaption>
-</figure>
+</div>
+<div class="blad-voet">
+<div class="blad-titel">
+<h2 id="plan-titel"></h2>
+<p id="plan-intro"></p>
+<dl class="titelblok">
+<div><dt data-i18n="t235">Project</dt><dd id="tb-project"></dd></div>
+<div><dt data-i18n="t236">Blad</dt><dd id="tb-blad"></dd></div>
+<div><dt data-i18n="t237">Getekend</dt><dd>F. van Sonsbeek</dd></div>
+</dl>
+</div>
 <ol class="plan-lijst" id="plan-lijst"></ol>
 </div>
+</figure>
+<p class="blad-onderschrift" data-i18n="t015" id="plan-onderschrift">Voorbeelden van wat kan, geen vast pakket. We kiezen samen wat bij jouw zaak past en beginnen met één onderdeel.</p>
 </div>
 </section>
 <!-- Mogelijkheden -->
@@ -86,26 +101,32 @@
 </div>
 <div class="mogelijkheden">
 <div class="mog">
+<svg aria-hidden="true" class="mog-ic" viewbox="0 0 32 32"><path d="M16 28s-8.5-7.4-8.5-14a8.5 8.5 0 0 1 17 0c0 6.6-8.5 14-8.5 14z"></path><circle cx="16" cy="14" r="3.2"></circle></svg>
 <h3 data-i18n="t018">Gevonden worden</h3>
 <ul><li data-i18n="t019">Website op maat, op je eigen adres</li><li data-i18n="t020">Meertalige site voor toeristen of klanten uit het buitenland<span class="al">eerder gemaakt</span></li><li data-i18n="t021">Teksten die goed gevonden worden in Google</li><li data-i18n="t022">Openingstijden en gegevens overal gelijk, ook in Google Maps</li></ul>
 </div>
 <div class="mog">
+<svg aria-hidden="true" class="mog-ic" viewbox="0 0 32 32"><path d="M5 12.5h22l-2.3 11.6a2 2 0 0 1-2 1.6H9.3a2 2 0 0 1-2-1.6z"></path><path d="M11.5 12.5l3.5-6.5M20.5 12.5L17 6"></path><path d="M12 17.5v4M16 17.5v4M20 17.5v4"></path></svg>
 <h3 data-i18n="t023">Verkopen en bestellen</h3>
 <ul><li data-i18n="t024">Online bestellen, reserveren of een afspraak maken</li><li data-i18n="t025">Pakketten en abonnementen, zoals een wekelijks groentepakket</li><li data-i18n="t026">Klanten volgen zelf hun bestelling<span class="al">eerder gemaakt</span></li><li data-i18n="t027">Een appje of mail zodra iets klaarstaat</li></ul>
 </div>
 <div class="mog">
+<svg aria-hidden="true" class="mog-ic" viewbox="0 0 32 32"><rect height="16" rx="2" width="22" x="5" y="9"></rect><path d="M5.6 10.2L16 18l10.4-7.8"></path></svg>
 <h3 data-i18n="t028">Mail en administratie</h3>
 <ul><li data-i18n="t029">Mail lezen en sorteren: facturen, vragen, offertes<span class="al">eerder gemaakt</span></li><li data-i18n="t030">Facturen controleren op bedrag, btw, rekeningnummer en dubbele<span class="al">eerder gemaakt</span></li><li data-i18n="t031">Bonnetjes en pakbonnen scannen met je telefoon</li><li data-i18n="t032">Alles netjes klaarzetten voor je boekhouder</li><li data-i18n="t033">Offertes en facturen opstellen in je eigen huisstijl</li></ul>
 </div>
 <div class="mog">
+<svg aria-hidden="true" class="mog-ic" viewbox="0 0 32 32"><path d="M7 7.5h18a2.5 2.5 0 0 1 2.5 2.5v9a2.5 2.5 0 0 1-2.5 2.5H14l-5.5 4.5v-4.5H7A2.5 2.5 0 0 1 4.5 19v-9A2.5 2.5 0 0 1 7 7.5z"></path><path d="M10 13h12M10 17h7"></path></svg>
 <h3 data-i18n="t034">Klantcontact</h3>
 <ul><li data-i18n="t035">Concept-antwoorden op vragen en reviews, in jouw toon</li><li data-i18n="t036">Een nieuwsbrief met het aanbod van de week</li><li data-i18n="t037">Berichten voor Instagram of Facebook vanuit één foto</li><li data-i18n="t038">Herinneringen voor afspraken en openstaande betalingen</li></ul>
 </div>
 <div class="mog">
+<svg aria-hidden="true" class="mog-ic" viewbox="0 0 32 32"><path d="M5 26.5h22"></path><path d="M8.5 26.5v-7M14 26.5V13M19.5 26.5v-9M25 26.5V8.5"></path></svg>
 <h3 data-i18n="t039">Inzicht en sturing</h3>
 <ul><li data-i18n="t040">Dashboard met omzet, toppers en drukke dagen</li><li data-i18n="t041">Voorraad bijhouden, met een seintje als iets op raakt</li><li data-i18n="t042">Elke ochtend een korte samenvatting van wat er speelt<span class="al">eerder gemaakt</span></li><li data-i18n="t043">Een melding als iets afwijkt van je eigen regels<span class="al">eerder gemaakt</span></li><li data-i18n="t044">Doelen en een weekscore voor jou of je team<span class="al">eerder gemaakt</span></li></ul>
 </div>
 <div class="mog">
+<svg aria-hidden="true" class="mog-ic" viewbox="0 0 32 32"><rect height="21" rx="2" width="18" x="7" y="6.5"></rect><path d="M12.5 6.5V4.5h7v2"></path><path d="M11 13.5l2 2 3.2-3.2M11 20.5l2 2 3.2-3.2M19.5 14h2.5M19.5 21h2.5"></path></svg>
 <h3 data-i18n="t045">Op de werkvloer</h3>
 <ul><li data-i18n="t046">Groot scherm met wat er vandaag binnenkomt en vertrekt<span class="al">eerder gemaakt</span></li><li data-i18n="t047">Paklijsten en planning per dag</li><li data-i18n="t048">Checklists voor openen, sluiten en hygiëne</li><li data-i18n="t049">Roosters en beschikbaarheid van personeel</li></ul>
 </div>
@@ -115,6 +136,7 @@
 <!-- Waarom ik -->
 <section aria-labelledby="waarom-titel" class="waarom" id="waarom">
 <div class="wrap">
+<div class="waarom-in">
 <div class="section-head">
 <h2 data-i18n="t050" id="waarom-titel">Waarom met mij werken</h2>
 <p data-i18n="t051">Een website en slimme systemen laten maken hoeft niet duur, traag of ingewikkeld te zijn. Dit krijg je, en zo verhoudt het zich tot de andere routes.</p>
@@ -129,6 +151,7 @@
 <li><h3 data-i18n="t064">Veilig vanaf dag één</h3><p data-i18n="t065">Beveiligde verbinding en eigen wachtwoorden. Het dashboard doet voorstellen, maar betaalt of verstuurt nooit iets zelf. Een factuur met een nieuw rekeningnummer wordt gemarkeerd, zodat jij hem nakijkt.</p></li>
 <li><h3 data-i18n="t066">Klein beginnen, rustig opbouwen</h3><p data-i18n="t067">We beginnen met één onderdeel en laten dat een paar weken naast je huidige werkwijze meedraaien. AI maakt soms fouten, dus in het begin kijk jij alles na. Pas als het goed werkt, bouwen we verder.</p></li>
 </ul>
+</div>
 <div class="vgl-wrap">
 <table class="vgl">
 <caption data-i18n="t068">Zo verhoudt het zich, meestal</caption>

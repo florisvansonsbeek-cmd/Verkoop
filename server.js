@@ -260,11 +260,12 @@ function serveStatic(req, res, p) {
   const cache = /\.(woff2|webp|png|jpg|svg|ico)$/.test(p) ? "public, max-age=2592000" : versioned ? "public, max-age=31536000, immutable" : "public, max-age=300";
   serveFile(req, res, f, cache);
 }
+const LOGO = '<span class="logo"><svg aria-hidden="true" class="logo-mark" viewBox="0 0 48 48"><path d="M11 41V22a13 13 0 0 1 26 0v19" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M6 41.5h36" stroke="currentColor" stroke-linecap="round" stroke-width="2.6"/><path d="M24 40V25" stroke="#a8742f" stroke-linecap="round" stroke-width="2.2"/><path d="M24 33c-6 0-8.5-3.6-8.5-8 5.4 0 8.5 3.2 8.5 8z" fill="#a8742f"/><path d="M24 28.5c5.2 0 7.8-3.2 7.8-7.2-5 0-7.8 2.9-7.8 7.2z" fill="#7d8f68"/></svg><span class="logo-txt"><b>VAN SONSBEEK</b><i>WEBSITES &amp; SLIMME SYSTEMEN</i></span></span>';
 function page(title, body, opts = {}) {
   return `<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex"><title>${esc(title)}</title><link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/css/site.css?v=${VERSION}">${opts.beheer ? `<link rel="stylesheet" href="/css/beheer.css?v=${VERSION}">` : ""}</head>
-<body${opts.beheer ? ' class="beheer"' : ""}><header class="top"><div class="wrap top-in"><a class="brand" href="/"><span class="sign sign--brand">van Sonsbeek</span><span class="brand-sub">${opts.beheer ? "beheer" : "websites voor kleine zaken"}</span></a>${opts.right || ""}</div></header>
+<body${opts.beheer ? ' class="beheer"' : ""}><header class="top"><div class="wrap top-in"><a class="brand" href="/" aria-label="Van Sonsbeek, naar de voorpagina">${LOGO}</a>${opts.beheer ? '<span class="muted small">beheer</span>' : ""}${opts.right || ""}</div></header>
 ${body}</body></html>`;
 }
 

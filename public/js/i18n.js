@@ -73,7 +73,7 @@
       t214: "Van Sonsbeek, back to the top", t215: "Main menu", t216: "Choose a type of business", t217: "Previous business", t218: "Next business",
       t219: "Open screenshot full size", t220: "Screens of Campo International", t221: "Open screenshot full size", t222: "Screens of Handelsplan", t223: "Open screenshot full size", t224: "Screens of Koersplan",
       t225: "View the example on", t226: "Example of your website", t227: "Inbox", t228: "Type your business name here", t229: "yourbusiness.nl",
-      t230: "Needs attention", t231: "Ready to pay", t232: "Held back", t234: "That can happen, just as it does with people. That's why the dashboard only makes suggestions: it never pays, sends or deletes anything itself. In the first weeks you check everything and we fine-tune it together. If a part doesn't work well enough for your business, I'll tell you honestly and we leave it out.", t233: "What if the AI makes a mistake?",
+      t230: "Needs attention", t231: "Ready to pay", t232: "Held back", t234: "That can happen, just as it does with people. That's why the dashboard only makes suggestions: it never pays, sends or deletes anything itself. In the first weeks you check everything and we fine-tune it together. If a part doesn't work well enough for your business, I'll tell you honestly and we leave it out.", t235: "Project", t236: "Sheet", t237: "Drawn by", t233: "What if the AI makes a mistake?",
       ui: {
         title: "Websites and smart systems for small businesses | Van Sonsbeek",
         desc: "I build websites and AI-powered systems that read your mail, check invoices and keep track of orders.",
@@ -85,7 +85,7 @@
         voorstel: "Ask for a proposal", checkFout: "The check didn't work. Is your internet connection OK?", checkPreview: "The website check doesn't work in this preview. On the live site it really fetches your page.",
         naamNodig: "Please enter your name.", contactNodig: "Enter a phone number or email address where I can reach you.", versturen: "Sending…", stuur: "Send message",
         bedankt: "Thanks, {naam}.", bedanktTekst: "Your message has arrived. I'll get in touch as soon as possible.", fout: "Sending didn't work. Please try again.", preview: "This is a preview: nothing is sent. On the live site your message will arrive.",
-        onderschrift: "Examples of what's possible, not a fixed package. Together we choose what fits your business and start with one part.", gecheckt: "I checked {host} (score {n})."
+        onderschrift: "Examples of what's possible, not a fixed package. Together we choose what fits your business and start with one part.", gecheckt: "I checked {host} (score {n}).", blad: "{n} of {m}"
       }
     },
     de: {
@@ -156,7 +156,7 @@
       t214: "Van Sonsbeek, zum Anfang", t215: "Hauptmenü", t216: "Branche wählen", t217: "Vorheriger Betrieb", t218: "Nächster Betrieb",
       t219: "Screenshot groß öffnen", t220: "Ansichten von Campo International", t221: "Screenshot groß öffnen", t222: "Ansichten von Handelsplan", t223: "Screenshot groß öffnen", t224: "Ansichten von Koersplan",
       t225: "Beispiel ansehen auf", t226: "Beispiel Ihrer Website", t227: "Postfach", t228: "Name Ihres Betriebs hier eingeben", t229: "ihrbetrieb.de",
-      t230: "Braucht Aufmerksamkeit", t231: "Bereit zur Zahlung", t232: "Zurückgehalten", t234: "Das kann passieren, genau wie bei Menschen. Deshalb macht das Dashboard nur Vorschläge: Es bezahlt, versendet und löscht nichts selbst. In den ersten Wochen prüfen Sie alles, und wir justieren gemeinsam nach. Funktioniert ein Baustein für Ihren Betrieb nicht gut genug, sage ich das ehrlich und wir lassen ihn weg.", t233: "Was, wenn die KI einen Fehler macht?",
+      t230: "Braucht Aufmerksamkeit", t231: "Bereit zur Zahlung", t232: "Zurückgehalten", t234: "Das kann passieren, genau wie bei Menschen. Deshalb macht das Dashboard nur Vorschläge: Es bezahlt, versendet und löscht nichts selbst. In den ersten Wochen prüfen Sie alles, und wir justieren gemeinsam nach. Funktioniert ein Baustein für Ihren Betrieb nicht gut genug, sage ich das ehrlich und wir lassen ihn weg.", t235: "Projekt", t236: "Blatt", t237: "Gezeichnet", t233: "Was, wenn die KI einen Fehler macht?",
       ui: {
         title: "Websites und smarte Systeme für kleine Betriebe | Van Sonsbeek",
         desc: "Ich baue Websites und KI-gestützte Systeme, die Mails lesen, Rechnungen prüfen und Bestellungen im Blick behalten.",
@@ -168,7 +168,7 @@
         voorstel: "Angebot anfragen", checkFout: "Die Prüfung hat nicht geklappt. Ist Ihre Internetverbindung in Ordnung?", checkPreview: "In dieser Vorschau funktioniert der Website-Check nicht. Auf der Live-Seite wird Ihre Seite wirklich geprüft.",
         naamNodig: "Bitte geben Sie Ihren Namen ein.", contactNodig: "Geben Sie eine Telefonnummer oder E-Mail-Adresse ein, unter der ich Sie erreiche.", versturen: "Wird gesendet…", stuur: "Nachricht senden",
         bedankt: "Danke, {naam}.", bedanktTekst: "Ihre Nachricht ist angekommen. Ich melde mich so schnell wie möglich.", fout: "Senden hat nicht geklappt. Bitte versuchen Sie es noch einmal.", preview: "Dies ist eine Vorschau: Es wird nichts gesendet. Auf der Live-Seite kommt Ihre Nachricht an.",
-        onderschrift: "Beispiele, was möglich ist, kein festes Paket. Gemeinsam wählen wir, was zu Ihrem Betrieb passt, und beginnen mit einem Baustein.", gecheckt: "Ich habe {host} geprüft (Wert {n})."
+        onderschrift: "Beispiele, was möglich ist, kein festes Paket. Gemeinsam wählen wir, was zu Ihrem Betrieb passt, und beginnen mit einem Baustein.", gecheckt: "Ich habe {host} geprüft (Wert {n}).", blad: "{n} von {m}"
       }
     },
     nl: { ui: {
@@ -182,7 +182,7 @@
       voorstel: "Vraag een voorstel", checkFout: "De check lukte niet. Is je internet in orde?", checkPreview: "In deze voorvertoning werkt de websitecheck nog niet. Op de live site haalt hij je pagina echt op.",
       naamNodig: "Vul je naam in.", contactNodig: "Vul een telefoonnummer of e-mailadres in waarop ik je kan bereiken.", versturen: "Versturen…", stuur: "Stuur bericht",
       bedankt: "Dank je, {naam}.", bedanktTekst: "Je bericht is binnen. Ik neem zo snel mogelijk contact met je op.", fout: "Versturen lukte niet. Probeer het nog eens.", preview: "Dit is een voorvertoning: er wordt nog niets verstuurd. Op de live site komt je bericht wel aan.",
-      onderschrift: "Voorbeelden van wat kan, geen vast pakket. We kiezen samen wat bij jouw zaak past en beginnen met één onderdeel.", gecheckt: "Ik heb {host} gecheckt (score {n})."
+      onderschrift: "Voorbeelden van wat kan, geen vast pakket. We kiezen samen wat bij jouw zaak past en beginnen met één onderdeel.", gecheckt: "Ik heb {host} gecheckt (score {n}).", blad: "{n} van {m}"
     } }
   };
 
