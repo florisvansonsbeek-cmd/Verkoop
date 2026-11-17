@@ -9,6 +9,10 @@
  *   APP_PASSWORD     wachtwoord voor /beheer. Zonder wachtwoord blijft /beheer dicht.
  *   CONTACT_PHONE    telefoonnummer dat op de site staat (bijv. 06 12345678); geeft ook een WhatsApp-link.
  *   CONTACT_EMAIL    e-mailadres dat op de site staat.
+ *
+ * Pagina per soort bedrijf: /voor/<slug>, gemaakt uit templates/branche.html en public/js/plannen.js.
+ * Echte ervaringen van klanten: content/ervaringen.json, bijvoorbeeld [{ "tekst": "...", "naam": "...", "zaak": "..." }].
+ * Zonder CONTACT_PHONE blijven de app- en belknoppen weg.
  *   NTFY_TOPIC       pushmelding op je telefoon bij een nieuwe aanvraag (app ntfy). NTFY_SERVER en NTFY_TOKEN optioneel.
  *   RESEND_API_KEY   mail bij een nieuwe aanvraag via Resend, met MAIL_TO en eventueel MAIL_FROM.
  *   SITE_URL         het adres van de site, bijv. https://vsonsbeek.nl (voor deel-links en de link in meldingen).
@@ -18,12 +22,15 @@ const fs = require("node:fs");
 const path = require("node:path");
 const zlib = require("node:zlib");
 const crypto = require("node:crypto");
+const vm = require("node:vm");
 const { checkWebsite, CheckError } = require("./lib/check");
 
 const PORT = Number(process.env.PORT) || 3000;
 const APP_PASSWORD = process.env.APP_PASSWORD || "";
 const SITE_URL = (process.env.SITE_URL || "").replace(/\/+$/, "");
 const PUBLIC_DIR = path.join(__dirname, "public");
+const TEMPLATE_DIR = path.join(__dirname, "templates");
+const CONTENT_DIR = path.join(__dirname, "content");
 const VERSION = (process.env.RAILWAY_GIT_COMMIT_SHA || Date.now().toString(36)).slice(0, 10);
 const VAKKEN = ["kapper", "schoenmaker", "stomerij", "bakkerij", "ijzerwaren", "lijstenmaker", "kleding", "streek", "anders"];
 const WENSEN = ["Nieuwe website", "Website vernieuwen", "Dashboard mail en facturen", "Weet ik nog niet"];
@@ -199,18 +206,44 @@ const TYPES = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=
 const files = new Map();
 let indexTemplate = "";
 const indexCache = new Map();
+function telefoon() {
+  const tel = (process.env.CONTACT_PHONE || "").trim();
+  if (!tel) return null;
+  const d = tel.replace(/[^\d+]/g, "");
+  const intl = d.startsWith("+") ? d : d.startsWith("00") ? "+" + d.slice(2) : d.startsWith("0") ? "+31" + d.slice(1) : d;
+  return { tel, intl, mobiel: /^\+316\d{8}$/.test(intl) };
+}
+const APP_TEKST = encodeURIComponent("Hoi Floris, ik heb een vraag over een website voor mijn zaak.");
+const APP_ICOON = '<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.6 19z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 9.2c.2 2.6 2.2 4.7 4.8 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 function contactBlock() {
   const out = [];
-  const tel = (process.env.CONTACT_PHONE || "").trim();
+  const t = telefoon();
   const mail = (process.env.CONTACT_EMAIL || "").trim();
-  if (tel) {
-    const d = tel.replace(/[^\d+]/g, "");
-    const intl = d.startsWith("+") ? d : d.startsWith("00") ? "+" + d.slice(2) : d.startsWith("0") ? "+31" + d.slice(1) : d;
-    out.push(`<p><span>Bellen</span><a href="tel:${esc(intl)}">${esc(tel)}</a></p>`);
-    if (/^\+316\d{8}$/.test(intl)) out.push(`<p><span>WhatsApp</span><a href="https://wa.me/${esc(intl.slice(1))}" target="_blank" rel="noopener">Stuur me een appje</a></p>`);
+  if (t) {
+    out.push(`<p><span data-i18n="t283">Bellen</span><a href="tel:${esc(t.intl)}">${esc(t.tel)}</a></p>`);
+    if (t.mobiel) out.push(`<p><span>WhatsApp</span><a href="https://wa.me/${esc(t.intl.slice(1))}?text=${APP_TEKST}" target="_blank" rel="noopener" data-i18n="t284">Stuur me een appje</a></p>`);
   }
-  if (mail && /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(mail)) out.push(`<p><span>Mailen</span><a href="mailto:${esc(mail)}">${esc(mail)}</a></p>`);
+  if (mail && /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(mail)) out.push(`<p><span data-i18n="t285">Mailen</span><a href="mailto:${esc(mail)}">${esc(mail)}</a></p>`);
   return out.join("\n");
+}
+// grote app-knop bij contact en een zwevende knop op de telefoon; alleen met een 06-nummer
+function appKnop() {
+  const t = telefoon();
+  return t && t.mobiel ? `<a class="btn btn--app" href="https://wa.me/${esc(t.intl.slice(1))}?text=${APP_TEKST}" target="_blank" rel="noopener">${APP_ICOON}<span data-i18n="t281">Stuur een appje</span></a>` : "";
+}
+function appZweef() {
+  const t = telefoon();
+  return t && t.mobiel ? `<a class="app-zweef" href="https://wa.me/${esc(t.intl.slice(1))}?text=${APP_TEKST}" target="_blank" rel="noopener" aria-label="Stuur een appje via WhatsApp" data-i18n-aria="t282">${APP_ICOON}</a>` : "";
+}
+// echte ervaringen van klanten staan in content/ervaringen.json: [{ "tekst": "...", "naam": "...", "zaak": "..." }]
+function ervaringen() {
+  let lijst = [];
+  try { lijst = JSON.parse(fs.readFileSync(path.join(CONTENT_DIR, "ervaringen.json"), "utf8")); } catch { lijst = []; }
+  lijst = (Array.isArray(lijst) ? lijst : []).filter((e) => e && e.tekst && e.naam);
+  if (!lijst.length) return "";
+  return `<div class="ervaringen"><h3 data-i18n="t279">Wat klanten zeggen</h3><div class="ervaringen-lijst">` +
+    lijst.map((e) => `<figure class="ervaring"><blockquote><p>${esc(e.tekst)}</p></blockquote><figcaption><b>${esc(e.naam)}</b>${e.zaak ? `<span>${esc(e.zaak)}</span>` : ""}</figcaption></figure>`).join("") +
+    `</div></div>`;
 }
 function loadStatic() {
   const walk = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => d.isDirectory() ? walk(path.join(dir, d.name)) : [path.join(dir, d.name)]);
@@ -219,12 +252,95 @@ function loadStatic() {
     const buf = fs.readFileSync(f);
     if (rel === "/index.html") {
       const foto = fs.existsSync(path.join(PUBLIC_DIR, "img", "floris.jpg")) ? `<img src="/img/floris.jpg" alt="" width="440" height="440">` : "FvS";
-      indexTemplate = buf.toString("utf8").replaceAll("{{V}}", VERSION).replace("{{CONTACT}}", contactBlock()).replace("{{FOTO}}", foto);
+      indexTemplate = buf.toString("utf8").replaceAll("{{V}}", VERSION).replace("{{CONTACT}}", contactBlock()).replace("{{FOTO}}", foto)
+        .replace("{{APPKNOP}}", appKnop()).replace("{{APPZWEEF}}", appZweef()).replace("{{ERVARINGEN}}", ervaringen());
       continue;
     }
     files.set(rel, packFile(buf, TYPES[path.extname(f).toLowerCase()] || "application/octet-stream"));
   }
-  log(`${files.size + 1} bestanden geladen`);
+  loadBranches();
+  log(`${files.size + 1} bestanden en ${BRANCHES.size} pagina's per bedrijfssoort geladen`);
+}
+
+/* ---------------- Pagina's per soort bedrijf: /voor/<slug> ---------------- */
+const BRANCHES = new Map();
+const brancheCache = new Map();
+let PLANNEN = [];
+function stuk(html, begin, eindTag) {
+  const i = html.indexOf(begin);
+  if (i < 0) throw new Error("Niet gevonden in index.html: " + begin);
+  // zoek de bijbehorende sluittag door te tellen
+  const tag = begin.match(/^<(\w+)/)[1];
+  const re = new RegExp(`<${tag}[\\s>]|</${tag}>`, "g");
+  re.lastIndex = i;
+  let diep = 0, m;
+  while ((m = re.exec(html))) {
+    diep += m[0].startsWith("</") ? -1 : 1;
+    if (diep === 0) return html.slice(i, m.index + m[0].length);
+  }
+  throw new Error("Geen einde voor " + begin + (eindTag || ""));
+}
+const naarVoorpagina = (h) => h.replace(/href="#/g, 'href="/#');
+const hoofdletter = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+function inkorten(t, n) { if (t.length <= n) return t; const k = t.slice(0, n - 1); return k.slice(0, k.lastIndexOf(" ")) + "…"; }
+function loadBranches() {
+  const ctx = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(PUBLIC_DIR, "js", "plannen.js"), "utf8"), ctx);
+  PLANNEN = ctx.window.PLANNEN || [];
+  const tpl = fs.readFileSync(path.join(TEMPLATE_DIR, "branche.html"), "utf8");
+  const delen = {
+    KOP: naarVoorpagina(stuk(indexTemplate, '<header class="top">')),
+    VOET: naarVoorpagina(stuk(indexTemplate, '<footer class="foot">')),
+    PAKKETTEN: stuk(indexTemplate, '<div class="pakketten">'),
+    ZEKERHEDEN: stuk(indexTemplate, '<div class="zeker-blok">'),
+    KAARTJE: stuk(indexTemplate, '<div class="kaartje">'),
+  };
+  BRANCHES.clear(); brancheCache.clear();
+  PLANNEN.forEach((pl, i) => {
+    if (!pl.slug) return;
+    const groep = pl.groep.nl;
+    const legenda = pl.punten.map((p, k) => `<li data-n="${k + 1}"><span class="nr">${k + 1}</span><div><h3>${esc(p.t.nl)}</h3><p>${esc(p.u.nl)}</p></div></li>`).join("");
+    const andere = PLANNEN.filter((x) => x.slug && x.id !== pl.id).map((x) => `<li><a data-groep="${esc(x.id)}" href="/voor/${esc(x.slug)}">${esc(hoofdletter(x.groep.nl))}</a></li>`).join("");
+    const pad = "/voor/" + pl.slug;
+    const jsonld = JSON.stringify({ "@context": "https://schema.org", "@type": "Service", name: `Websites en slimme systemen voor ${groep}`,
+      provider: { "@type": "Person", name: "Floris van Sonsbeek" }, areaServed: { "@type": "City", name: "Utrecht" }, url: "{{ORIGIN}}" + pad,
+      offers: { "@type": "Offer", priceCurrency: "EUR", priceSpecification: { "@type": "PriceSpecification", minPrice: 895, priceCurrency: "EUR" } } }).replace(/</g, "\\u003c");
+    const waarden = {
+      ...delen, V: VERSION, PAD: pad, PLAN: esc(pl.id), JSONLD: jsonld,
+      TITEL: esc(`Website voor ${groep} in Utrecht | Van Sonsbeek`), OGTITEL: esc(`Een website voor ${groep}`),
+      BESCHRIJVING: esc(inkorten(pl.intro.nl, 158)), H1: esc(`Een website voor ${groep}`),
+      LEAD: esc(`Ik bouw websites en slimme systemen voor ${groep} in Utrecht en omgeving. Hieronder zie je wat dat in de praktijk kan betekenen.`),
+      GROEP_HOOFD: esc(hoofdletter(groep)), PLAN_TITEL: esc(pl.titel.nl), PLAN_INTRO: esc(pl.intro.nl), BLAD: `${i + 1} van ${PLANNEN.length}`,
+      LEGENDA: legenda, ANDERE: andere, APPKNOP: appKnop(), APPZWEEF: appZweef(),
+    };
+    const html = tpl.replace(/\{\{([A-Z0-9_]+)\}\}/g, (m, k) => (k === "ORIGIN" ? m : k in waarden ? waarden[k] : m));
+    BRANCHES.set(pl.slug, html);
+  });
+}
+function serveBranche(req, res, p) {
+  const slug = p.replace(/^\/voor\/?/, "").replace(/\/+$/, "");
+  if (!slug) return redirect(res, "/#begin");
+  const html = BRANCHES.get(slug);
+  if (!html) return serveStatic(req, res, p);
+  const origin = originOf(req), key = origin + p;
+  if (!brancheCache.has(key)) {
+    if (brancheCache.size > 40) brancheCache.clear();
+    brancheCache.set(key, packFile(Buffer.from(html.replaceAll("{{ORIGIN}}", esc(origin))), TYPES[".html"]));
+  }
+  serveFile(req, res, brancheCache.get(key), "no-cache");
+}
+function sitemap(req, res) {
+  const base = originOf(req);
+  const urls = ["/", ...[...BRANCHES.keys()].map((s) => "/voor/" + s)];
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    urls.map((u) => `  <url><loc>${esc(base + u)}</loc></url>`).join("\n") + "\n</urlset>\n";
+  res.writeHead(200, { "Content-Type": TYPES[".xml"], "Cache-Control": "public, max-age=3600" });
+  res.end(req.method === "HEAD" ? undefined : xml);
+}
+function robots(req, res) {
+  const txt = `User-agent: *\nDisallow: /beheer\n\nSitemap: ${originOf(req)}/sitemap.xml\n`;
+  res.writeHead(200, { "Content-Type": TYPES[".txt"], "Cache-Control": "public, max-age=3600" });
+  res.end(req.method === "HEAD" ? undefined : txt);
 }
 function packFile(buf, type) {
   const zip = /text|svg|json|javascript|xml/.test(type) && buf.length > 800;
@@ -448,6 +564,9 @@ const server = http.createServer(async (req, res) => {
     if (p === "/api/check") return req.method === "POST" ? await apiCheck(req, res) : sendJson(res, 405, { message: "Gebruik POST." });
     if (p === "/beheer" || p.startsWith("/beheer/")) return await beheer(req, res, url);
     if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405, { Allow: "GET, HEAD" }); return res.end(); }
+    if (p === "/voor" || p.startsWith("/voor/")) return serveBranche(req, res, p);
+    if (p === "/sitemap.xml") return sitemap(req, res);
+    if (p === "/robots.txt") return robots(req, res);
     return serveStatic(req, res, p);
   } catch (e) {
     const status = e.status || 500;

@@ -1,0 +1,167 @@
+/* Van Sonsbeek: de plattegronden (slider op de voorpagina, één vaste tekening op /voor/...),
+   de kopbalk die meekleurt boven de groene tafel en de zwevende app-knop. */
+(function () {
+  "use strict";
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var T = function (k, v) { return window.T ? window.T(k, v) : k; };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function tt(o) { var l = window.TAAL ? window.TAAL() : "nl"; return (o && (o[l] || o.nl)) || ""; }
+  function hoofdletter(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+  var PL = window.PLANNEN || [];
+  var vast = document.body.getAttribute("data-plan");          // op /voor/... staat één bedrijf vast
+  var planIdx = 0;
+  if (vast) PL.forEach(function (p, i) { if (p.id === vast) planIdx = i; });
+
+  var tabsEl = $("#plan-tabs"), imgEl = $("#plan-img"), lijnenEl = $("#plan-lijnen"), labelsEl = $("#plan-labels"), lijstEl = $("#plan-lijst"), vlakEl = $(".plan-vlak");
+
+  // de lijntjes tekenen zich pas als de tekening in beeld komt, zodat je het ziet gebeuren
+  var planGezien = !("IntersectionObserver" in window), planWacht = false;
+  if (!planGezien && vlakEl) {
+    var planIo = new IntersectionObserver(function (es) {
+      if (!es.some(function (e) { return e.isIntersecting; })) return;
+      planGezien = true; planIo.disconnect();
+      if (planWacht) vlakEl.classList.add("is-geladen");
+    }, { threshold: 0.2 });
+    planIo.observe(vlakEl);
+  }
+
+  function indeling(punten) {
+    var items = punten.map(function (p, i) { return { p: p, n: i + 1, side: p.x < 700 ? "l" : "r" }; });
+    var tel = function (s) { return items.filter(function (it) { return it.side === s; }).length; };
+    while (Math.abs(tel("l") - tel("r")) > 1) {               // kolommen in balans
+      var groot = tel("l") > tel("r") ? "l" : "r";
+      var kand = items.filter(function (it) { return it.side === groot; }).sort(function (a, b) { return Math.abs(a.p.x - 700) - Math.abs(b.p.x - 700); })[0];
+      kand.side = groot === "l" ? "r" : "l";
+    }
+    ["l", "r"].forEach(function (s) {
+      var c = items.filter(function (it) { return it.side === s; }).sort(function (a, b) { return a.p.y - b.p.y; });
+      var gap = 104, top = s === "r" && !vast ? 140 : 84, bodem = 832;   // rechtsboven staan de pijltjes
+      c.forEach(function (it, i) { it.ly = Math.max(Math.min(Math.max(it.p.y, top), bodem), i ? c[i - 1].ly + gap : top); });
+      for (var i = c.length - 1; i >= 0; i--) { var max = i === c.length - 1 ? bodem : c[i + 1].ly - gap; if (c[i].ly > max) c[i].ly = max; }
+    });
+    return items;
+  }
+  function renderTabs() {
+    if (!tabsEl) return;
+    tabsEl.innerHTML = PL.map(function (pl, i) {
+      return '<button type="button" role="tab" id="plan-tab-' + i + '" aria-controls="plan-paneel" aria-selected="' + (i === planIdx) + '" tabindex="' + (i === planIdx ? 0 : -1) + '">' + esc(tt(pl.naam)) + "</button>";
+    }).join("");
+  }
+  function toonPlan(i, focus) {
+    if (!PL.length || !imgEl) return;
+    planIdx = (i + PL.length) % PL.length;
+    var pl = PL[planIdx];
+    if (tabsEl) {
+      $$('[role="tab"]', tabsEl).forEach(function (b, k) { var on = k === planIdx; b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; if (on) { if (focus) b.focus({ preventScroll: true }); tabsEl.scrollTo({ left: b.offsetLeft - tabsEl.clientWidth / 2 + b.clientWidth / 2, behavior: reduce ? "auto" : "smooth" }); } });
+      $("#plan-paneel").setAttribute("aria-labelledby", "plan-tab-" + planIdx);
+    }
+    $("#plan-titel").textContent = tt(pl.titel);
+    $("#plan-intro").textContent = tt(pl.intro);
+    var ond = $("#plan-onderschrift"); if (ond) ond.textContent = T("onderschrift");
+    var meer = $("#plan-meer");
+    if (meer && pl.slug) { meer.href = "/voor/" + pl.slug; meer.textContent = T("brMeer", { groep: tt(pl.groep) }); }
+    var tbP = $("#tb-project"), tbB = $("#tb-blad");
+    if (tbP) tbP.textContent = tt(pl.titel);
+    if (tbB) tbB.textContent = T("blad", { n: planIdx + 1, m: PL.length });
+    // de tekening eerst laden; daarna tekenen de lijntjes zich
+    var src = "/img/plannen/" + pl.id + ".svg", klaar = function () { if (planGezien) vlakEl.classList.add("is-geladen"); else planWacht = true; };
+    vlakEl.classList.remove("is-geladen");
+    if (imgEl.getAttribute("src") === src && imgEl.complete) requestAnimationFrame(klaar);
+    else { imgEl.onload = klaar; imgEl.onerror = klaar; imgEl.src = src; }
+    clearTimeout(toonPlan.t); toonPlan.t = setTimeout(klaar, 1500);
+    imgEl.alt = tt(pl.titel);
+    // labels staan op een liggend lijntje, zoals op een bouwtekening
+    var items = indeling(pl.punten), svg = "";
+    labelsEl.innerHTML = "";
+    items.forEach(function (it) {
+      var links = it.side === "l", knik = links ? 306 : 1094;
+      svg += '<path class="pl-lijn n' + it.n + '" data-n="' + it.n + '" pathLength="1" d="M' + it.p.x + " " + it.p.y + "L" + knik + " " + it.ly + '"/>';
+      var lab = document.createElement("div");
+      lab.className = "plan-label plan-label--" + it.side + " n" + it.n;
+      lab.setAttribute("data-n", it.n);
+      lab.innerHTML = '<span class="nr">' + it.n + "</span><span>" + esc(tt(it.p.t)) + "</span>";
+      lab.style[links ? "right" : "left"] = ((links ? 1400 - knik : knik) / 14) + "%";   // het label begint waar het lijntje knikt
+      lab.style.bottom = ((900 - it.ly) / 9) + "%";
+      labelsEl.appendChild(lab);
+    });
+    items.forEach(function (it) {
+      svg += '<g class="pl-pin n' + it.n + '" data-n="' + it.n + '"><circle class="pl-halo" cx="' + it.p.x + '" cy="' + it.p.y + '" r="21"/><circle class="pl-kern" cx="' + it.p.x + '" cy="' + it.p.y + '" r="14"/><text x="' + it.p.x + '" y="' + (it.p.y + 5) + '" text-anchor="middle">' + it.n + "</text></g>";
+    });
+    lijnenEl.innerHTML = svg;
+    lijstEl.innerHTML = pl.punten.map(function (p, k) {
+      return '<li data-n="' + (k + 1) + '"><span class="nr">' + (k + 1) + "</span><div><h3>" + esc(tt(p.t)) + "</h3><p>" + esc(tt(p.u)) + "</p></div></li>";
+    }).join("");
+    if (!vast && !reduce) { vlakEl.classList.remove("wissel"); void vlakEl.offsetWidth; vlakEl.classList.add("wissel"); }
+    if (!vast) { var volgend = PL[(planIdx + 1) % PL.length]; (new Image()).src = "/img/plannen/" + volgend.id + ".svg"; }
+  }
+  // wijs je een punt aan in de uitleg of op de tekening, dan licht het bijbehorende nummer op
+  function licht(n) {
+    $$("[data-n]", $("#plan-paneel")).forEach(function (el) { el.classList.toggle("is-aan", n != null && el.getAttribute("data-n") === String(n)); });
+  }
+  [lijstEl, labelsEl].forEach(function (el) {
+    if (!el) return;
+    el.addEventListener("mouseover", function (e) { var t = e.target.closest("[data-n]"); licht(t ? t.getAttribute("data-n") : null); });
+    el.addEventListener("mouseleave", function () { licht(null); });
+  });
+  if (tabsEl && PL.length) {
+    renderTabs();
+    tabsEl.addEventListener("click", function (e) { var b = e.target.closest('[role="tab"]'); if (b) toonPlan(Number(b.id.replace("plan-tab-", ""))); });
+    tabsEl.addEventListener("keydown", function (e) {
+      var d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      if (e.key === "Home") { e.preventDefault(); toonPlan(0, true); } else if (e.key === "End") { e.preventDefault(); toonPlan(PL.length - 1, true); }
+      else if (d) { e.preventDefault(); toonPlan(planIdx + d, true); }
+    });
+    $("#plan-vorige").addEventListener("click", function () { toonPlan(planIdx - 1); });
+    $("#plan-volgende").addEventListener("click", function () { toonPlan(planIdx + 1); });
+    var sx = null, sy = null;
+    vlakEl.addEventListener("touchstart", function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    vlakEl.addEventListener("touchend", function (e) {
+      if (sx === null) return;
+      var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) toonPlan(planIdx + (dx < 0 ? 1 : -1));
+    });
+  }
+  if (imgEl && PL.length) toonPlan(planIdx);
+
+  // teksten die uit de gegevens per bedrijf komen: de kop op /voor/... en de lijst "Voor wie" in de voet
+  function groepTeksten() {
+    var pl = PL[planIdx];
+    if (vast && pl) {
+      var kop = $("#br-titel"), lead = $("#br-lead");
+      if (kop) kop.textContent = T("brTitel", { groep: tt(pl.groep) });
+      if (lead) lead.textContent = T("brLead", { groep: tt(pl.groep) });
+      document.title = T("brDocTitel", { groep: tt(pl.groep) });
+      var md = $('meta[name="description"]'); if (md) md.setAttribute("content", tt(pl.intro));
+    }
+    $$("[data-groep]").forEach(function (a) {
+      var p = PL.filter(function (x) { return x.id === a.getAttribute("data-groep"); })[0];
+      if (p) a.textContent = hoofdletter(tt(p.groep));
+    });
+  }
+  document.addEventListener("taal", function () {
+    if (tabsEl && PL.length) renderTabs();
+    if (imgEl && PL.length) toonPlan(planIdx);
+    groepTeksten();
+  });
+
+  /* ---------------- Kopbalk: donker zolang hij boven de tekentafel staat; app-knop pas na het begin ---------------- */
+  var kopbalk = $(".top"), tafel = $("#intro-tafel"), zweef = $(".app-zweef"), contactEl = $("#contact") || $(".br-contact");
+  if ((kopbalk && tafel) || zweef) {
+    var tik = false;
+    var kleur = function () {
+      tik = false;
+      if (kopbalk && tafel) kopbalk.classList.toggle("is-donker", tafel.getBoundingClientRect().bottom > kopbalk.offsetHeight / 2);
+      if (zweef) {
+        // niet over het contactblok heen: daar staat de app-knop al
+        var c = contactEl && contactEl.getBoundingClientRect(), opContact = c && c.top < window.innerHeight - 80 && c.bottom > 0;
+        zweef.classList.toggle("is-zichtbaar", window.scrollY > 520 && !opContact);
+      }
+    };
+    window.addEventListener("scroll", function () { if (!tik) { tik = true; requestAnimationFrame(kleur); } }, { passive: true });
+    window.addEventListener("resize", kleur);
+    kleur();
+  }
+})();

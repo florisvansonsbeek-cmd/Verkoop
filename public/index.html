@@ -23,6 +23,7 @@
 <link href="/css/site.css?v={{V}}" rel="stylesheet"/>
 <script defer="" src="/js/plannen.js?v={{V}}"></script>
 <script defer="" src="/js/i18n.js?v={{V}}"></script>
+<script defer="" src="/js/plan.js?v={{V}}"></script>
 <script defer="" src="/js/site.js?v={{V}}"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Floris van Sonsbeek","description":"Websites en dashboards voor kleine zaken","areaServed":{"@type":"City","name":"Utrecht"},"url":"{{ORIGIN}}/"}</script>
 </head>
@@ -37,8 +38,8 @@
 <a data-i18n="t004" href="#mogelijkheden">Mogelijkheden</a>
 <a data-i18n="t005" href="#waarom">Waarom ik</a>
 <a data-i18n="t006" href="#werk">Mijn werk</a>
-<a data-i18n="t007" href="#voorbeeld">Jouw site</a>
 <a data-i18n="t008" href="#dashboard">Dashboard</a>
+<a data-i18n="t280" href="#prijzen">Prijzen</a>
 <a data-i18n="t009" href="#vragen">Vragen</a>
 </nav>
 <div class="taal" id="taal"></div>
@@ -80,6 +81,7 @@
 <div class="blad-titel">
 <h2 id="plan-titel"></h2>
 <p id="plan-intro"></p>
+<a class="textlink textlink--small plan-meer" href="/voor/boerderijwinkels" id="plan-meer">Meer over websites voor boerderijwinkels</a>
 <dl class="titelblok">
 <div><dt data-i18n="t235">Project</dt><dd id="tb-project"></dd></div>
 <div><dt data-i18n="t236">Blad</dt><dd id="tb-blad"></dd></div>
@@ -258,6 +260,7 @@
 </div>
 </article>
 </div>
+{{ERVARINGEN}}
 </div>
 </section>
 <!-- 1. Jouw site -->
@@ -376,30 +379,85 @@
 <p data-i18n="t162">Je site komt op je eigen adres, zoals jouwzaak.nl. Moet er later iets veranderen, dan stuur je me een berichtje.</p>
 </li>
 </ol>
-<div class="prijs">
-<div class="prijs-intro">
-<h3 data-i18n="t163">Wat kost het?</h3>
-<p data-i18n="t164">Dat hangt af van wat je nodig hebt. Na de kennismaking krijg je een vaste prijs, zodat je vooraf weet waar je aan toe bent.</p>
+</div>
+</section>
+<!-- 6. Prijzen -->
+<section aria-labelledby="prijzen-titel" class="band prijzen" id="prijzen">
+<div class="wrap">
+<div class="prijzen-kop">
+<h2 data-i18n="t163" id="prijzen-titel">Wat kost het?</h2>
+<p data-i18n="t238">Je ziet eerst een voorbeeld op je eigen telefoon. Bevalt het, dan krijg je een vaste prijs, zodat je vooraf weet waar je aan toe bent. Hieronder staan vanaf-prijzen.</p>
 </div>
 <div class="pakketten">
 <div class="pakket">
-<h4 data-i18n="t165">Website</h4>
+<h3 data-i18n="t165">Website</h3>
+<p class="pakket-prijs" data-i18n="t239">vanaf <b>€ 895</b></p>
 <p data-i18n="t166">Je eigen adres met prijzen, openingstijden, route en een belknop. Werkt op elke telefoon. De hosting regel ik.</p>
+<p class="pakket-maand" data-i18n="t240">Daarna <b>€ 25</b> per maand voor onderhoud</p>
 </div>
 <div class="pakket">
-<h4 data-i18n="t167">Website met aanvragen</h4>
+<h3 data-i18n="t167">Website met aanvragen</h3>
+<p class="pakket-prijs" data-i18n="t242">vanaf <b>€ 1.495</b></p>
 <p data-i18n="t168">Alles van de website, plus een formulier voor afspraken of bestellingen. Aanvragen komen in je mail en in je eigen overzicht.</p>
+<p class="pakket-maand" data-i18n="t240">Daarna <b>€ 25</b> per maand voor onderhoud</p>
 </div>
-<div class="pakket">
-<h4 data-i18n="t169">Website met dashboard</h4>
+<div class="pakket pakket--dashboard">
+<h3 data-i18n="t169">Website met dashboard</h3>
+<p class="pakket-prijs" data-i18n="t243">vanaf <b>€ 2.950</b></p>
 <p data-i18n="t170">Alles hierboven, plus een dashboard dat je mail leest, facturen nakijkt en laat zien wat er vandaag moet gebeuren.</p>
+<p class="pakket-maand" data-i18n="t241">Daarna <b>€ 75</b> per maand, met de AI-dienst erbij</p>
 </div>
 </div>
+<div class="prijzen-twee">
+<div class="onderhoud">
+<h3 data-i18n="t244">Onderhoud</h3>
+<p class="onderhoud-prijs" data-i18n="t245"><b>€ 25</b> per maand voor je site, <b>€ 75</b> met dashboard.</p>
+<ul class="vinkjes">
+<li data-i18n="t246">Hosting op servers in Amsterdam</li>
+<li data-i18n="t247">Updates en beveiliging</li>
+<li data-i18n="t248">Back-ups van je site en gegevens</li>
+<li data-i18n="t249">Kleine wijzigingen, zoals nieuwe prijzen of openingstijden</li>
+<li data-i18n="t250">Bij een dashboard: de kosten van de AI-dienst</li>
+</ul>
+<p class="small muted" data-i18n="t251">Per maand opzegbaar.</p>
+</div>
+<div class="klussen">
+<h3 data-i18n="t252">Kleine klussen om mee te beginnen</h3>
+<p data-i18n="t253">Nog niet toe aan een hele website? Begin klein, voor een vaste prijs die we vooraf afspreken.</p>
+<ul class="klussen-lijst">
+<li><b data-i18n="t254">Google Maps-profiel inrichten</b><span data-i18n="t255">Openingstijden, foto's en gegevens kloppen overal.</span></li>
+<li><b data-i18n="t256">E-mail op je eigen naam</b><span data-i18n="t257">Zoals info@jouwzaak.nl, op je telefoon en je computer.</span></li>
+<li><b data-i18n="t258">Je oude site of Facebook-pagina overzetten</b><span data-i18n="t259">Naar een eigen, snelle site op je eigen adres.</span></li>
+<li><b data-i18n="t260">Logo en huisstijl</b><span data-i18n="t261">Een logo, kleuren en letters die bij je zaak passen.</span></li>
+</ul>
+</div>
+</div>
+<div class="aanbod">
+<div class="aanbod-kaart">
+<h3 data-i18n="t262">Voor de eerste drie zaken</h3>
+<p data-i18n="t263">Je krijgt een lagere prijs. In ruil vraag ik een eerlijke review en of ik je site als voorbeeld mag laten zien.</p>
+<a class="textlink" data-i18n="t264" href="#contact">Vraag het aan</a>
+</div>
+<div class="aanbod-kaart">
+<h3 data-i18n="t265">Ken je een ondernemer die hier iets aan heeft?</h3>
+<p data-i18n="t266">Breng je iemand aan en wordt het een opdracht, dan krijgen jullie allebei korting.</p>
+<a class="textlink" data-i18n="t267" href="#contact">Laat het me weten</a>
+</div>
+</div>
+<div class="zeker-blok">
+<h3 data-i18n="t268">Waar je op kunt rekenen</h3>
+<ul class="zekerheden">
+<li><b data-i18n="t269">Geen langlopend contract</b><span data-i18n="t270">Het onderhoud zeg je per maand op. Je site en je domein blijven van jou.</span></li>
+<li><b data-i18n="t271">Eerst zien, dan beslissen</b><span data-i18n="t272">Je bekijkt een voorbeeld op je eigen telefoon voordat je een prijs krijgt.</span></li>
+<li><b data-i18n="t273">Je site draait in Nederland</b><span data-i18n="t274">Op servers in Amsterdam, met een beveiligde verbinding.</span></li>
+<li><b data-i18n="t275">Je weet wat er met je mail gebeurt</b><span data-i18n="t276">Bij een dashboard hoor je vooraf welke AI-dienst je mail leest en waar die draait.</span></li>
+<li><b data-i18n="t277">Binnen twee werkdagen antwoord</b><span data-i18n="t278">Op elke vraag of wijziging, ook als die klein is.</span></li>
+</ul>
 </div>
 </div>
 </section>
-<!-- 6. Vragen -->
-<section aria-labelledby="vragen-titel" class="faq" id="vragen">
+<!-- 7. Vragen -->
+<section aria-labelledby="vragen-titel" class="faq faq--was" id="vragen">
 <div class="wrap faq-in">
 <div class="section-head">
 <h2 data-i18n="t171" id="vragen-titel">Goed om te weten</h2>
@@ -440,16 +498,22 @@
 </div>
 </div>
 </section>
-<!-- 7. Contact -->
+<!-- 8. Contact -->
 <section aria-labelledby="contact-titel" class="band band--groen" id="contact">
 <div class="wrap contact-in">
 <div class="contact-text">
 <h2 data-i18n="t186" id="contact-titel">Zullen we kennismaken?</h2>
 <p data-i18n="t187">Laat je naam en nummer achter. Ik bel of app je terug om een moment af te spreken. Langskomen in je zaak kan ook.</p>
+{{APPKNOP}}
 <div class="kaartje">
 <span class="logo"><svg aria-hidden="true" class="logo-mark" viewbox="0 0 48 48"><path d="M11 41V22a13 13 0 0 1 26 0v19" fill="none" stroke="currentColor" stroke-width="2.6"></path><path d="M6 41.5h36" stroke="currentColor" stroke-linecap="round" stroke-width="2.6"></path><path d="M24 40V25" stroke="#a8742f" stroke-linecap="round" stroke-width="2.2"></path><path d="M24 33c-6 0-8.5-3.6-8.5-8 5.4 0 8.5 3.2 8.5 8z" fill="#a8742f"></path><path d="M24 28.5c5.2 0 7.8-3.2 7.8-7.2-5 0-7.8 2.9-7.8 7.2z" fill="#7d8f68"></path></svg><span class="logo-txt"><b data-i18n="t188">VAN SONSBEEK</b><i data-i18n="t189">WEBSITES &amp; SLIMME SYSTEMEN</i></span></span>
+<div class="kaartje-wie">
+<img alt="" class="kaartje-foto" height="200" src="/img/floris.jpg" width="200"/>
+<div>
 <p class="kaartje-naam" data-i18n="t190">Floris van Sonsbeek</p>
 <p class="kaartje-wat" data-i18n="t191">Websites en dashboards voor kleine zaken in Utrecht</p>
+</div>
+</div>
 <div class="direct" id="direct">{{CONTACT}}</div>
 </div>
 </div>
@@ -499,11 +563,29 @@
 <li><a data-i18n="t208" href="#mogelijkheden">Mogelijkheden</a></li>
 <li><a data-i18n="t209" href="#voorbeeld">Jouw site</a></li>
 <li><a data-i18n="t210" href="#dashboard">Dashboard</a></li>
+<li><a data-i18n="t280" href="#prijzen">Prijzen</a></li>
 <li><a data-i18n="t211" href="#check">Websitecheck</a></li>
 <li><a data-i18n="t212" href="https://campo.vsonsbeek.nl" rel="noopener" target="_blank">Campo International (demo)</a></li>
 </ul>
-<p class="small muted" >© <span id="jaar">2026</span> Floris van Sonsbeek</p>
+<div class="foot-voor">
+<p class="foot-kop" data-i18n="t292">Voor wie</p>
+<ul class="foot-links foot-links--twee">
+<li><a data-groep="boerderij" href="/voor/boerderijwinkels">Boerderijwinkels</a></li>
+<li><a data-groep="installateur" href="/voor/loodgieters-en-installateurs">Loodgieters en installateurs</a></li>
+<li><a data-groep="schilder" href="/voor/schilders-en-stukadoors">Schilders en stukadoors</a></li>
+<li><a data-groep="aannemer" href="/voor/aannemers-en-bouwbedrijven">Aannemers en bouwbedrijven</a></li>
+<li><a data-groep="dak-tuin" href="/voor/dakdekkers-en-hoveniers">Dakdekkers en hoveniers</a></li>
+<li><a data-groep="kapper" href="/voor/kappers-en-barbiers">Kappers en barbiers</a></li>
+<li><a data-groep="garage" href="/voor/autogarages-en-bandenspecialisten">Autogarages en bandenspecialisten</a></li>
+<li><a data-groep="fysio" href="/voor/fysiotherapeuten">Fysiotherapeuten en praktijken</a></li>
+<li><a data-groep="schoonmaak" href="/voor/schoonmaakbedrijven">Schoonmaakbedrijven</a></li>
+<li><a data-groep="tandarts" href="/voor/tandartsen-en-mondhygienisten">Tandartsen en mondhygiënisten</a></li>
+<li><a data-groep="accountant" href="/voor/accountants-en-boekhouders">Accountants en boekhouders</a></li>
+</ul>
+</div>
+<p class="small muted foot-recht">© <span id="jaar">2026</span> Floris van Sonsbeek</p>
 </div>
 </footer>
+{{APPZWEEF}}
 </body>
 </html>

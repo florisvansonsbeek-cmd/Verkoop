@@ -1,7 +1,10 @@
-/* Plattegronden in de slider: per bedrijf de tekening, een korte uitleg en de punten waar AI helpt.
+/* Plattegronden in de slider en op /voor/<slug>: per bedrijf de tekening, een korte uitleg en de punten waar AI helpt.
+   slug is het adres van de eigen pagina; groep is de naam in een zin ("een website voor kappers en barbiers").
    x en y zijn posities op de tekening (1400 x 900). Teksten in nl, en en de. */
 window.PLANNEN = [
   { id: "boerderij",
+    slug: "boerderijwinkels",
+    groep: { nl: "boerderijwinkels", en: "farm shops", de: "Hofläden" },
     naam: { nl: "Boerderijwinkel", en: "Farm shop", de: "Hofladen" },
     titel: { nl: "Boerderijwinkel De Hoeve", en: "De Hoeve farm shop", de: "Hofladen De Hoeve" },
     intro: { nl: "Streekproducten van eigen land, aan de rand van de stad. Met een website die het weekaanbod laat zien en online bestellen, worden losse bezoekers vaste klanten.",
@@ -17,6 +20,8 @@ window.PLANNEN = [
       { x: 940, y: 690, t: { nl: "Reviews en vragen", en: "Reviews and questions", de: "Bewertungen und Fragen" }, u: { nl: "Vragen en reviews komen op één plek binnen, met een concept-antwoord in jouw toon.", en: "Questions and reviews arrive in one place, with a draft reply in your own tone.", de: "Fragen und Bewertungen landen an einem Ort, mit einem Antwortentwurf in Ihrem Ton." } }
     ] },
   { id: "installateur",
+    slug: "loodgieters-en-installateurs",
+    groep: { nl: "loodgieters en installateurs", en: "plumbers and installers", de: "Installateure und Klempner" },
     naam: { nl: "Loodgieter", en: "Plumber", de: "Installateur" },
     titel: { nl: "Loodgieters en installateurs", en: "Plumbers and installers", de: "Klempner und Installateure" },
     intro: { nl: "Veel kleine loodgietersbedrijven draaien nog vooral op telefoon en Werkspot. Een website met diensten, werkgebied en contactformulier levert vaak direct meer aanvragen op.",
@@ -31,6 +36,8 @@ window.PLANNEN = [
       { x: 720, y: 345, t: { nl: "Facturen", en: "Invoices", de: "Rechnungen" }, u: { nl: "Facturen van de groothandel worden gelezen en vergeleken met je bestellingen.", en: "Wholesaler invoices are read and checked against your orders.", de: "Rechnungen des Großhandels werden gelesen und mit Ihren Bestellungen abgeglichen." } }
     ] },
   { id: "schilder",
+    slug: "schilders-en-stukadoors",
+    groep: { nl: "schilders en stukadoors", en: "painters and plasterers", de: "Maler und Stuckateure" },
     naam: { nl: "Schilder", en: "Painter", de: "Maler" },
     titel: { nl: "Schilders en stukadoors", en: "Painters and plasterers", de: "Maler und Stuckateure" },
     intro: { nl: "Veel schilders hebben alleen een Facebook-pagina of helemaal niets. Een simpele site met voor- en na-foto's en reviews werkt vaak beter dan social media alleen.",
@@ -45,6 +52,8 @@ window.PLANNEN = [
       { x: 450, y: 760, t: { nl: "Reviews", en: "Reviews", de: "Bewertungen" }, u: { nl: "Een dag na oplevering krijgt de klant vanzelf een vriendelijk verzoek om een review.", en: "A day after completion, the customer automatically gets a friendly review request.", de: "Einen Tag nach Abschluss bekommt der Kunde automatisch eine freundliche Bitte um Bewertung." } }
     ] },
   { id: "aannemer",
+    slug: "aannemers-en-bouwbedrijven",
+    groep: { nl: "aannemers en bouwbedrijven", en: "builders and construction firms", de: "Bauunternehmen" },
     naam: { nl: "Aannemer", en: "Builder", de: "Bauunternehmer" },
     titel: { nl: "Aannemers en bouwbedrijven", en: "Builders and contractors", de: "Bauunternehmen" },
     intro: { nl: "Zeker bij kleinere aannemers en verbouwers ontbreekt vaak een nette website. Klanten willen projecten, certificeringen en een portfolio kunnen bekijken voordat ze bellen.",
@@ -59,6 +68,8 @@ window.PLANNEN = [
       { x: 760, y: 540, t: { nl: "Meerwerk", en: "Extra work", de: "Mehrarbeit" }, u: { nl: "Extra werk wordt vastgelegd en goedgekeurd voordat het gebeurt.", en: "Extra work is recorded and approved before it happens.", de: "Mehrarbeit wird festgehalten und freigegeben, bevor sie passiert." } }
     ] },
   { id: "dak-tuin",
+    slug: "dakdekkers-en-hoveniers",
+    groep: { nl: "dakdekkers en hoveniers", en: "roofers and gardeners", de: "Dachdecker und Gärtner" },
     naam: { nl: "Dakdekker en hovenier", en: "Roofer and gardener", de: "Dachdecker und Gärtner" },
     titel: { nl: "Dakdekkers en hoveniers", en: "Roofers and landscape gardeners", de: "Dachdecker und Gartenbauer" },
     intro: { nl: "Deze bedrijven zijn sterk afhankelijk van lokale vindbaarheid. Zonder website missen ze veel zoekopdrachten zoals \"dakdekker Utrecht\" of \"hovenier in de buurt\".",
@@ -72,6 +83,8 @@ window.PLANNEN = [
       { x: 880, y: 560, t: { nl: "Ontwerp en offerte", en: "Design and quote", de: "Entwurf und Angebot" }, u: { nl: "Een tuinontwerp of dakherstel met prijs, als nette offerte.", en: "A garden design or roof repair with a price, as a neat quote.", de: "Ein Gartenentwurf oder eine Dachreparatur mit Preis, als sauberes Angebot." } }
     ] },
   { id: "kapper",
+    slug: "kappers-en-barbiers",
+    groep: { nl: "kappers en barbiers", en: "hairdressers and barbers", de: "Friseure und Barbiere" },
     naam: { nl: "Kapper", en: "Hairdresser", de: "Friseur" },
     titel: { nl: "Kappers en barbiers", en: "Hairdressers and barbers", de: "Friseure und Barbiere" },
     intro: { nl: "Veel kapsalons hebben alleen Instagram of een Facebook-pagina. Een eigen site met prijzen, afspraken maken en reviews is vaak effectiever en professioneler.",
@@ -86,6 +99,8 @@ window.PLANNEN = [
       { x: 968, y: 140, t: { nl: "Dashboard", en: "Dashboard", de: "Dashboard" }, u: { nl: "Omzet per stoel en per dag, en welke behandelingen het meest opleveren.", en: "Revenue per chair and per day, and which services earn the most.", de: "Umsatz pro Stuhl und Tag, und welche Leistungen am meisten bringen." } }
     ] },
   { id: "garage",
+    slug: "autogarages-en-bandenspecialisten",
+    groep: { nl: "autogarages en bandenspecialisten", en: "garages and tyre specialists", de: "Autowerkstätten und Reifenhändler" },
     naam: { nl: "Garage", en: "Garage", de: "Autowerkstatt" },
     titel: { nl: "Autogarages en bandenspecialisten", en: "Garages and tyre specialists", de: "Autowerkstätten und Reifenhändler" },
     intro: { nl: "Veel garages hebben geen website of alleen een verouderde pagina. Klanten willen openingstijden, diensten en reviews kunnen checken voordat ze langskomen.",
@@ -100,6 +115,8 @@ window.PLANNEN = [
       { x: 540, y: 640, t: { nl: "Reviews", en: "Reviews", de: "Bewertungen" }, u: { nl: "Na het ophalen een verzoek om een review, zodat je hoger komt in Google.", en: "After pick-up, a review request, so you rank higher on Google.", de: "Nach der Abholung eine Bitte um Bewertung, damit Sie bei Google höher stehen." } }
     ] },
   { id: "fysio",
+    slug: "fysiotherapeuten",
+    groep: { nl: "fysiotherapeuten en praktijken", en: "physiotherapists and practices", de: "Physiotherapiepraxen" },
     naam: { nl: "Fysiotherapeut", en: "Physiotherapist", de: "Physiotherapie" },
     titel: { nl: "Fysiotherapeuten en praktijken", en: "Physiotherapy practices", de: "Physiotherapiepraxen" },
     intro: { nl: "Veel fysiopraktijken hebben een minimale of verouderde website. Een eigen site met specialisaties en online afspraak maken helpt bij nieuwe cliënten.",
@@ -113,6 +130,8 @@ window.PLANNEN = [
       { x: 840, y: 582, t: { nl: "Verwijzingen", en: "Referrals", de: "Überweisungen" }, u: { nl: "Mail van huisartsen en verwijzers wordt gelezen en klaargezet.", en: "Mail from GPs and referrers is read and sorted for you.", de: "Mails von Hausärzten und Überweisern werden gelesen und vorbereitet." } }
     ] },
   { id: "schoonmaak",
+    slug: "schoonmaakbedrijven",
+    groep: { nl: "schoonmaakbedrijven", en: "cleaning companies", de: "Reinigungsfirmen" },
     naam: { nl: "Schoonmaakbedrijf", en: "Cleaning company", de: "Reinigungsfirma" },
     titel: { nl: "Schoonmaakbedrijven", en: "Cleaning companies", de: "Reinigungsunternehmen" },
     intro: { nl: "Veel schoonmaakbedrijven werken nog puur op mond-tot-mond en Facebook. Een website met diensten, prijsindicatie en aanvraagformulier levert vaak structureel meer werk op.",
@@ -126,6 +145,8 @@ window.PLANNEN = [
       { x: 840, y: 495, t: { nl: "Facturen", en: "Invoices", de: "Rechnungen" }, u: { nl: "Gewerkte uren worden elke maand netjes gefactureerd.", en: "Hours worked are invoiced neatly every month.", de: "Geleistete Stunden werden jeden Monat sauber abgerechnet." } }
     ] },
   { id: "tandarts",
+    slug: "tandartsen-en-mondhygienisten",
+    groep: { nl: "tandartsen en mondhygiënisten", en: "dentists and dental hygienists", de: "Zahnärzte und Dentalhygieniker" },
     naam: { nl: "Tandarts", en: "Dentist", de: "Zahnarzt" },
     titel: { nl: "Tandartsen en mondhygiënisten", en: "Dentists and dental hygienists", de: "Zahnärzte und Dentalhygiene" },
     intro: { nl: "Opvallend veel kleine praktijken hebben geen eigen website of alleen een verouderde pagina. Patiënten verwachten online informatie over behandelingen, wachttijden en inschrijven.",
@@ -139,6 +160,8 @@ window.PLANNEN = [
       { x: 940, y: 130, t: { nl: "Facturen", en: "Invoices", de: "Rechnungen" }, u: { nl: "Facturen voor materialen worden gecontroleerd voordat je betaalt.", en: "Invoices for materials are checked before you pay.", de: "Rechnungen für Material werden geprüft, bevor Sie zahlen." } }
     ] },
   { id: "accountant",
+    slug: "accountants-en-boekhouders",
+    groep: { nl: "accountants en boekhouders", en: "accountants and bookkeepers", de: "Steuerberater und Buchhalter" },
     naam: { nl: "Accountant", en: "Accountant", de: "Steuerbüro" },
     titel: { nl: "Accountants en boekhouders", en: "Accountants and bookkeepers", de: "Steuerberater und Buchhalter" },
     intro: { nl: "Veel kleine accountantskantoren hebben geen website of een zeer verouderde site. Nieuwe klanten zoeken online naar specialisaties, zoals zzp of mkb, en willen een professionele eerste indruk.",
