@@ -15,7 +15,7 @@ window.VOORBEELDEN = {
   installateur: { zaak: "Installatiebedrijf Smit", punten: [
     { wie: "k", pk: 1, vb: { type: "site", kop: "Lekkage of storing? Wij komen langs.", regels: ["Werkgebied: Utrecht en omgeving", "Spoed: ook in het weekend"], knop: "Spoed melden" } },
     { wie: "k", pk: 2, vb: { type: "aanvraag", titel: "Lekkage melden", foto: true, velden: [["Adres", "Lindelaan 14, Utrecht"], ["Wat is er aan de hand?", "Lekkage onder het aanrecht"], ["Spoed?", "Ja, vandaag"]], knop: "Verstuur" } },
-    { wie: "j", pk: 3, vb: { type: "planning", titel: "Planning dinsdag", rijen: [["8.00", "Bus 1", "Lekkage Lindelaan"], ["10.30", "Bus 1", "Onderhoud cv-ketel"], ["9.00", "Bus 2", "Badkamer Oudwijk"]], voorstel: "Voorstel: de spoedklus aan de Lindelaan in bus 1, om 8.00 uur." } },
+    { wie: "j", pk: 3, vb: { type: "planning", titel: "Planning dinsdag", rijen: [["8.00", "Bus 1", "Lekkage Lindelaan"], ["9.00", "Bus 2", "Badkamer Oudwijk"], ["10.30", "Bus 1", "Onderhoud cv-ketel"]], voorstel: "Voorstel: de spoedklus aan de Lindelaan in bus 1, om 8.00 uur." } },
     { wie: "k", pk: 3, vb: { type: "offerte", titel: "Offerte nieuwe badkamer", regels: [["Tegelwerk", "€ 2.400"], ["Sanitair", "€ 1.850"], ["Arbeid", "€ 3.200"]], totaal: "€ 7.450", knop: "Akkoord geven" } },
     { wie: "j", pk: 3, vb: { type: "overzicht", titel: "Magazijn", tegels: [["Knelkoppelingen", "18"], ["Sifons", "3"], ["Cv-pompen", "2"]], melding: "Sifons raken op. Op de bestellijst zetten?" } },
     { wie: "j", pk: 3, vb: { type: "factuur", van: "Groothandel Delta", bedrag: "€ 1.284,00", checks: [["ok", "Alles besteld en geleverd"], ["stop", "Lijkt dubbel: dezelfde factuur kwam vorige week ook"]] } }
