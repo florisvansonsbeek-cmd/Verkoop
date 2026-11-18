@@ -26,9 +26,9 @@ Eén Node-server (`server.js`) met Postgres, zonder framework. De lettertypen (B
    | `CONTACT_EMAIL` | optioneel: je e-mailadres op de site |
    | `NTFY_TOPIC` | optioneel: pushmelding op je telefoon bij een nieuwe aanvraag (app ntfy, zoals bij Handelsplan) |
    | `RESEND_API_KEY`, `MAIL_TO`, `MAIL_FROM` | optioneel: mail bij een nieuwe aanvraag via Resend (Railway laat geen gewone SMTP toe op het Hobby-abonnement) |
-   | `SITE_URL` | optioneel: het adres van de site, bijvoorbeeld `https://vsonsbeek.nl` |
+   | `SITE_URL` | het eigen adres, nu `https://verkoop.vsonsbeek.nl`. De server kijkt elke twee minuten of dat adres al bij hem uitkomt; zodra het werkt, wijzen canonical en sitemap ernaar en stuurt het railway.app-adres door. Werkt het niet (meer), dan blijft alles op het adres waarop de bezoeker binnenkwam. |
 
-5. **Settings → Networking**: *Generate Domain*, of een eigen domein. Voor een subdomein van vsonsbeek.nl zet je bij je domeinbeheerder het CNAME-record dat Railway laat zien.
+5. **Settings → Networking**: *Generate Domain*, of een eigen domein. Voor een subdomein van vsonsbeek.nl zet je bij je domeinbeheerder het CNAME-record en het TXT-record (`_railway-verify…`) dat Railway laat zien.
 6. **Settings → Deploy**: healthcheck-pad `/healthz`.
 
 De tabellen maakt de site zelf aan bij de eerste start. Zonder `DATABASE_URL` werkt alles ook, maar dan verdwijnen aanvragen bij een herstart.

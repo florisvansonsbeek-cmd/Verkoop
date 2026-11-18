@@ -15,7 +15,10 @@
  * Zonder CONTACT_PHONE blijven de app- en belknoppen weg.
  *   NTFY_TOPIC       pushmelding op je telefoon bij een nieuwe aanvraag (app ntfy). NTFY_SERVER en NTFY_TOKEN optioneel.
  *   RESEND_API_KEY   mail bij een nieuwe aanvraag via Resend, met MAIL_TO en eventueel MAIL_FROM.
- *   SITE_URL         het adres van de site, bijv. https://vsonsbeek.nl (voor deel-links en de link in meldingen).
+ *   SITE_URL         het eigen adres van de site, bijv. https://verkoop.vsonsbeek.nl (voor canonical, sitemap,
+ *                    deel-links en de link in meldingen). De server controleert zelf of dat adres al bij hem
+ *                    uitkomt. Zodra dat zo is, stuurt het railway.app-adres bezoekers door naar het eigen adres;
+ *                    tot die tijd blijft alles op het adres waarop de bezoeker binnenkwam.
  */
 const http = require("node:http");
 const fs = require("node:fs");
@@ -28,6 +31,11 @@ const { checkWebsite, CheckError } = require("./lib/check");
 const PORT = Number(process.env.PORT) || 3000;
 const APP_PASSWORD = process.env.APP_PASSWORD || "";
 const SITE_URL = (process.env.SITE_URL || "").replace(/\/+$/, "");
+const SITE_HOST = (() => { try { return SITE_URL ? new URL(SITE_URL).host.toLowerCase() : ""; } catch { return ""; } })();
+/* Kenmerk waarmee de server zichzelf herkent als hij zijn eigen adres opvraagt; gelijk voor elke uitrol van deze service. */
+const INSTANTIE = crypto.createHash("sha256").update("verkoop:" + (process.env.RAILWAY_SERVICE_ID || "lokaal")).digest("hex").slice(0, 16);
+/* true zodra SITE_URL echt bij deze server uitkomt. Een http://-adres (lokaal testen) wordt niet gecontroleerd. */
+let siteLive = !!SITE_HOST && !SITE_URL.startsWith("https://");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const TEMPLATE_DIR = path.join(__dirname, "templates");
 const CONTENT_DIR = path.join(__dirname, "content");
@@ -157,8 +165,38 @@ function sameOrigin(req) {
   const sfs = req.headers["sec-fetch-site"];
   return !sfs || sfs === "same-origin" || sfs === "none";
 }
+/* Komt het eigen adres al bij deze server uit? Een keer gelukt is genoeg om over te stappen;
+ * pas na drie mislukte pogingen op rij valt de site terug op het binnenkomende adres. */
+let domeinMislukt = 0, eersteCheck = true;
+function controleerDomein() {
+  return new Promise((resolve) => {
+    const klaar = (ok, reden) => {
+      domeinMislukt = ok ? 0 : domeinMislukt + 1;
+      const nu = ok || (siteLive && domeinMislukt < 3);
+      if (eersteCheck && !nu) log(`Eigen adres ${SITE_HOST} nog niet bereikbaar (${reden}); de site blijft op het adres waarop bezoekers binnenkomen en probeert het elke twee minuten opnieuw.`);
+      eersteCheck = false;
+      if (nu !== siteLive) {
+        siteLive = nu;
+        log(nu ? `Eigen adres ${SITE_HOST} werkt: canonical en sitemap wijzen ernaar, het railway.app-adres stuurt door.`
+               : `Eigen adres ${SITE_HOST} niet bereikbaar (${reden}): de site gebruikt weer het adres waarop bezoekers binnenkomen.`);
+      }
+      resolve();
+    };
+    const vraag = require("node:https").get(SITE_URL + "/healthz", { timeout: 8000, headers: { "User-Agent": "verkoop-zelfcheck" } }, (r) => {
+      r.resume();
+      klaar(r.statusCode === 200 && r.headers["x-instantie"] === INSTANTIE, "status " + r.statusCode);
+    });
+    vraag.on("timeout", () => vraag.destroy(new Error("geen antwoord")));
+    vraag.on("error", (e) => klaar(false, e.code || e.message));
+  });
+}
+function startDomeinCheck() {
+  if (!SITE_HOST || !SITE_URL.startsWith("https://")) return;
+  const ronde = () => controleerDomein().then(() => setTimeout(ronde, siteLive ? 600e3 : 120e3).unref());
+  ronde();
+}
 function originOf(req) {
-  if (SITE_URL) return SITE_URL;
+  if (SITE_URL && siteLive) return SITE_URL;
   const host = String(req.headers["x-forwarded-host"] || req.headers.host || "");
   if (!/^[a-z0-9.-]+(:\d{1,5})?$/i.test(host)) return "";
   return (isHttps(req) ? "https://" : "http://") + host;
@@ -562,7 +600,15 @@ const server = http.createServer(async (req, res) => {
     secHeaders(req, res);
     const url = new URL(req.url, "http://localhost");
     const p = url.pathname;
-    if (p === "/healthz") { res.writeHead(200, { "Content-Type": "text/plain", "Cache-Control": "no-store" }); return res.end("ok"); }
+    if (p === "/healthz") { res.writeHead(200, { "Content-Type": "text/plain", "Cache-Control": "no-store", "X-Instantie": INSTANTIE }); return res.end("ok"); }
+    if (siteLive && (req.method === "GET" || req.method === "HEAD")) {
+      // Wie via het railway.app-adres binnenkomt, gaat door naar het eigen adres (formulieren en /healthz niet).
+      const host = String(req.headers["x-forwarded-host"] || req.headers.host || "").toLowerCase();
+      if (host !== SITE_HOST && host.endsWith(".up.railway.app")) {
+        res.writeHead(301, { Location: SITE_URL + p + url.search, "Cache-Control": "public, max-age=86400" });
+        return res.end();
+      }
+    }
     if (p === "/api/aanvraag") return req.method === "POST" ? await apiAanvraag(req, res) : sendJson(res, 405, { message: "Gebruik POST." });
     if (p === "/api/check") return req.method === "POST" ? await apiCheck(req, res) : sendJson(res, 405, { message: "Gebruik POST." });
     if (p === "/beheer" || p.startsWith("/beheer/")) return await beheer(req, res, url);
@@ -585,6 +631,6 @@ const server = http.createServer(async (req, res) => {
   await initSession().catch((e) => { log("Sessiesleutel uit database mislukt, tijdelijke sleutel gebruikt:", e.message); sessionKey = crypto.randomBytes(32); });
   if (!APP_PASSWORD) log("APP_PASSWORD niet ingesteld: /beheer blijft dicht.");
   if (!process.env.NTFY_TOPIC && !process.env.RESEND_API_KEY) log("Geen NTFY_TOPIC of RESEND_API_KEY: nieuwe aanvragen zie je alleen in /beheer.");
-  server.listen(PORT, () => log(`Site luistert op poort ${PORT} (versie ${VERSION})`));
+  server.listen(PORT, () => { log(`Site luistert op poort ${PORT} (versie ${VERSION})`); startDomeinCheck(); });
 })();
 process.on("SIGTERM", () => { server.close(() => process.exit(0)); setTimeout(() => process.exit(0), 5000).unref(); });
