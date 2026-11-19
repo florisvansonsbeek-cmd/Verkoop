@@ -11,7 +11,7 @@ De site waarmee ik kleine zaken laat zien wat ik voor ze kan bouwen. Twee tabbla
 
 **Voorbeelden (`/voorbeelden`)**, gemaakt uit `templates/voorbeelden.html` en `public/js/vakken.js`:
 
-- **Voorbeeldsite per vak**: kies een van de elf vakken, typ de naam van je zaak en zie de site op een telefoon of computer, met wat je klanten ermee doen en wat het jou achter de schermen scheelt. *Kopieer link naar dit voorbeeld* maakt een link als `/voorbeelden?vak=kapper&zaak=Barbershop%20Noor#voorbeeld`, handig voor een appje of een QR-code. Oude links (`/?vak=…`) sturen hierheen door.
+- **Voorbeeldsite per vak**: kies een van de elf vakken, typ de naam van je zaak en zie de site op een telefoon of computer, met wat je klanten ermee doen en wat het jou achter de schermen scheelt. Elke voorbeeldsite is opgebouwd als een presentatieblad: bovenaan een gevel-tekening van het pand (schaal 1:100, met stramien, maatvoering en peilmaten) waarin de naam van de zaak staat, daaronder kernfeiten, diensten, prijzen en tijden, stappen, een situatietekening met noordpijl en een titelblok als voet. De tekeningen staan in `public/js/gevels.js`, de inhoud per vak in `public/js/vakken.js` (`site`). *Kopieer link naar dit voorbeeld* maakt een link als `/voorbeelden?vak=kapper&zaak=Barbershop%20Noor#voorbeeld`, handig voor een appje of een QR-code. Oude links (`/?vak=…`) sturen hierheen door.
 - **Handige links per vak**: brancheverenigingen, regels en sites om klanten naar te verwijzen, gemarkeerd met *Voor jou* of *Voor je klanten*. Daaronder links voor elke ondernemer. Links gecontroleerd in november 2026; ze staan in `vakken.js` (`links` per vak en `HANDIG`).
 - **Dashboard**: een demo die zes mails van het gekozen vak leest: facturen worden gecontroleerd (bedrag, btw, nieuw rekeningnummer, dubbele factuur), een vraag van een klant krijgt een concept-antwoord, een herinnering blijkt al betaald.
 - **Websitecheck**: vul een webadres in en de server beoordeelt die pagina op veiligheid, telefoon, vindbaarheid, snelheid, actualiteit (zoals een oud jaartal of nog 19% btw) en contact. Met *Vraag een voorstel* gaat de bezoeker naar het contactformulier, met de check erbij.
@@ -20,7 +20,7 @@ De site waarmee ik kleine zaken laat zien wat ik voor ze kan bouwen. Twee tabbla
 
 **/beheer**: alle aanvragen (met status en notitie, en als CSV te downloaden) en alle websitechecks.
 
-Eén Node-server (`server.js`) met Postgres, zonder framework. De lettertypen (Cormorant Garamond, Source Sans 3 en IBM Plex Mono, open source onder de OFL) worden door de site zelf geserveerd; er wordt niets van andere sites geladen.
+Eén Node-server (`server.js`) met Postgres, zonder framework. De lettertypen (Cormorant Garamond, Source Sans 3 en IBM Plex Mono, en voor de voorbeeldsites Fraunces en Barlow Condensed; allemaal open source onder de OFL) worden door de site zelf geserveerd; er wordt niets van andere sites geladen.
 
 ## Op Railway zetten
 

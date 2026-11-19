@@ -48,13 +48,12 @@
   function icon(id, cls) {
     return '<svg class="' + (cls || "") + '" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (I[id] || "") + "</svg>";
   }
-  var KAART = '<svg viewBox="0 0 320 150" aria-hidden="true"><rect width="320" height="150" fill="#e8edf1"/>' +
-    '<path d="M0 34h320M0 112h320M78 0v150M214 0v150M140 0l26 150" stroke="#fff" stroke-width="7"/>' +
-    '<path d="M-10 58C60 78 96 30 158 62s104 56 172 34" stroke="#a9c6d9" stroke-width="16" fill="none"/>' +
-    '<g transform="translate(166 70)"><path class="pin" d="M0-30C-13-30-20-20-20-11-20 3 0 20 0 20S20 3 20-11C20-20 13-30 0-30Z"/><circle cy="-11" r="7" fill="#fff"/></g></svg>';
   var UIT = '<svg class="uit" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3h7v7M13 3 4 12"/></svg>';
 
-  /* ---------------- Voorbeeldsite (Nederlands, net als de zaak zelf) ---------------- */
+  /* ---------------- Voorbeeldsite (Nederlands, net als de zaak zelf) ----------------
+     Opgebouwd als een presentatieblad: de gevel van het pand bovenaan, daaronder een strak raster. */
+  var PIN = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15s-5-4.6-5-8.6a5 5 0 0 1 10 0C13 10.4 8 15 8 15z"/><circle cx="8" cy="6.4" r="1.8"/></svg>';
+  var TEL = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.2 1.8 6.6 5 5.1 6.3a8.6 8.6 0 0 0 4.6 4.6L11 9.4l3.2 1.4-.5 2.6a1.5 1.5 0 0 1-1.6 1.2C6.6 14.2 1.8 9.4 1.4 3.9a1.5 1.5 0 0 1 1.2-1.6z"/></svg>';
   function openInfo(uren) {
     var nu = new Date(), d = (nu.getDay() + 6) % 7, h = nu.getHours() + nu.getMinutes() / 60, slot = uren[d];
     if (slot && h >= slot[0] && h < slot[1]) return { open: true, tekst: "Nu open tot " + tijd(slot[1]) };
@@ -70,34 +69,55 @@
     if (p[2] === "gratis") return "gratis";
     return (p[2] ? p[2] + " " : "") + euro(p[1]);
   }
-  function signSize(naam, breed) {
-    var n = naam.length;
-    if (breed) return n > 30 ? 24 : n > 22 ? 27 : 30;
-    return n > 28 ? 16 : n > 20 ? 18 : 21;
+  /* kleuren per zaak: alles afgeleid van de merkkleur, de tweede kleur en het papier */
+  function rgb(h) { h = h.replace("#", ""); return [0, 2, 4].map(function (i) { return parseInt(h.substr(i, 2), 16); }); }
+  function hex(a) { return "#" + a.map(function (v) { return ("0" + Math.round(Math.max(0, Math.min(255, v))).toString(16)).slice(-2); }).join(""); }
+  function meng(a, b, t) { var A = rgb(a), B = rgb(b); return hex(A.map(function (v, i) { return v + (B[i] - v) * t; })); }
+  function alfa(a, t) { return "rgba(" + rgb(a).join(",") + "," + t + ")"; }
+  function zetKleuren(el, k) {
+    var acc = k[0], acc2 = k[1], bg = k[2], ink = meng(acc, "#0a0c0b", 0.52), v = {
+      "--ms-acc": acc, "--ms-acc-2": acc2, "--ms-bg": bg, "--ms-ink": ink, "--ms-ink-2": alfa(ink, 0.8), "--ms-ink-3": alfa(ink, 0.56),
+      "--ms-ink-4": alfa(ink, 0.4), "--ms-ink-5": alfa(ink, 0.15), "--ms-lijn": alfa(ink, 0.14), "--ms-raster": alfa(ink, 0.045),
+      "--ms-glas": meng(acc, "#ffffff", 0.84), "--ms-zacht": meng(acc, bg, 0.9), "--ms-boom": meng(acc, bg, 0.8), "--ms-papier": meng(bg, "#ffffff", 0.55),
+      "--ms-figuur": alfa(ink, 0.86), "--ms-schaduw": alfa(ink, 0.1), "--ms-acc-licht": meng(acc2, bg, 0.6)
+    };
+    for (var key in v) el.style.setProperty(key, v[key]);
   }
-  function mockHtml(id, naam, swing) {
-    var s = V[id].site, info = openInfo(s.uren), vandaag = (new Date().getDay() + 6) % 7;
+  function mockHtml(id, naam, breed) {
+    var s = V[id].site, info = openInfo(s.uren), vandaag = (new Date().getDay() + 6) % 7, G = window.GEVELS;
     var prijzen = s.prijzen.map(function (p) {
-      return "<li><span>" + esc(p[0]) + '</span><span class="lead-dots"></span><span class="price">' + esc(prijsTekst(p)) + "</span></li>";
+      return "<li><span>" + esc(p[0]) + '</span><i></i><span class="ms-bedrag">' + esc(prijsTekst(p)) + "</span></li>";
     }).join("");
     var metBedrag = s.prijzen.some(function (p) { return typeof p[1] === "number" && p[1] > 0; });
     var uren = s.uren.map(function (u, i) {
-      var cls = (i === vandaag ? "is-today" : "") + (u ? "" : " is-dicht");
-      return '<li class="' + cls.trim() + '"><span>' + DAGEN[i] + '</span><span class="lead-dots"></span><span class="price">' + (u ? tijd(u[0]) + "–" + tijd(u[1]) : "gesloten") + "</span></li>";
+      return '<li class="' + (i === vandaag ? "is-vandaag" : "") + (u ? "" : " is-dicht") + '"><span>' + DAGEN[i] + '</span><i></i><span class="ms-bedrag">' + (u ? tijd(u[0]) + "–" + tijd(u[1]) : "gesloten") + "</span></li>";
     }).join("");
-    return '<header class="ms-top"><span class="ms-sign' + (swing && !reduce ? " swing" : "") + '"><span class="ms-sign-name">' + esc(naam) + "</span></span>" +
-      '<nav class="ms-nav" aria-hidden="true"><span>' + esc(s.prijsKop) + "</span><span>Openingstijden</span><span>Route</span><span>Contact</span></nav>" +
-      '<span class="ms-open' + (info.open ? "" : " is-dicht") + '"><i></i>' + esc(info.tekst) + "</span></header>" +
-      (s.luifel ? '<div class="ms-luifel" aria-hidden="true"></div>' : '<div class="ms-streep" aria-hidden="true"></div>') +
-      '<section class="ms-hero"><div class="ms-art">' + icon(id) + "</div><div>" +
-      '<p class="ms-tag">' + esc(s.tag) + '</p><div class="ms-ctas"><span class="ms-btn">' + esc(s.knoppen[0]) + '</span><span class="ms-btn ms-btn--ghost">' + esc(s.knoppen[1]) + "</span></div></div></section>" +
-      '<div class="ms-info">' +
-      '<section class="ms-sec"><h3>' + esc(s.prijsKop) + '</h3><ul class="ms-list">' + prijzen + "</ul>" + (metBedrag ? '<p class="ms-fine">Voorbeeldprijzen</p>' : "") + "</section>" +
-      '<section class="ms-sec"><h3>Openingstijden</h3><ul class="ms-list">' + uren + "</ul></section>" +
-      '<section class="ms-sec"><h3>Zo vind je ons</h3><div class="ms-map">' + KAART + '</div><p class="ms-fine">Utrecht</p></section>' +
-      '<section class="ms-sec ms-story"><h3>Over ons</h3><p>' + esc(s.verhaal) + "</p></section>" +
-      "</div>" +
-      '<footer class="ms-foot">© ' + new Date().getFullYear() + " " + esc(naam) + "</footer>";
+    var lijst = function (rijen, cls) { return '<ul class="' + cls + '">' + rijen.map(function (r) { return "<li><b>" + esc(r[0]) + "</b><span>" + esc(r[1]) + "</span></li>"; }).join("") + "</ul>"; };
+    var tekening = G ? G.teken(s.tekening || id, naam, { stijl: s.stijl, focus: !breed, label: "Gevel van " + naam }) : "";
+    var kaart = G ? G.kaart(s.kaart, naam, s.stijl) : "";
+    return '<header class="ms-kop"><span class="ms-merk"><span class="ms-bol">' + esc(naam.charAt(0).toUpperCase()) + '</span><span class="ms-naam ms-woordmerk">' + esc(naam) + "</span></span>" +
+      '<span class="ms-menu">' + (s.menu || []).map(function (m) { return "<span>" + esc(m) + "</span>"; }).join("") + "</span>" +
+      '<span class="ms-open' + (info.open ? "" : " is-dicht") + '"><i></i>' + esc(info.tekst) + "</span>" +
+      '<span class="ms-knop ms-knop--klein">' + esc(s.knoppen[0]) + '</span><span class="ms-burger"><i></i><i></i><i></i></span></header>' +
+      '<section class="ms-held"><div class="ms-held-tekst"><p class="ms-h1">' + esc(s.kop) + '</p><p class="ms-intro">' + esc(s.intro) + "</p>" +
+      '<div class="ms-knoppen"><span class="ms-knop">' + esc(s.knoppen[0]) + '</span><span class="ms-knop ms-knop--lijn">' + esc(s.knoppen[1]) + "</span></div>" +
+      '<p class="ms-adresregel">' + PIN + "<span>" + esc(s.adres) + "</span></p>" +
+      '<p class="ms-open ms-open--los' + (info.open ? "" : " is-dicht") + '"><i></i>' + esc(info.tekst) + "</p></div>" +
+      '<figure class="ms-blad"><div class="ms-tek">' + tekening + '</div><figcaption><span>Gevel ' + esc(s.plek || s.adres) + "</span><span>schaal 1:100</span></figcaption></figure></section>" +
+      lijst(s.feiten, "ms-feiten") +
+      '<section class="ms-sectie"><div class="ms-sectie-kop"><p class="ms-h2">' + esc(s.dienstKop || "Wat we doen") + "</p></div>" + lijst(s.diensten, "ms-diensten") + "</section>" +
+      '<section class="ms-sectie ms-sectie--twee"><div><p class="ms-h2">' + esc(s.prijsKop) + '</p><ul class="ms-lijst">' + prijzen + "</ul>" + (metBedrag ? '<p class="ms-fijn">Voorbeeldprijzen</p>' : "") + "</div>" +
+      '<div><p class="ms-h2">Openingstijden</p><ul class="ms-lijst">' + uren + "</ul></div></section>" +
+      '<section class="ms-sectie"><div class="ms-sectie-kop"><p class="ms-h2">Zo werkt het</p></div><ol class="ms-stappen">' +
+      s.stappen.map(function (st, i) { return '<li><span class="ms-nr">' + (i + 1) + "</span><b>" + esc(st[0]) + "</b><span>" + esc(st[1]) + "</span></li>"; }).join("") + "</ol></section>" +
+      '<section class="ms-sectie ms-sectie--route"><div class="ms-kaart ms-tek">' + kaart + "</div>" +
+      '<div class="ms-adres"><p class="ms-h2">Zo vind je ons</p><p class="ms-adresregel">' + PIN + "<span>" + esc(s.adres) + '</span></p><p class="ms-adresregel">' + TEL + "<span>" + esc(s.tel) + "</span></p>" +
+      '<p class="ms-gebied">' + esc(s.gebied || "") + '</p><span class="ms-knop ms-knop--lijn">Plan je route</span></div></section>' +
+      '<section class="ms-verhaal"><p>' + esc(s.verhaal) + "</p></section>" +
+      '<section class="ms-slot"><p class="ms-h2">' + esc(s.slot || s.kop) + '</p><div class="ms-knoppen"><span class="ms-knop ms-knop--wit">' + esc(s.knoppen[0]) + '</span><span class="ms-slot-tel">' + TEL + esc(s.tel) + "</span></div></section>" +
+      '<footer class="ms-titelblok"><div class="ms-tb-groot"><span>Zaak</span><b class="ms-naam">' + esc(naam) + "</b></div>" +
+      "<div><span>Adres</span><b>" + esc(s.adres) + "</b></div><div><span>Telefoon</span><b>" + esc(s.tel) + "</b></div>" +
+      "<div><span>Website</span><b>Van Sonsbeek, " + new Date().getFullYear() + "</b></div></footer>";
   }
   var zoomOk = window.CSS && CSS.supports && CSS.supports("zoom", "0.5");
   function pasZoom(mock, scherm, breed) {
@@ -108,15 +128,34 @@
     mock.style.transform = "scale(" + z + ")";
     mock.style.marginBottom = (mock.offsetHeight * (z - 1)) + "px";
   }
-  function plaatsMock(mock, scherm, id, naam, breed, swing) {
+  /* namen in de tekening: te lang voor het bord? dan iets smaller zetten */
+  function pasNamen(root) {
+    $$("text.ms-naam[data-w]", root).forEach(function (t) {
+      t.removeAttribute("textLength"); t.removeAttribute("lengthAdjust");
+      var max = parseFloat(t.getAttribute("data-w"));
+      try { if (t.getComputedTextLength() > max) { t.setAttribute("textLength", max); t.setAttribute("lengthAdjust", "spacingAndGlyphs"); } } catch (e) { /* nog niet zichtbaar */ }
+    });
+  }
+  function plaatsMock(mock, scherm, id, naam, breed, teken) {
     var s = V[id].site; naam = naam || s.zaak;
-    mock.className = "ms" + (breed ? " ms--breed" : "") + (s.luifel ? "" : " ms--strak");
-    mock.style.setProperty("--ms-acc", s.kleur[0]);
-    mock.style.setProperty("--ms-acc-2", s.kleur[1]);
-    mock.style.setProperty("--ms-bg", s.kleur[2]);
-    mock.innerHTML = mockHtml(id, naam, swing);
-    $(".ms-sign", mock).style.fontSize = signSize(naam, breed) + "px";
+    mock.className = "ms ms--" + (s.stijl || "serif") + (breed ? " ms--breed" : "") + (teken && !reduce ? " ms--teken" : "");
+    zetKleuren(mock, s.kleur);
+    mock.innerHTML = mockHtml(id, naam, breed);
     pasZoom(mock, scherm, breed);
+    pasNamen(mock);
+  }
+  /* alleen de naam veranderd: tekst vervangen en de tekeningen opnieuw maken */
+  function wisselNaam(mock, id, naam, breed) {
+    var s = V[id].site, G = window.GEVELS; naam = naam || s.zaak;
+    mock.classList.remove("ms--teken");                     // de tekening tekent zich alleen bij een nieuw vak opnieuw
+    $$(".ms-naam", mock).forEach(function (el) { if (el.tagName.toLowerCase() !== "text") el.textContent = naam; });
+    var bol = $(".ms-bol", mock); if (bol) bol.textContent = naam.charAt(0).toUpperCase();
+    if (G) {
+      var t = $(".ms-blad .ms-tek", mock), k = $(".ms-kaart", mock);
+      if (t) t.innerHTML = G.teken(s.tekening || id, naam, { stijl: s.stijl, focus: !breed, label: "Gevel van " + naam });
+      if (k) k.innerHTML = G.kaart(s.kaart, naam, s.stijl);
+    }
+    pasNamen(mock);
   }
   function linksHtml(lijst, metWie) {
     return lijst.map(function (l) {
@@ -153,13 +192,12 @@
   };
   var mock = $("#mock"), device = $("#device"), scherm = $("#device-screen"), naamInput = $("#zaaknaam");
 
-  function tekenMock(swing) { if (mock) plaatsMock(mock, scherm, state.vak, state.naam, state.device === "laptop", swing); }
+  function tekenMock(teken) { if (mock) plaatsMock(mock, scherm, state.vak, state.naam, state.device === "laptop", teken); }
+  var naamKlok;
   function updateNaam() {
-    var el = mock && $(".ms-sign-name", mock), foot = mock && $(".ms-foot", mock), naam = state.naam || V[state.vak].site.zaak;
-    if (!el) return tekenMock(false);
-    el.textContent = naam;
-    $(".ms-sign", mock).style.fontSize = signSize(naam, state.device === "laptop") + "px";
-    if (foot) foot.textContent = "© " + new Date().getFullYear() + " " + naam;
+    if (!mock || !$(".ms-kop", mock)) return tekenMock(false);
+    clearTimeout(naamKlok);
+    naamKlok = setTimeout(function () { wisselNaam(mock, state.vak, state.naam, state.device === "laptop"); }, 90);
   }
   function renderChips() {
     var plek = $("#vakken"); if (!plek) return;
@@ -534,6 +572,7 @@
   }
 
   /* ---------------- Start ---------------- */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { $$(".ms").forEach(pasNamen); });
   var jaar = $("#jaar"); if (jaar) jaar.textContent = String(new Date().getFullYear());
   vakTeksten();
   resetDemo();
@@ -543,9 +582,10 @@
   window.addEventListener("hashchange", openDoel);
   setInterval(function () {
     $$(".ms").forEach(function (m) {
-      var o = $(".ms-open", m), id = m.getAttribute("data-mock") || (m === mock ? state.vak : null);
-      if (!o || !V[id]) return;
-      var info = openInfo(V[id].site.uren); o.lastChild.textContent = info.tekst; o.classList.toggle("is-dicht", !info.open);
+      var id = m.getAttribute("data-mock") || (m === mock ? state.vak : null);
+      if (!V[id]) return;
+      var info = openInfo(V[id].site.uren);
+      $$(".ms-open", m).forEach(function (o) { o.lastChild.textContent = info.tekst; o.classList.toggle("is-dicht", !info.open); });
     });
   }, 60000);
 })();
