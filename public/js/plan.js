@@ -1,4 +1,4 @@
-/* Van Sonsbeek: de plattegronden (slider op de voorpagina, één vaste tekening op /voor/...),
+/* Van Sonsbeek: de plattegrond op /voor/... (de slider-code is er nog voor het geval hij terugkomt),
    met per punt een voorbeeldscherm, aantikken wat je wilt en een titelblok dat het pakket uitrekent.
    Ook: de kopbalk die meekleurt boven de groene tafel en de zwevende app-knop. */
 (function () {

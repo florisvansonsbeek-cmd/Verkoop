@@ -13,7 +13,7 @@
 <meta content="website" property="og:type"/>
 <meta content="nl_NL" property="og:locale"/>
 <meta content="Een mooie website en slimme hulp achter de schermen" property="og:title"/>
-<meta content="Websites voor kleine zaken in Utrecht. Typ de naam van je zaak en zie meteen een voorbeeld." property="og:description"/>
+<meta content="Websites voor kleine zaken in Utrecht, met een dashboard dat je mail leest en je facturen nakijkt. Bekijk voorbeelden per vak." property="og:description"/>
 <meta content="{{ORIGIN}}/" property="og:url"/>
 <meta content="{{ORIGIN}}/img/og.jpg" property="og:image"/>
 <meta content="1200" property="og:image:width"/>
@@ -22,13 +22,12 @@
 <link as="font" crossorigin="" href="/fonts/source-sans-3-latin-wght-normal.woff2" rel="preload" type="font/woff2"/>
 <link href="/css/site.css?v={{V}}" rel="stylesheet"/>
 <script defer="" src="/js/plannen.js?v={{V}}"></script>
-<script defer="" src="/js/voorbeelden.js?v={{V}}"></script>
+<script defer="" src="/js/vakken.js?v={{V}}"></script>
 <script defer="" src="/js/i18n.js?v={{V}}"></script>
-<script defer="" src="/js/plan.js?v={{V}}"></script>
 <script defer="" src="/js/site.js?v={{V}}"></script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Floris van Sonsbeek","description":"Websites en dashboards voor kleine zaken","areaServed":{"@type":"City","name":"Utrecht"},"url":"{{ORIGIN}}/"}</script>
 </head>
-<body>
+<body data-pagina="thuis">
 <a class="skip" data-i18n="t001" href="#main">Naar de inhoud</a>
 <header class="top">
 <div class="wrap top-in">
@@ -36,11 +35,9 @@
 <span class="logo"><svg aria-hidden="true" class="logo-mark" viewbox="0 0 48 48"><path d="M11 41V22a13 13 0 0 1 26 0v19" fill="none" stroke="currentColor" stroke-width="2.6"></path><path d="M6 41.5h36" stroke="currentColor" stroke-linecap="round" stroke-width="2.6"></path><path d="M24 40V25" stroke="#a8742f" stroke-linecap="round" stroke-width="2.2"></path><path d="M24 33c-6 0-8.5-3.6-8.5-8 5.4 0 8.5 3.2 8.5 8z" fill="#a8742f"></path><path d="M24 28.5c5.2 0 7.8-3.2 7.8-7.2-5 0-7.8 2.9-7.8 7.2z" fill="#7d8f68"></path></svg><span class="logo-txt"><b data-i18n="t002">VAN SONSBEEK</b><i data-i18n="t003">WEBSITES &amp; SLIMME SYSTEMEN</i></span></span>
 </a>
 <nav aria-label="Hoofdmenu" class="nav" data-i18n-aria="t215">
-<a data-i18n="t004" href="#mogelijkheden">Mogelijkheden</a>
-<a data-i18n="t005" href="#waarom">Waarom ik</a>
-<a data-i18n="t006" href="#werk">Mijn werk</a>
-<a data-i18n="t008" href="#dashboard">Dashboard</a>
+<a class="nav-vb" data-i18n="t298" href="/voorbeelden">Voorbeelden</a>
 <a data-i18n="t280" href="#prijzen">Prijzen</a>
+<a data-i18n="t006" href="#werk">Mijn werk</a>
 <a data-i18n="t009" href="#vragen">Vragen</a>
 </nav>
 <div class="taal" id="taal"></div>
@@ -48,72 +45,98 @@
 </div>
 </header>
 <main id="main">
-<!-- 0. Begin: de boerderijwinkel -->
-<section aria-labelledby="intro-titel" class="intro" id="begin">
+<!-- 1. Begin: twee voorbeeldsites op de tafel -->
+<section aria-labelledby="intro-titel" class="intro intro--thuis" id="begin">
 <div class="intro-tafel" id="intro-tafel">
 <div class="wrap">
 <div class="intro-kop">
 <h1 data-i18n="t011" id="intro-titel">Een mooie website, en slimme hulp achter de schermen</h1>
 <div class="intro-zij">
-<p class="lead" data-i18n="t012">Ik bouw websites en systemen met AI voor zaken met karakter. Ze lezen je mail, kijken facturen na en houden bestellingen bij, zodat jij tijd hebt voor je klanten. Kies hieronder een soort bedrijf en zie wat dat in de praktijk betekent.</p>
+<p class="lead" data-i18n="t299">Ik maak websites voor kleine zaken in Utrecht: met je prijzen, openingstijden en een belknop, op je eigen adres. Wil je meer, dan bouw ik er een dashboard bij dat je mail leest en je facturen nakijkt.</p>
 <div class="intro-acties">
 <a class="btn btn--room" data-i18n="t013" href="#contact">Plan een kennismaking</a>
-<a class="textlink textlink--licht" data-i18n="t014" href="#mogelijkheden">Bekijk alle mogelijkheden</a>
+<a class="textlink textlink--licht" data-i18n="t300" href="/voorbeelden">Bekijk voorbeelden voor jouw vak</a>
 </div>
 </div>
 </div>
-<div aria-label="Kies een soort bedrijf" class="plan-tabs" data-i18n-aria="t216" id="plan-tabs" role="tablist"></div>
 </div>
 </div>
 <div class="wrap">
-<figure class="blad" id="plan-paneel" role="tabpanel">
-<div class="plan-vlak">
-<div class="plan-doek">
-<img alt="" height="900" id="plan-img" src="/img/plannen/boerderij.svg" width="1400"/>
-<svg aria-hidden="true" class="plan-lijnen" id="plan-lijnen" viewbox="0 0 1400 900"></svg>
+<div class="duo">
+<a aria-label="Bekijk de voorbeeldsite van een installateur" class="duo-laptop" data-i18n-aria="t321" href="/voorbeelden?vak=installateur#voorbeeld">
+<div class="device" data-device="laptop"><div class="device-screen"><div aria-hidden="true" class="ms" data-mock="installateur"></div></div></div>
+</a>
+<a aria-label="Bekijk de voorbeeldsite van een kapper" class="duo-tel" data-i18n-aria="t322" href="/voorbeelden?vak=kapper#voorbeeld">
+<div class="device" data-device="phone"><div class="device-screen"><div aria-hidden="true" class="ms" data-mock="kapper"></div></div></div>
+</a>
 </div>
-<div aria-hidden="true" class="plan-labels" id="plan-labels"></div>
-<div class="blad-nav">
-<button aria-label="Vorig bedrijf" class="plan-pijl" data-i18n-aria="t217" id="plan-vorige" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M15 5l-7 7 7 7"></path></svg></button>
-<button aria-label="Volgend bedrijf" class="plan-pijl" data-i18n-aria="t218" id="plan-volgende" type="button"><svg aria-hidden="true" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></button>
+<div class="vakstrook">
+<p class="vakstrook-kop" data-i18n="t301">Kies je vak en bekijk een voorbeeldsite:</p>
+<ul class="vakstrook-lijst">
+<li><a data-vaknaam="boerderij" href="/voorbeelden?vak=boerderij#voorbeeld"><span>Boerderijwinkel</span></a></li>
+<li><a data-vaknaam="installateur" href="/voorbeelden?vak=installateur#voorbeeld"><span>Loodgieter</span></a></li>
+<li><a data-vaknaam="schilder" href="/voorbeelden?vak=schilder#voorbeeld"><span>Schilder</span></a></li>
+<li><a data-vaknaam="aannemer" href="/voorbeelden?vak=aannemer#voorbeeld"><span>Aannemer</span></a></li>
+<li><a data-vaknaam="dak-tuin" href="/voorbeelden?vak=dak-tuin#voorbeeld"><span>Dakdekker en hovenier</span></a></li>
+<li><a data-vaknaam="kapper" href="/voorbeelden?vak=kapper#voorbeeld"><span>Kapper</span></a></li>
+<li><a data-vaknaam="garage" href="/voorbeelden?vak=garage#voorbeeld"><span>Garage</span></a></li>
+<li><a data-vaknaam="fysio" href="/voorbeelden?vak=fysio#voorbeeld"><span>Fysiotherapeut</span></a></li>
+<li><a data-vaknaam="schoonmaak" href="/voorbeelden?vak=schoonmaak#voorbeeld"><span>Schoonmaakbedrijf</span></a></li>
+<li><a data-vaknaam="tandarts" href="/voorbeelden?vak=tandarts#voorbeeld"><span>Tandarts</span></a></li>
+<li><a data-vaknaam="accountant" href="/voorbeelden?vak=accountant#voorbeeld"><span>Accountant</span></a></li>
+</ul>
 </div>
-</div>
-<div class="blad-voet">
-<div class="blad-titel">
-<h2 id="plan-titel"></h2>
-<p id="plan-intro"></p>
-</div>
-<div class="blad-lijst">
-<p class="plan-sleutel" id="plan-sleutel"></p>
-<ol class="plan-lijst" id="plan-lijst"></ol>
-</div>
-<div class="blad-keuze">
-<p class="keuze-hint" id="keuze-hint"></p>
-<dl class="titelblok">
-<div><dt data-i18n="t235">Project</dt><dd id="tb-project"></dd></div>
-<div><dt data-i18n="t236">Blad</dt><dd id="tb-blad"></dd></div>
-<div class="tb-keuze"><dt data-i18n="t294">Keuze</dt><dd id="tb-keuze"></dd></div>
-<div class="tb-keuze"><dt data-i18n="t295">Pakket</dt><dd id="tb-pakket"></dd></div>
-<div class="tb-keuze"><dt data-i18n="t296">Vanaf</dt><dd id="tb-vanaf"></dd></div>
-<div><dt data-i18n="t237">Getekend</dt><dd>F. van Sonsbeek</dd></div>
-</dl>
-<div class="keuze-acties">
-<a class="btn" data-i18n="t297" href="#contact" id="keuze-knop">Vraag dit aan</a>
-<a class="textlink textlink--small plan-meer" href="/voor/boerderijwinkels" id="plan-meer">Meer over websites voor boerderijwinkels</a>
-</div>
-</div>
-</div>
-</figure>
-<p class="blad-onderschrift" data-i18n="t015" id="plan-onderschrift">Voorbeelden van wat kan, geen vast pakket. We kiezen samen wat bij jouw zaak past en beginnen met één onderdeel.</p>
 </div>
 </section>
-<!-- Mogelijkheden -->
-<section aria-labelledby="mog-titel" class="band band--was" id="mogelijkheden">
+<!-- 2. Wat ik maak en wat het kost -->
+<section aria-labelledby="prijzen-titel" class="band band--was prijzen" id="prijzen">
 <div class="wrap">
-<div class="section-head">
-<h2 data-i18n="t016" id="mog-titel">Wat ik voor zo'n zaak kan maken</h2>
-<p data-i18n="t017">Hieronder staan ideeën, geen vast pakket. We kiezen samen eerst één ding dat jou de meeste tijd scheelt en testen dat in jouw zaak. Pas als dat goed werkt, breiden we uit. Bij <em>eerder gemaakt</em> heb ik iets vergelijkbaars al voor een van mijn eigen systemen gebouwd.</p>
+<div class="prijzen-kop">
+<h2 data-i18n="t302" id="prijzen-titel">Wat ik voor je maak, en wat het kost</h2>
+<p data-i18n="t238">Je ziet eerst een voorbeeld op je eigen telefoon. Bevalt het, dan krijg je een vaste prijs, zodat je vooraf weet waar je aan toe bent. Hieronder staan vanaf-prijzen.</p>
 </div>
+<div class="pakketten">
+<div class="pakket">
+<h3 data-i18n="t165">Website</h3>
+<p class="pakket-prijs" data-i18n="t239">vanaf <b>€ 895</b></p>
+<p data-i18n="t166">Je eigen adres met prijzen, openingstijden, route en een belknop. Werkt op elke telefoon. De hosting regel ik.</p>
+<ul class="pakket-lijst">
+<li data-i18n="t021">Teksten die goed gevonden worden in Google</li>
+<li data-i18n="t022">Openingstijden en gegevens overal gelijk, ook in Google Maps</li>
+<li data-i18n="t020">Meertalige site voor toeristen of klanten uit het buitenland<span class="al">eerder gemaakt</span></li>
+</ul>
+<p class="pakket-maand" data-i18n="t240">Daarna <b>€ 25</b> per maand voor onderhoud</p>
+</div>
+<div class="pakket">
+<h3 data-i18n="t167">Website met aanvragen</h3>
+<p class="pakket-prijs" data-i18n="t242">vanaf <b>€ 1.495</b></p>
+<p data-i18n="t168">Alles van de website, plus een formulier voor afspraken of bestellingen. Aanvragen komen in je mail en in je eigen overzicht.</p>
+<ul class="pakket-lijst">
+<li data-i18n="t024">Online bestellen, reserveren of een afspraak maken</li>
+<li data-i18n="t027">Een appje of mail zodra iets klaarstaat</li>
+<li data-i18n="t026">Klanten volgen zelf hun bestelling<span class="al">eerder gemaakt</span></li>
+</ul>
+<p class="pakket-maand" data-i18n="t240">Daarna <b>€ 25</b> per maand voor onderhoud</p>
+</div>
+<div class="pakket pakket--dashboard">
+<h3 data-i18n="t169">Website met dashboard</h3>
+<p class="pakket-prijs" data-i18n="t243">vanaf <b>€ 2.950</b></p>
+<p data-i18n="t170">Alles hierboven, plus een dashboard dat je mail leest, facturen nakijkt en laat zien wat er vandaag moet gebeuren.</p>
+<ul class="pakket-lijst">
+<li data-i18n="t029">Mail lezen en sorteren: facturen, vragen, offertes<span class="al">eerder gemaakt</span></li>
+<li data-i18n="t030">Facturen controleren op bedrag, btw, rekeningnummer en dubbele<span class="al">eerder gemaakt</span></li>
+<li data-i18n="t042">Elke ochtend een korte samenvatting van wat er speelt<span class="al">eerder gemaakt</span></li>
+</ul>
+<p class="pakket-demo"><a class="textlink textlink--small" data-i18n="t323" href="/voorbeelden#dashboard">Probeer de demo met voorbeeldmail</a></p>
+<p class="pakket-maand" data-i18n="t241">Daarna <b>€ 75</b> per maand, met de AI-dienst erbij</p>
+</div>
+<p class="pakketten-voet" data-i18n="t306"><span class="al">eerder gemaakt</span> betekent: iets vergelijkbaars draait al in een van mijn eigen systemen.</p>
+</div>
+<div class="uitklappers">
+<details class="uitklap" id="mogelijkheden">
+<summary><span class="uitklap-titel" data-i18n="t304">Alle mogelijkheden op een rij</span><span class="uitklap-kort" data-i18n="t326">Van gevonden worden tot de werkvloer</span></summary>
+<div class="uitklap-in">
+<p class="uitklap-intro" data-i18n="t017">Hieronder staan ideeën, geen vast pakket. We kiezen samen eerst één ding dat jou de meeste tijd scheelt en testen dat in jouw zaak. Pas als dat goed werkt, breiden we uit. Bij <em>eerder gemaakt</em> heb ik iets vergelijkbaars al voor een van mijn eigen systemen gebouwd.</p>
 <div class="mogelijkheden">
 <div class="mog">
 <svg aria-hidden="true" class="mog-ic" viewbox="0 0 32 32"><path d="M16 28s-8.5-7.4-8.5-14a8.5 8.5 0 0 1 17 0c0 6.6-8.5 14-8.5 14z"></path><circle cx="16" cy="14" r="3.2"></circle></svg>
@@ -147,42 +170,48 @@
 </div>
 </div>
 </div>
-</section>
-<!-- Waarom ik -->
-<section aria-labelledby="waarom-titel" class="waarom" id="waarom">
-<div class="wrap">
-<div class="waarom-in">
-<div class="section-head">
-<h2 data-i18n="t050" id="waarom-titel">Waarom met mij werken</h2>
-<p data-i18n="t051">Een website en slimme systemen laten maken hoeft niet duur, traag of ingewikkeld te zijn. Dit krijg je, en zo verhoudt het zich tot de andere routes.</p>
+</details>
+<details class="uitklap">
+<summary><span class="uitklap-titel" data-i18n="t305">Wat zit er in het onderhoud?</span><span class="uitklap-kort" data-i18n="t245"><b>€ 25</b> per maand voor je site, <b>€ 75</b> met dashboard.</span></summary>
+<div class="uitklap-in">
+<ul class="vinkjes">
+<li data-i18n="t246">Hosting op servers in Amsterdam</li>
+<li data-i18n="t247">Updates en beveiliging</li>
+<li data-i18n="t248">Back-ups van je site en gegevens</li>
+<li data-i18n="t249">Kleine wijzigingen, zoals nieuwe prijzen of openingstijden</li>
+<li data-i18n="t250">Bij een dashboard: de kosten van de AI-dienst</li>
+</ul>
+<p class="uitklap-noot" data-i18n="t251">Per maand opzegbaar.</p>
 </div>
-<ul class="redenen">
-<li><h3 data-i18n="t052">Eén aanspreekpunt, van idee tot online</h3><p data-i18n="t053">Ontwerp, bouw, koppelingen, hosting en onderhoud doe ik zelf. Geen bureau dat je doorstuurt naar een programmeur en een hostingpartij.</p></li>
-<li><h3 data-i18n="t054">Op maat gebouwd, niet uit een sjabloon</h3><p data-i18n="t055">Geen standaardthema met plug-ins die verouderen, maar een site die precies doet wat jouw zaak nodig heeft. Daardoor blijft hij snel en veilig.</p></li>
-<li><h3 data-i18n="t056">AI waar het echt tijd oplevert</h3><p data-i18n="t057">Ik zet AI in op het saaie werk: mail, facturen en bestellingen. Niet als gimmick, maar zodat jij meer tijd hebt voor je klanten.</p></li>
-<li><h3 data-i18n="t058">Lagere kosten door een moderne werkwijze</h3><p data-i18n="t059">Met AI-hulpmiddelen bouw ik sneller dan op de traditionele manier. Dat voordeel zie je terug in de prijs, en die spreken we vooraf af.</p></li>
-<li><h3 data-i18n="t060">Jouw zaak, jouw gegevens</h3><p data-i18n="t061">Je domein en je klantgegevens zijn van jou. Wil je ooit verder met een ander, dan neem je alles mee.</p></li>
-<li><h3 data-i18n="t062">Bewezen, niet beloofd</h3><p data-i18n="t063">Drie systemen draaien al, met mail-koppelingen, live cijfers en inlog. Je kunt ze hieronder zelf bekijken.</p></li>
-<li><h3 data-i18n="t064">Veilig vanaf dag één</h3><p data-i18n="t065">Beveiligde verbinding en eigen wachtwoorden. Het dashboard doet voorstellen, maar betaalt of verstuurt nooit iets zelf. Een factuur met een nieuw rekeningnummer wordt gemarkeerd, zodat jij hem nakijkt.</p></li>
-<li><h3 data-i18n="t066">Klein beginnen, rustig opbouwen</h3><p data-i18n="t067">We beginnen met één onderdeel en laten dat een paar weken naast je huidige werkwijze meedraaien. AI maakt soms fouten, dus in het begin kijk jij alles na. Pas als het goed werkt, bouwen we verder.</p></li>
+</details>
+<details class="uitklap">
+<summary><span class="uitklap-titel" data-i18n="t252">Kleine klussen om mee te beginnen</span><span class="uitklap-kort" data-i18n="t327">Nog geen hele website nodig? Begin met één ding.</span></summary>
+<div class="uitklap-in">
+<p class="uitklap-intro" data-i18n="t253">Nog niet toe aan een hele website? Begin klein, voor een vaste prijs die we vooraf afspreken.</p>
+<ul class="klussen-lijst">
+<li><b data-i18n="t254">Google Maps-profiel inrichten</b><span data-i18n="t255">Openingstijden, foto's en gegevens kloppen overal.</span></li>
+<li><b data-i18n="t256">E-mail op je eigen naam</b><span data-i18n="t257">Zoals info@jouwzaak.nl, op je telefoon en je computer.</span></li>
+<li><b data-i18n="t258">Je oude site of Facebook-pagina overzetten</b><span data-i18n="t259">Naar een eigen, snelle site op je eigen adres.</span></li>
+<li><b data-i18n="t260">Logo en huisstijl</b><span data-i18n="t261">Een logo, kleuren en letters die bij je zaak passen.</span></li>
 </ul>
 </div>
-<div class="vgl-wrap">
-<table class="vgl">
-<caption data-i18n="t068">Zo verhoudt het zich, meestal</caption>
-<thead><tr><th scope="col"><span class="sr" data-i18n="t069">Onderwerp</span></th><th data-i18n="t070" scope="col">Bureau</th><th data-i18n="t071" scope="col">Sjabloon-websitebouwer</th><th class="wij" data-i18n="t072" scope="col">Met mij</th></tr></thead>
-<tbody>
-<tr><th data-i18n="t073" scope="row">Gebouwd op maat</th><td data-i18n="t074">Ja, maar duur</td><td data-i18n="t075">Nee, een sjabloon</td><td class="wij" data-i18n="t076">Ja</td></tr>
-<tr><th data-i18n="t077" scope="row">AI die werk overneemt</th><td data-i18n="t078">Vaak als losse extra</td><td data-i18n="t079">Nauwelijks</td><td class="wij" data-i18n="t080">Ingebouwd waar het helpt</td></tr>
-<tr><th data-i18n="t081" scope="row">Aanspreekpunt</th><td data-i18n="t082">Accountmanager</td><td data-i18n="t083">Helpdesk of zelf uitzoeken</td><td class="wij" data-i18n="t084">Ik, rechtstreeks</td></tr>
-<tr><th data-i18n="t085" scope="row">Prijs</th><td data-i18n="t086">Meestal hoog</td><td data-i18n="t087">Laag, maar elke maand</td><td class="wij" data-i18n="t088">Vaste prijs vooraf</td></tr>
-<tr><th data-i18n="t089" scope="row">Wie doet het werk</th><td data-i18n="t090">Het bureau, in weken</td><td data-i18n="t091">Jij zelf</td><td class="wij" data-i18n="t092">Ik, snel</td></tr>
-</tbody>
-</table>
+</details>
+</div>
+<div class="aanbod">
+<div class="aanbod-kaart">
+<h3 data-i18n="t262">Voor de eerste drie zaken</h3>
+<p data-i18n="t263">Je krijgt een lagere prijs. In ruil vraag ik een eerlijke review en of ik je site als voorbeeld mag laten zien.</p>
+<a class="textlink" data-i18n="t264" href="#contact">Vraag het aan</a>
+</div>
+<div class="aanbod-kaart">
+<h3 data-i18n="t265">Ken je een ondernemer die hier iets aan heeft?</h3>
+<p data-i18n="t266">Breng je iemand aan en wordt het een opdracht, dan krijgen jullie allebei korting.</p>
+<a class="textlink" data-i18n="t267" href="#contact">Laat het me weten</a>
+</div>
 </div>
 </div>
 </section>
-<!-- 4. Mijn werk -->
+<!-- 3. Mijn werk -->
 <section aria-labelledby="werk-titel" class="work" id="werk">
 <div class="wrap">
 <div class="section-head">
@@ -219,156 +248,55 @@
 <p class="project-link"><a class="textlink" data-i18n="t107" href="https://campo.vsonsbeek.nl" rel="noopener" target="_blank">Bekijk de demo op campo.vsonsbeek.nl</a><span class="small muted" data-i18n="t108">Inloggen op de werkplek kan met het demo-account op de inlogpagina.</span></p>
 </div>
 </article>
-<article aria-labelledby="p-handelsplan" class="project">
-<figure class="shots" data-shots="">
+</div>
+<div class="projecten-klein">
+<article aria-labelledby="p-handelsplan" class="project-klein">
 <div class="browser">
 <div class="browser-bar"><span class="browser-url" data-i18n="t109">handelsplan.vsonsbeek.nl</span></div>
-<div aria-labelledby="hp-tab-0" class="browser-view" id="hp-panel" role="tabpanel">
-<a aria-label="Schermafbeelding groot openen" class="vergroot" data-i18n-aria="t221" href="/img/hp-markt-1600.webp" rel="noopener" target="_blank"><img alt="Handelsplan, tab Markt: een kwadrant met Stagflatie, Reflatie, Krimp en Goldilocks en een stip waar de markt nu staat." decoding="async" height="1000" loading="lazy" sizes="(min-width: 1000px) 720px, 94vw" src="/img/hp-markt-800.webp" srcset="/img/hp-markt-800.webp 800w, /img/hp-markt-1600.webp 1600w" width="1600"/></a>
+<div class="browser-view">
+<a aria-label="Schermafbeelding groot openen" class="vergroot" data-i18n-aria="t221" href="/img/hp-markt-1600.webp" rel="noopener" target="_blank"><img alt="Handelsplan, tab Markt: een kwadrant met Stagflatie, Reflatie, Krimp en Goldilocks en een stip waar de markt nu staat." decoding="async" height="1000" loading="lazy" sizes="(min-width: 1000px) 560px, 94vw" src="/img/hp-markt-800.webp" srcset="/img/hp-markt-800.webp 800w, /img/hp-markt-1600.webp 1600w" width="1600"/></a>
 </div>
 </div>
-<div aria-label="Schermen van Handelsplan" class="shot-tabs" data-i18n-aria="t222" role="tablist">
-<button aria-controls="hp-panel" aria-selected="true" data-alt="Handelsplan, tab Markt: een kwadrant met Stagflatie, Reflatie, Krimp en Goldilocks en een stip waar de markt nu staat." data-i18n="t110" data-src="/img/hp-markt" data-url="handelsplan.vsonsbeek.nl" id="hp-tab-0" role="tab" type="button">Markt</button>
-<button aria-controls="hp-panel" aria-selected="false" data-alt="Handelsplan, tab Vandaag: het verhaal van de dag in drie delen: wat er speelt, wat het betekent en wat je doet." data-i18n="t111" data-src="/img/hp-vandaag" data-url="handelsplan.vsonsbeek.nl" id="hp-tab-1" role="tab" tabindex="-1" type="button">Vandaag</button>
-</div>
-</figure>
-<div class="project-text">
 <h3 class="project-naam" data-i18n="t112" id="p-handelsplan">Handelsplan</h3>
 <p class="project-what" data-i18n="t113">Mijn eigen beleggingsdashboard, dat zichzelf elke dag bijwerkt.</p>
+<p class="for-you" data-i18n="t118"><strong>Voor jouw zaak:</strong> cijfers die zichzelf bijwerken, en een seintje als er iets gebeurt dat jij wilt weten.</p>
+<details class="project-meer">
+<summary data-i18n="t324">Wat het doet</summary>
 <ul class="ticks">
 <li data-i18n="t114">Haalt elk kwartier koersen op en twee keer per dag economische cijfers</li>
 <li data-i18n="t115">Leest elk kwartier nieuwe mail, ook bijlagen zoals PDF, Word en Excel</li>
 <li data-i18n="t116">AI haalt er bedragen, datums en acties uit en schrijft elke werkdag een korte briefing</li>
 <li data-i18n="t117">Stuurt een melding zodra een van mijn eigen regels wordt geraakt</li>
 </ul>
-<p class="for-you" data-i18n="t118"><strong>Voor jouw zaak:</strong> cijfers die zichzelf bijwerken, en een seintje als er iets gebeurt dat jij wilt weten.</p>
-<p class="project-link"><span class="small muted" data-i18n="t119">Privé. Ik laat hem graag zien bij een kennismaking.</span></p>
-</div>
+</details>
+<p class="small muted" data-i18n="t119">Privé. Ik laat hem graag zien bij een kennismaking.</p>
 </article>
-<article aria-labelledby="p-koersplan" class="project">
-<figure class="shots" data-shots="">
+<article aria-labelledby="p-koersplan" class="project-klein">
 <div class="browser">
 <div class="browser-bar"><span class="browser-url" data-i18n="t120">koersplan.vsonsbeek.nl</span></div>
-<div aria-labelledby="kp-tab-0" class="browser-view" id="kp-panel" role="tabpanel">
-<a aria-label="Schermafbeelding groot openen" class="vergroot" data-i18n-aria="t223" href="/img/koers-overzicht-1600.webp" rel="noopener" target="_blank"><img alt="Koersplan, Overzicht: een weekscore van 66 procent met een liniaal voor het tempo en daaronder acties om af te vinken." decoding="async" height="1000" loading="lazy" sizes="(min-width: 1000px) 720px, 94vw" src="/img/koers-overzicht-800.webp" srcset="/img/koers-overzicht-800.webp 800w, /img/koers-overzicht-1600.webp 1600w" width="1600"/></a>
+<div class="browser-view">
+<a aria-label="Schermafbeelding groot openen" class="vergroot" data-i18n-aria="t223" href="/img/koers-overzicht-1600.webp" rel="noopener" target="_blank"><img alt="Koersplan, Overzicht: een weekscore van 66 procent met een liniaal voor het tempo en daaronder acties om af te vinken." decoding="async" height="1000" loading="lazy" sizes="(min-width: 1000px) 560px, 94vw" src="/img/koers-overzicht-800.webp" srcset="/img/koers-overzicht-800.webp 800w, /img/koers-overzicht-1600.webp 1600w" width="1600"/></a>
 </div>
 </div>
-<img alt="Koersplan op een telefoon." class="shots-phone" decoding="async" height="1298" loading="lazy" src="/img/koers-mobiel-600.webp" width="600"/>
-<div aria-label="Schermen van Koersplan" class="shot-tabs" data-i18n-aria="t224" role="tablist">
-<button aria-controls="kp-panel" aria-selected="true" data-alt="Koersplan, Overzicht: een weekscore van 66 procent met een liniaal voor het tempo en daaronder acties om af te vinken." data-i18n="t121" data-src="/img/koers-overzicht" data-url="koersplan.vsonsbeek.nl" id="kp-tab-0" role="tab" type="button">Weekscore</button>
-<button aria-controls="kp-panel" aria-selected="false" data-alt="Koersplan, Jaar: een jaaragenda met per week een vakje dat donkerder kleurt naarmate de score hoger is." data-i18n="t122" data-src="/img/koers-jaar" data-url="koersplan.vsonsbeek.nl" id="kp-tab-1" role="tab" tabindex="-1" type="button">Jaar</button>
-</div>
-</figure>
-<div class="project-text">
 <h3 class="project-naam" data-i18n="t123" id="p-koersplan">Koersplan</h3>
 <p class="project-what" data-i18n="t124">Persoonlijk dashboard dat bijhoudt of ik op koers lig met mijn doelen.</p>
+<p class="for-you" data-i18n="t129"><strong>Voor jouw zaak:</strong> doelen voor jou of je team, en elke week zichtbaar of je op schema ligt.</p>
+<details class="project-meer">
+<summary data-i18n="t324">Wat het doet</summary>
 <ul class="ticks">
 <li data-i18n="t125">Weekscore uit afgevinkte acties, met het tempo van de week</li>
 <li data-i18n="t126">Jaaragenda met een kleur per week: in één oogopslag zie je hoe het gaat</li>
 <li data-i18n="t127">Haalt zelf gegevens op uit Handelsplan: twee systemen die met elkaar praten</li>
 <li data-i18n="t128">Inloggen met een pincode, met een slot tegen raden</li>
 </ul>
-<p class="for-you" data-i18n="t129"><strong>Voor jouw zaak:</strong> doelen voor jou of je team, en elke week zichtbaar of je op schema ligt.</p>
-<p class="project-link"><span class="small muted" data-i18n="t130">Privé. Hier getoond met voorbeelddoelen.</span></p>
-</div>
+</details>
+<p class="small muted" data-i18n="t130">Privé. Hier getoond met voorbeelddoelen.</p>
 </article>
 </div>
 {{ERVARINGEN}}
 </div>
 </section>
-<!-- 1. Jouw site -->
-<section aria-labelledby="hero-titel" class="hero hero--maker" id="voorbeeld">
-<div class="wrap hero-in">
-<div class="hero-copy">
-<h2 data-i18n="t131" id="hero-titel">Zo ziet jouw zaak er online uit</h2>
-<p class="lead" data-i18n="t132">Typ de naam van je zaak en kies je vak. Je ziet meteen hoe je eigen website eruit kan zien: met je prijzen, openingstijden en een belknop, op je eigen adres.</p>
-<form autocomplete="off" class="maker" id="maker" novalidate="">
-<label class="field-label" data-i18n="t133" for="zaaknaam">Naam van je zaak</label>
-<input class="field" data-i18n-ph="t228" id="zaaknaam" maxlength="40" name="zaaknaam" placeholder="Typ hier de naam van je zaak" spellcheck="false" type="text"/>
-<fieldset class="vakken">
-<legend class="field-label" data-i18n="t134">Wat voor zaak heb je?</legend>
-<div class="chips" id="vakken"></div>
-</fieldset>
-<button class="btn btn--licht naar-voorbeeld" data-i18n="t135" type="submit">Bekijk het voorbeeld</button>
-</form>
-<div class="hero-actions">
-<a class="btn" data-i18n="t136" href="#contact">Plan een kennismaking</a>
-<a class="textlink" data-i18n="t137" href="#werk">Bekijk wat ik al bouwde</a>
-</div>
-</div>
-<div class="stage">
-<div class="stage-bar">
-<div aria-label="Bekijk het voorbeeld op" class="toggle" data-i18n-aria="t225" role="group">
-<button aria-pressed="true" class="toggle-btn" data-device="phone" data-i18n="t138" type="button">Telefoon</button>
-<button aria-pressed="false" class="toggle-btn" data-device="laptop" data-i18n="t139" type="button">Computer</button>
-</div>
-<button class="textlink textlink--small" data-i18n="t140" id="deel-link" type="button">Kopieer link naar dit voorbeeld</button>
-</div>
-<div class="device" data-device="phone" id="device">
-<div class="device-screen" id="device-screen">
-<div aria-label="Voorbeeld van jouw website" class="ms" data-i18n-aria="t226" id="mock">
-<div class="ms-top"><span class="ms-sign"><span class="ms-sign-name">Jouw zaak</span></span></div>
-<p class="ms-pad">Je website met prijzen, openingstijden en een belknop.</p>
-</div>
-</div>
-</div>
-<p class="stage-note" data-i18n="t141" id="stage-note">Een voorbeeld met voorbeeldprijzen. Jouw site maak ik met je eigen foto's, prijzen en verhaal.</p>
-</div>
-</div>
-</section>
-<!-- 2. Dashboard -->
-<section aria-labelledby="dash-titel" class="band band--donker" id="dashboard">
-<div class="wrap">
-<div class="section-head">
-<h2 data-i18n="t142" id="dash-titel">Achter de toonbank: een dashboard dat je mail leest</h2>
-<p data-i18n="t143">Facturen, vragen van klanten, herinneringen en reclame komen allemaal in dezelfde inbox. Het dashboard leest mee, haalt eruit wat belangrijk is en zet bij elke factuur wat opvalt. Jij kijkt het na en beslist.</p>
-</div>
-<div class="demo" id="demo">
-<div class="demo-col demo-inbox">
-<div class="demo-col-head">
-<h3 data-i18n="t144">Wat binnenkomt</h3>
-<button class="btn btn--licht btn--small" data-i18n="t145" id="demo-run" type="button">Lees mijn mail</button>
-</div>
-<ol aria-label="Inbox" class="mails" data-i18n-aria="t227" id="mails"></ol>
-</div>
-<div class="demo-col demo-read">
-<div class="demo-col-head"><h3 data-i18n="t146">Wat het dashboard las</h3></div>
-<div aria-live="polite" class="bon" id="bon">
-<p class="bon-leeg">Druk op <strong>Lees mijn mail</strong>. Daarna zie je hier per bericht wat het dashboard eruit haalde en wat het controleerde.</p>
-</div>
-</div>
-<div class="demo-col demo-today">
-<div class="demo-col-head"><h3 data-i18n="t147">Wat jij vandaag doet</h3></div>
-<dl class="kpis" id="kpis">
-<div class="kpi"><dt data-i18n="t230">Vraagt aandacht</dt><dd data-kpi="aandacht">0</dd></div>
-<div class="kpi"><dt data-i18n="t231">Klaar om te betalen</dt><dd data-kpi="betalen">€ 0,00</dd></div>
-<div class="kpi"><dt data-i18n="t232">Tegengehouden</dt><dd data-kpi="tegen">€ 0,00</dd></div>
-</dl>
-<ul aria-live="polite" class="todo" id="todo"></ul>
-</div>
-</div>
-<p class="demo-note" data-i18n="t148">Voorbeeld met verzonnen namen en bedragen. Het dashboard betaalt en verstuurt nooit iets zelf: jij beslist.</p>
-</div>
-</section>
-<!-- 3. Websitecheck -->
-<section aria-labelledby="check-titel" class="band band--was" id="check">
-<div class="wrap check-in">
-<div class="section-head">
-<h2 data-i18n="t149" id="check-titel">Heb je al een website? Kijk hoe hij ervoor staat</h2>
-<p data-i18n="t150">Vul het adres in. Binnen een paar seconden zie je of je site veilig is, goed werkt op een telefoon, makkelijk te vinden is en nog actueel oogt.</p>
-</div>
-<form class="check-form" id="check-form" novalidate="">
-<label class="field-label" data-i18n="t151" for="check-url">Adres van je website</label>
-<div class="check-row">
-<input autocomplete="url" class="field" data-i18n-ph="t229" id="check-url" inputmode="url" name="url" placeholder="jouwzaak.nl" required="" spellcheck="false" type="text"/>
-<button class="btn" data-i18n="t152" id="check-btn" type="submit">Check mijn website</button>
-</div>
-<p class="small muted" data-i18n="t153">Ik bewaar alleen het adres en de uitkomst, om de check beter te maken.</p>
-</form>
-<div aria-live="polite" class="check-result" id="check-result"></div>
-</div>
-</section>
-<!-- 5. Werkwijze -->
+<!-- 4. Werkwijze en waar je op kunt rekenen -->
 <section aria-labelledby="werkwijze-titel" class="band band--was" id="werkwijze">
 <div class="wrap">
 <div class="section-head">
@@ -392,85 +320,23 @@
 <p data-i18n="t162">Je site komt op je eigen adres, zoals jouwzaak.nl. Moet er later iets veranderen, dan stuur je me een berichtje.</p>
 </li>
 </ol>
-</div>
-</section>
-<!-- 6. Prijzen -->
-<section aria-labelledby="prijzen-titel" class="band prijzen" id="prijzen">
-<div class="wrap">
-<div class="prijzen-kop">
-<h2 data-i18n="t163" id="prijzen-titel">Wat kost het?</h2>
-<p data-i18n="t238">Je ziet eerst een voorbeeld op je eigen telefoon. Bevalt het, dan krijg je een vaste prijs, zodat je vooraf weet waar je aan toe bent. Hieronder staan vanaf-prijzen.</p>
-</div>
-<div class="pakketten">
-<div class="pakket">
-<h3 data-i18n="t165">Website</h3>
-<p class="pakket-prijs" data-i18n="t239">vanaf <b>€ 895</b></p>
-<p data-i18n="t166">Je eigen adres met prijzen, openingstijden, route en een belknop. Werkt op elke telefoon. De hosting regel ik.</p>
-<p class="pakket-maand" data-i18n="t240">Daarna <b>€ 25</b> per maand voor onderhoud</p>
-</div>
-<div class="pakket">
-<h3 data-i18n="t167">Website met aanvragen</h3>
-<p class="pakket-prijs" data-i18n="t242">vanaf <b>€ 1.495</b></p>
-<p data-i18n="t168">Alles van de website, plus een formulier voor afspraken of bestellingen. Aanvragen komen in je mail en in je eigen overzicht.</p>
-<p class="pakket-maand" data-i18n="t240">Daarna <b>€ 25</b> per maand voor onderhoud</p>
-</div>
-<div class="pakket pakket--dashboard">
-<h3 data-i18n="t169">Website met dashboard</h3>
-<p class="pakket-prijs" data-i18n="t243">vanaf <b>€ 2.950</b></p>
-<p data-i18n="t170">Alles hierboven, plus een dashboard dat je mail leest, facturen nakijkt en laat zien wat er vandaag moet gebeuren.</p>
-<p class="pakket-maand" data-i18n="t241">Daarna <b>€ 75</b> per maand, met de AI-dienst erbij</p>
-</div>
-</div>
-<div class="prijzen-twee">
-<div class="onderhoud">
-<h3 data-i18n="t244">Onderhoud</h3>
-<p class="onderhoud-prijs" data-i18n="t245"><b>€ 25</b> per maand voor je site, <b>€ 75</b> met dashboard.</p>
-<ul class="vinkjes">
-<li data-i18n="t246">Hosting op servers in Amsterdam</li>
-<li data-i18n="t247">Updates en beveiliging</li>
-<li data-i18n="t248">Back-ups van je site en gegevens</li>
-<li data-i18n="t249">Kleine wijzigingen, zoals nieuwe prijzen of openingstijden</li>
-<li data-i18n="t250">Bij een dashboard: de kosten van de AI-dienst</li>
-</ul>
-<p class="small muted" data-i18n="t251">Per maand opzegbaar.</p>
-</div>
-<div class="klussen">
-<h3 data-i18n="t252">Kleine klussen om mee te beginnen</h3>
-<p data-i18n="t253">Nog niet toe aan een hele website? Begin klein, voor een vaste prijs die we vooraf afspreken.</p>
-<ul class="klussen-lijst">
-<li><b data-i18n="t254">Google Maps-profiel inrichten</b><span data-i18n="t255">Openingstijden, foto's en gegevens kloppen overal.</span></li>
-<li><b data-i18n="t256">E-mail op je eigen naam</b><span data-i18n="t257">Zoals info@jouwzaak.nl, op je telefoon en je computer.</span></li>
-<li><b data-i18n="t258">Je oude site of Facebook-pagina overzetten</b><span data-i18n="t259">Naar een eigen, snelle site op je eigen adres.</span></li>
-<li><b data-i18n="t260">Logo en huisstijl</b><span data-i18n="t261">Een logo, kleuren en letters die bij je zaak passen.</span></li>
-</ul>
-</div>
-</div>
-<div class="aanbod">
-<div class="aanbod-kaart">
-<h3 data-i18n="t262">Voor de eerste drie zaken</h3>
-<p data-i18n="t263">Je krijgt een lagere prijs. In ruil vraag ik een eerlijke review en of ik je site als voorbeeld mag laten zien.</p>
-<a class="textlink" data-i18n="t264" href="#contact">Vraag het aan</a>
-</div>
-<div class="aanbod-kaart">
-<h3 data-i18n="t265">Ken je een ondernemer die hier iets aan heeft?</h3>
-<p data-i18n="t266">Breng je iemand aan en wordt het een opdracht, dan krijgen jullie allebei korting.</p>
-<a class="textlink" data-i18n="t267" href="#contact">Laat het me weten</a>
-</div>
-</div>
+<div id="waarom">
 <div class="zeker-blok">
 <h3 data-i18n="t268">Waar je op kunt rekenen</h3>
 <ul class="zekerheden">
-<li><b data-i18n="t269">Geen langlopend contract</b><span data-i18n="t270">Het onderhoud zeg je per maand op. Je site en je domein blijven van jou.</span></li>
+<li><b data-i18n="t052">Eén aanspreekpunt, van idee tot online</b><span data-i18n="t053">Ontwerp, bouw, koppelingen, hosting en onderhoud doe ik zelf. Geen bureau dat je doorstuurt naar een programmeur en een hostingpartij.</span></li>
 <li><b data-i18n="t271">Eerst zien, dan beslissen</b><span data-i18n="t272">Je bekijkt een voorbeeld op je eigen telefoon voordat je een prijs krijgt.</span></li>
-<li><b data-i18n="t273">Je site draait in Nederland</b><span data-i18n="t274">Op servers in Amsterdam, met een beveiligde verbinding.</span></li>
+<li><b data-i18n="t066">Klein beginnen, rustig opbouwen</b><span data-i18n="t325">We beginnen met één onderdeel en laten dat een paar weken meedraaien. In het begin kijk jij alles na.</span></li>
+<li><b data-i18n="t269">Geen langlopend contract</b><span data-i18n="t270">Het onderhoud zeg je per maand op. Je site en je domein blijven van jou.</span></li>
 <li><b data-i18n="t275">Je weet wat er met je mail gebeurt</b><span data-i18n="t276">Bij een dashboard hoor je vooraf welke AI-dienst je mail leest en waar die draait.</span></li>
 <li><b data-i18n="t277">Binnen twee werkdagen antwoord</b><span data-i18n="t278">Op elke vraag of wijziging, ook als die klein is.</span></li>
 </ul>
 </div>
 </div>
+</div>
 </section>
-<!-- 7. Vragen -->
-<section aria-labelledby="vragen-titel" class="faq faq--was" id="vragen">
+<!-- 5. Vragen -->
+<section aria-labelledby="vragen-titel" class="faq" id="vragen">
 <div class="wrap faq-in">
 <div class="section-head">
 <h2 data-i18n="t171" id="vragen-titel">Goed om te weten</h2>
@@ -479,6 +345,10 @@
 <details>
 <summary data-i18n="t172">Ik ben niet handig met computers. Kan ik dit wel?</summary>
 <p data-i18n="t173">Ja. Ik regel alles, van het webadres tot de teksten. Jij vertelt wat er op moet en kijkt mee op je telefoon.</p>
+</details>
+<details>
+<summary data-i18n="t307">Waarom niet via een bureau of een websitebouwer?</summary>
+<p data-i18n="t308">Een bureau bouwt ook op maat, maar is meestal duurder en je praat met een accountmanager. Bij een websitebouwer betaal je elke maand en doe je het werk zelf, met een sjabloon. Bij mij krijg je een site op maat voor een vaste prijs vooraf, met AI waar het echt tijd scheelt. En je spreekt mij rechtstreeks.</p>
 </details>
 <details>
 <summary data-i18n="t174">Ik sta al op Google Maps of een boekingssite. Waarom nog een eigen website?</summary>
@@ -506,12 +376,12 @@
 </details>
 <details>
 <summary data-i18n="t184">Ik heb al een website. Kun je die verbeteren?</summary>
-<p data-i18n="t185">Ja. Ik kijk eerst of opknappen of opnieuw maken slimmer is. Doe <a href="#check">hierboven de websitecheck</a> alvast.</p>
+<p data-i18n="t309">Ja. Ik kijk eerst of opknappen of opnieuw maken slimmer is. Doe alvast de <a href="/voorbeelden#check">websitecheck</a>: binnen een paar seconden zie je hoe je site ervoor staat.</p>
 </details>
 </div>
 </div>
 </section>
-<!-- 8. Contact -->
+<!-- 6. Contact -->
 <section aria-labelledby="contact-titel" class="band band--groen" id="contact">
 <div class="wrap contact-in">
 <div class="contact-text">
@@ -573,11 +443,11 @@
 <p data-i18n="t207">Floris van Sonsbeek<br/>Websites en dashboards voor kleine zaken in Utrecht</p>
 </div>
 <ul class="foot-links">
-<li><a data-i18n="t208" href="#mogelijkheden">Mogelijkheden</a></li>
-<li><a data-i18n="t209" href="#voorbeeld">Jouw site</a></li>
-<li><a data-i18n="t210" href="#dashboard">Dashboard</a></li>
+<li><a data-i18n="t298" href="/voorbeelden">Voorbeelden</a></li>
 <li><a data-i18n="t280" href="#prijzen">Prijzen</a></li>
-<li><a data-i18n="t211" href="#check">Websitecheck</a></li>
+<li><a data-i18n="t006" href="#werk">Mijn werk</a></li>
+<li><a data-i18n="t328" href="/voorbeelden#dashboard">Dashboard-demo</a></li>
+<li><a data-i18n="t211" href="/voorbeelden#check">Websitecheck</a></li>
 <li><a data-i18n="t212" href="https://campo.vsonsbeek.nl" rel="noopener" target="_blank">Campo International (demo)</a></li>
 </ul>
 <div class="foot-voor">

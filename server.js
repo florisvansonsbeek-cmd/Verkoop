@@ -11,6 +11,7 @@
  *   CONTACT_EMAIL    e-mailadres dat op de site staat.
  *
  * Pagina per soort bedrijf: /voor/<slug>, gemaakt uit templates/branche.html en public/js/plannen.js.
+ * Voorbeelden per vak: /voorbeelden, gemaakt uit templates/voorbeelden.html en public/js/vakken.js.
  * Echte ervaringen van klanten: content/ervaringen.json, bijvoorbeeld [{ "tekst": "...", "naam": "...", "zaak": "..." }].
  * Zonder CONTACT_PHONE blijven de app- en belknoppen weg.
  *   NTFY_TOPIC       pushmelding op je telefoon bij een nieuwe aanvraag (app ntfy). NTFY_SERVER en NTFY_TOKEN optioneel.
@@ -40,7 +41,7 @@ const PUBLIC_DIR = path.join(__dirname, "public");
 const TEMPLATE_DIR = path.join(__dirname, "templates");
 const CONTENT_DIR = path.join(__dirname, "content");
 const VERSION = (process.env.RAILWAY_GIT_COMMIT_SHA || Date.now().toString(36)).slice(0, 10);
-const VAKKEN = ["kapper", "schoenmaker", "stomerij", "bakkerij", "ijzerwaren", "lijstenmaker", "kleding", "streek", "anders"];
+let VAKKEN = [];            // de elf vakken uit public/js/plannen.js, gevuld bij het laden
 const WENSEN = ["Nieuwe website", "Website vernieuwen", "Dashboard mail en facturen", "Weet ik nog niet"];
 const STATUSSEN = [["nieuw", "Nieuw"], ["gebeld", "Contact gehad"], ["afspraak", "Afspraak gepland"], ["offerte", "Offerte gestuurd"], ["klant", "Klant"], ["geen", "Geen interesse"]];
 
@@ -326,6 +327,8 @@ function loadBranches() {
   vm.runInNewContext(fs.readFileSync(path.join(PUBLIC_DIR, "js", "plannen.js"), "utf8"), ctx);
   vm.runInNewContext(fs.readFileSync(path.join(PUBLIC_DIR, "js", "voorbeelden.js"), "utf8"), ctx);
   PLANNEN = ctx.window.PLANNEN || [];
+  VAKKEN = PLANNEN.map((pl) => pl.id);
+  PLANNEN.forEach((pl) => { VAK_LABEL[pl.id] = pl.naam.nl; });
   const VB = ctx.window.VOORBEELDEN || {};
   const tpl = fs.readFileSync(path.join(TEMPLATE_DIR, "branche.html"), "utf8");
   const delen = {
@@ -357,6 +360,60 @@ function loadBranches() {
     const html = tpl.replace(/\{\{([A-Z0-9_]+)\}\}/g, (m, k) => (k === "ORIGIN" ? m : k in waarden ? waarden[k] : m));
     BRANCHES.set(pl.slug, html);
   });
+  loadVoorbeelden(delen);
+}
+
+/* ---------------- Voorbeelden per vak: /voorbeelden ----------------
+   De pagina werkt met JavaScript (voorbeeldsite, demo, check), maar de keuze, de uitleg en de links staan er ook zonder. */
+let voorbeeldenTpl = "", VAKDATA = {}, HANDIG = [];
+const voorbeeldenCache = new Map();
+const OUDE_VAKKEN = { streek: "boerderij" };
+const UIT_ICOON = '<svg class="uit" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3h7v7M13 3 4 12"/></svg>';
+const nl = (o) => (o == null ? "" : typeof o === "string" ? o : o.nl);
+function linksLijst(lijst, metWie) {
+  return lijst.map((l) => {
+    const url = nl(l.url), host = url.replace(/^https?:\/\/(www\.)?/, "").split("/")[0];
+    return `<li class="link${metWie ? " link--" + l.wie : ""}">` + (metWie ? `<span class="link-wie">${l.wie === "k" ? "Voor je klanten" : "Voor jou"}</span>` : "") +
+      `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(nl(l.t))}${UIT_ICOON}<span class="sr"> (opent in een nieuw tabblad)</span></a>` +
+      `<p>${esc(nl(l.u))}</p><span class="link-bron">${esc(host)}</span></li>`;
+  }).join("");
+}
+function loadVoorbeelden(delen) {
+  const ctx = { window: {} };
+  vm.runInNewContext(fs.readFileSync(path.join(PUBLIC_DIR, "js", "vakken.js"), "utf8"), ctx);
+  VAKDATA = ctx.window.VAKKEN || {};
+  HANDIG = ctx.window.HANDIG || [];
+  const jsonld = JSON.stringify({ "@context": "https://schema.org", "@type": "CollectionPage", name: "Voorbeelden per vak", url: "{{ORIGIN}}/voorbeelden",
+    about: { "@type": "Service", name: "Websites en dashboards voor kleine zaken", areaServed: { "@type": "City", name: "Utrecht" } } }).replace(/</g, "\\u003c");
+  const vast = { ...delen, KOP: delen.KOP.replace('href="/voorbeelden"', 'href="/voorbeelden" aria-current="page"'), V: VERSION, JSONLD: jsonld,
+    HANDIG: linksLijst(HANDIG, false), APPKNOP: appKnop(), APPZWEEF: appZweef() };
+  voorbeeldenTpl = fs.readFileSync(path.join(TEMPLATE_DIR, "voorbeelden.html"), "utf8")
+    .replace(/\{\{([A-Z0-9_]+)\}\}/g, (m, k) => (k in vast ? vast[k] : m));
+  voorbeeldenCache.clear();
+}
+function voorbeeldenHtml(vak) {
+  const pl = PLANNEN.find((x) => x.id === vak), v = VAKDATA[vak];
+  const groep = hoofdletter(pl.groep.nl);
+  const waarden = {
+    CHIPS: PLANNEN.filter((x) => VAKDATA[x.id]).map((x) => `<label class="chip"><input type="radio" name="vak" value="${esc(x.id)}"${x.id === vak ? " checked" : ""}><span>${esc(hoofdletter(x.naam.nl))}</span></label>`).join(""),
+    GROEP: esc(groep), LINKSKOP: esc(`Handig voor ${pl.groep.nl}`),
+  };
+  return voorbeeldenTpl.replace(/\{\{(CHIPS|GROEP|LINKSKOP)\}\}/g, (m, k) => waarden[k])
+    .replace('<ul class="vb-site" id="vb-site"></ul>', () => `<ul class="vb-site" id="vb-site">${v.k.map((i) => `<li><b>${esc(pl.punten[i].t.nl)}</b><span>${esc(pl.punten[i].u.nl)}</span></li>`).join("")}</ul>`)
+    .replace('<ul class="vb-achter" id="vb-achter"></ul>', () => `<ul class="vb-achter" id="vb-achter">${v.j.map((i) => `<li>${esc(pl.punten[i].t.nl)}</li>`).join("")}</ul>`)
+    .replace('<ul class="links" id="vb-links"></ul>', () => `<ul class="links" id="vb-links">${linksLijst(v.links, true)}</ul>`)
+    .replace('href="/voor/kappers-en-barbiers" id="vb-plan">Bekijk de plattegrond</a>', () => `href="/voor/${esc(pl.slug)}" id="vb-plan">Bekijk de plattegrond voor ${esc(pl.groep.nl)}</a>`);
+}
+function serveVoorbeelden(req, res, url) {
+  let vak = url.searchParams.get("vak") || "";
+  vak = OUDE_VAKKEN[vak] || vak;
+  if (!VAKDATA[vak]) vak = VAKDATA.kapper ? "kapper" : Object.keys(VAKDATA)[0];
+  const origin = originOf(req), key = origin + " " + vak;
+  if (!voorbeeldenCache.has(key)) {
+    if (voorbeeldenCache.size > 40) voorbeeldenCache.clear();
+    voorbeeldenCache.set(key, packFile(Buffer.from(voorbeeldenHtml(vak).replaceAll("{{ORIGIN}}", esc(origin))), TYPES[".html"]));
+  }
+  serveFile(req, res, voorbeeldenCache.get(key), "no-cache");
 }
 function serveBranche(req, res, p) {
   const slug = p.replace(/^\/voor\/?/, "").replace(/\/+$/, "");
@@ -372,7 +429,7 @@ function serveBranche(req, res, p) {
 }
 function sitemap(req, res) {
   const base = originOf(req);
-  const urls = ["/", ...[...BRANCHES.keys()].map((s) => "/voor/" + s)];
+  const urls = ["/", "/voorbeelden", ...[...BRANCHES.keys()].map((s) => "/voor/" + s)];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     urls.map((u) => `  <url><loc>${esc(base + u)}</loc></url>`).join("\n") + "\n</urlset>\n";
   res.writeHead(200, { "Content-Type": TYPES[".xml"], "Cache-Control": "public, max-age=3600" });
@@ -507,7 +564,8 @@ async function apiCheck(req, res) {
 
 /* ---------------- /beheer ---------------- */
 const fmtDatum = new Intl.DateTimeFormat("nl-NL", { timeZone: "Europe/Amsterdam", weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-const VAK_LABEL = { kapper: "Kapper", schoenmaker: "Schoenmaker", stomerij: "Stomerij", bakkerij: "Bakkerij", ijzerwaren: "IJzerwaren", lijstenmaker: "Lijstenmaker", kleding: "Kledingwinkel", streek: "Streekproducten", anders: "Iets anders" };
+// namen van de vakken; de oude ids staan erbij voor aanvragen van voor november 2026
+const VAK_LABEL = { schoenmaker: "Schoenmaker", stomerij: "Stomerij", bakkerij: "Bakkerij", ijzerwaren: "IJzerwaren", lijstenmaker: "Lijstenmaker", kleding: "Kledingwinkel", streek: "Streekproducten", anders: "Iets anders" };
 function cookieOpts(req, maxAge) { return `Path=/beheer; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${isHttps(req) ? "; Secure" : ""}`; }
 function contactLink(c) {
   if (c.includes("@")) return `<a href="mailto:${esc(c)}">${esc(c)}</a>`;
@@ -564,7 +622,7 @@ async function beheer(req, res, url) {
   const [aanvragen, checks] = await Promise.all([listAanvragen(), listChecks()]);
   const nieuw = aanvragen.filter((a) => a.status === "nieuw").length;
   const items = aanvragen.map((a) => {
-    const voorbeeld = a.vak ? `<a href="/?${new URLSearchParams({ zaak: a.voorbeeld || "", vak: a.vak })}#voorbeeld" target="_blank" rel="noopener">${esc(a.voorbeeld || "zonder naam")} (${esc(VAK_LABEL[a.vak] || a.vak)})</a>` : "";
+    const voorbeeld = a.vak ? `<a href="/voorbeelden?${new URLSearchParams({ vak: a.vak, zaak: a.voorbeeld || "" })}#voorbeeld" target="_blank" rel="noopener">${esc(a.voorbeeld || "zonder naam")} (${esc(VAK_LABEL[a.vak] || a.vak)})</a>` : "";
     return `<article class="bh-item${a.status === "nieuw" ? " is-nieuw" : ""}" id="a${a.id}">
   <div class="bh-kop"><h2>${esc(a.naam)}${a.zaak ? ` <span class="muted">van ${esc(a.zaak)}</span>` : ""}</h2><time>${esc(fmtDatum.format(new Date(a.ontvangen)))}</time></div>
   <dl class="bh-dl">
@@ -613,6 +671,12 @@ const server = http.createServer(async (req, res) => {
     if (p === "/api/check") return req.method === "POST" ? await apiCheck(req, res) : sendJson(res, 405, { message: "Gebruik POST." });
     if (p === "/beheer" || p.startsWith("/beheer/")) return await beheer(req, res, url);
     if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405, { Allow: "GET, HEAD" }); return res.end(); }
+    if (p === "/voorbeelden" || p === "/voorbeelden/") return serveVoorbeelden(req, res, url);
+    // oude links naar een voorbeeld op de voorpagina (/?vak=…&zaak=…#voorbeeld) staan nu op /voorbeelden
+    if (p === "/" && url.searchParams.has("vak")) {
+      res.writeHead(301, { Location: "/voorbeelden" + url.search, "Cache-Control": "public, max-age=86400" });
+      return res.end();
+    }
     if (p === "/voor" || p.startsWith("/voor/")) return serveBranche(req, res, p);
     if (p === "/sitemap.xml") return sitemap(req, res);
     if (p === "/robots.txt") return robots(req, res);

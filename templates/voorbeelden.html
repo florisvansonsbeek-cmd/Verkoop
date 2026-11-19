@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="live" name="vs-modus"/>
+<title>Voorbeelden per vak: websites en handige links | Van Sonsbeek</title>
+<meta content="Bekijk per vak een voorbeeldsite op telefoon en computer, probeer het dashboard dat je mail leest en vind handige links voor je bedrijf." name="description"/>
+<meta content="#1f3628" name="theme-color"/>
+<link href="/favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="{{ORIGIN}}/voorbeelden" rel="canonical"/>
+<meta content="website" property="og:type"/>
+<meta content="nl_NL" property="og:locale"/>
+<meta content="Voorbeelden per vak: zo ziet jouw website eruit" property="og:title"/>
+<meta content="Bekijk per vak een voorbeeldsite op telefoon en computer, probeer het dashboard dat je mail leest en vind handige links voor je bedrijf." property="og:description"/>
+<meta content="{{ORIGIN}}/voorbeelden" property="og:url"/>
+<meta content="{{ORIGIN}}/img/og.jpg" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<link as="font" crossorigin="" href="/fonts/cormorant-garamond-latin-600-normal.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="/fonts/source-sans-3-latin-wght-normal.woff2" rel="preload" type="font/woff2"/>
+<link href="/css/site.css?v={{V}}" rel="stylesheet"/>
+<script defer="" src="/js/plannen.js?v={{V}}"></script>
+<script defer="" src="/js/vakken.js?v={{V}}"></script>
+<script defer="" src="/js/i18n.js?v={{V}}"></script>
+<script defer="" src="/js/site.js?v={{V}}"></script>
+<script type="application/ld+json">{{JSONLD}}</script>
+</head>
+<body data-pagina="voorbeelden">
+<a class="skip" data-i18n="t001" href="#main">Naar de inhoud</a>
+{{KOP}}
+<main id="main">
+<!-- Kies je vak: op de groene tafel, met het werkblad eroverheen -->
+<section aria-labelledby="vb-titel" class="intro intro--vb" id="begin">
+<div class="intro-tafel" id="intro-tafel">
+<div class="wrap">
+<p class="kruimel"><a data-i18n="t286" href="/">Voorpagina</a><span aria-hidden="true">/</span><span data-i18n="t298">Voorbeelden</span></p>
+<div class="intro-kop">
+<h1 data-i18n="t310" id="vb-titel">Voorbeelden voor jouw vak</h1>
+<div class="intro-zij">
+<p class="lead" data-i18n="t311">Kies je vak. Je ziet een voorbeeldsite op telefoon en computer, wat het jou achter de schermen scheelt, en links die handig zijn voor je bedrijf.</p>
+</div>
+</div>
+<fieldset class="vakken vakken--tafel">
+<legend class="sr" data-i18n="t134">Wat voor zaak heb je?</legend>
+<div class="chips chips--tafel" id="vakken">{{CHIPS}}</div>
+</fieldset>
+</div>
+</div>
+<div class="wrap" id="voorbeeld">
+<div class="werkblad">
+<form autocomplete="off" class="maker" id="maker" novalidate="">
+<label class="field-label" data-i18n="t133" for="zaaknaam">Naam van je zaak</label>
+<input class="field" data-i18n-ph="t228" id="zaaknaam" maxlength="40" name="zaaknaam" placeholder="Typ hier de naam van je zaak" spellcheck="false" type="text"/>
+<p class="small hint" data-i18n="t329">Je ziet de naam meteen op het bord bovenaan de site.</p>
+</form>
+<div class="stage">
+<div class="stage-bar">
+<div aria-label="Bekijk het voorbeeld op" class="toggle" data-i18n-aria="t225" role="group">
+<button aria-pressed="true" class="toggle-btn" data-device="phone" data-i18n="t138" type="button">Telefoon</button>
+<button aria-pressed="false" class="toggle-btn" data-device="laptop" data-i18n="t139" type="button">Computer</button>
+</div>
+<button class="textlink textlink--small" data-i18n="t140" id="deel-link" type="button">Kopieer link naar dit voorbeeld</button>
+</div>
+<div class="device" data-device="phone" id="device">
+<div class="device-screen" id="device-screen">
+<div aria-label="Voorbeeld van jouw website" class="ms" data-i18n-aria="t226" id="mock" role="img"></div>
+</div>
+</div>
+<p class="stage-note" data-i18n="t141">Een voorbeeld met voorbeeldprijzen. Jouw site maak ik met je eigen foto's, prijzen en verhaal.</p>
+</div>
+<div class="vb-uitleg">
+<h2 class="vb-groep" id="vb-groep">{{GROEP}}</h2>
+<div class="vb-kolom">
+<h3 data-i18n="t312">Wat je klanten zien en doen</h3>
+<ul class="vb-site" id="vb-site"></ul>
+</div>
+<div class="vb-kolom vb-kolom--achter">
+<h3 data-i18n="t313">Wat het jou achter de schermen scheelt</h3>
+<ul class="vb-achter" id="vb-achter"></ul>
+</div>
+<div class="vb-acties">
+<a class="btn" data-i18n="t314" href="/#contact" id="vb-vraag">Vraag zo'n site aan</a>
+<a class="textlink textlink--small" href="/voor/kappers-en-barbiers" id="vb-plan">Bekijk de plattegrond</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Handig voor dit vak -->
+<section aria-labelledby="vb-links-kop" class="band vb-links-band" id="links">
+<div class="wrap">
+<div class="section-head">
+<h2 id="vb-links-kop">{{LINKSKOP}}</h2>
+<p data-i18n="t315">Een paar sites die handig zijn voor je vak: voor jezelf, en om je klanten naar te verwijzen.</p>
+</div>
+<ul class="links" id="vb-links"></ul>
+</div>
+</section>
+<!-- Dashboard-demo -->
+<section aria-labelledby="dash-titel" class="band band--donker" id="dashboard">
+<div class="wrap">
+<div class="section-head">
+<h2 data-i18n="t142" id="dash-titel">Achter de toonbank: een dashboard dat je mail leest</h2>
+<p data-i18n="t143">Facturen, vragen van klanten, herinneringen en reclame komen allemaal in dezelfde inbox. Het dashboard leest mee, haalt eruit wat belangrijk is en zet bij elke factuur wat opvalt. Jij kijkt het na en beslist.</p>
+<p class="demo-zaak" id="demo-zaak"></p>
+</div>
+<div class="demo" id="demo">
+<div class="demo-col demo-inbox">
+<div class="demo-col-head">
+<h3 data-i18n="t144">Wat binnenkomt</h3>
+<button class="btn btn--licht btn--small" data-i18n="t145" id="demo-run" type="button">Lees mijn mail</button>
+</div>
+<ol aria-label="Inbox" class="mails" data-i18n-aria="t227" id="mails"></ol>
+</div>
+<div class="demo-col demo-read">
+<div class="demo-col-head"><h3 data-i18n="t146">Wat het dashboard las</h3></div>
+<div aria-live="polite" class="bon" id="bon">
+<p class="bon-leeg">Druk op <strong>Lees mijn mail</strong>. Daarna zie je hier per bericht wat het dashboard eruit haalde en wat het controleerde.</p>
+</div>
+</div>
+<div class="demo-col demo-today">
+<div class="demo-col-head"><h3 data-i18n="t147">Wat jij vandaag doet</h3></div>
+<dl class="kpis" id="kpis">
+<div class="kpi"><dt data-i18n="t230">Vraagt aandacht</dt><dd data-kpi="aandacht">0</dd></div>
+<div class="kpi"><dt data-i18n="t231">Klaar om te betalen</dt><dd data-kpi="betalen">€ 0,00</dd></div>
+<div class="kpi"><dt data-i18n="t232">Tegengehouden</dt><dd data-kpi="tegen">€ 0,00</dd></div>
+</dl>
+<ul aria-live="polite" class="todo" id="todo"></ul>
+</div>
+</div>
+<p class="demo-note" data-i18n="t148">Voorbeeld met verzonnen namen en bedragen. Het dashboard betaalt en verstuurt nooit iets zelf: jij beslist.</p>
+</div>
+</section>
+<!-- Handig voor elke ondernemer -->
+<section aria-labelledby="handig-titel" class="band band--was" id="handig">
+<div class="wrap">
+<div class="section-head">
+<h2 data-i18n="t316" id="handig-titel">Handig voor elke ondernemer</h2>
+<p data-i18n="t317">Regels, belastingen, subsidies en gratis hulp. Goed om bij de hand te hebben, ook als je geen website van mij neemt.</p>
+</div>
+<ul class="links links--handig" id="handig-lijst">{{HANDIG}}</ul>
+<p class="links-noot" data-i18n="t318">Links gecontroleerd in november 2026. Ik heb geen band met deze organisaties.</p>
+</div>
+</section>
+<!-- Websitecheck -->
+<section aria-labelledby="check-titel" class="band" id="check">
+<div class="wrap check-in">
+<div class="section-head">
+<h2 data-i18n="t149" id="check-titel">Heb je al een website? Kijk hoe hij ervoor staat</h2>
+<p data-i18n="t150">Vul het adres in. Binnen een paar seconden zie je of je site veilig is, goed werkt op een telefoon, makkelijk te vinden is en nog actueel oogt.</p>
+</div>
+<form class="check-form" id="check-form" novalidate="">
+<label class="field-label" data-i18n="t151" for="check-url">Adres van je website</label>
+<div class="check-row">
+<input autocomplete="url" class="field" data-i18n-ph="t229" id="check-url" inputmode="url" name="url" placeholder="jouwzaak.nl" required="" spellcheck="false" type="text"/>
+<button class="btn" data-i18n="t152" id="check-btn" type="submit">Check mijn website</button>
+</div>
+<p class="small muted" data-i18n="t153">Ik bewaar alleen het adres en de uitkomst, om de check beter te maken.</p>
+</form>
+<div aria-live="polite" class="check-result" id="check-result"></div>
+</div>
+</section>
+<!-- Afsluiting -->
+<section aria-labelledby="vb-slot-titel" class="band band--groen vb-slot">
+<div class="wrap contact-in">
+<div class="contact-text">
+<h2 data-i18n="t186" id="vb-slot-titel">Zullen we kennismaken?</h2>
+<p data-i18n="t319">Vertel welk voorbeeld je aanspreekt, dan maak ik er een voor jouw zaak. Ik kom langs of we bellen; dat is gratis en je zit nergens aan vast.</p>
+<div class="contact-acties">
+<a class="btn btn--room" data-i18n="t013" href="/#contact">Plan een kennismaking</a>
+{{APPKNOP}}
+</div>
+</div>
+{{KAARTJE}}
+</div>
+</section>
+</main>
+{{VOET}}
+{{APPZWEEF}}
+</body>
+</html>

@@ -1,15 +1,26 @@
 # Verkoopwebsite
 
-De site waarmee ik kleine zaken laat zien wat ik voor ze kan bouwen:
+De site waarmee ik kleine zaken laat zien wat ik voor ze kan bouwen. Twee tabbladen:
 
-- **Jouw site**: een bezoeker typt de naam van zijn zaak, kiest zijn vak en ziet meteen een voorbeeldsite op een telefoon of computer, met prijzen, openingstijden, een belknop en een kaartje. Met *Kopieer link naar dit voorbeeld* maak je een link die meteen het voorbeeld van één zaak opent, bijvoorbeeld `/?zaak=Bakkerij%20De%20Korenaar&vak=bakkerij`. Handig voor een appje of een QR-code op een kaartje.
-- **Dashboard**: een demo van een dashboard dat mail leest. Zes voorbeeldmails worden gelezen: facturen worden gecontroleerd (bedrag, btw, nieuw rekeningnummer, dubbele factuur), een vraag van een klant krijgt een concept-antwoord, een herinnering blijkt al betaald. Rechts komt te staan wat er vandaag moet gebeuren.
+**Voorpagina (`/`)**, kort gehouden:
+
+- **Begin**: twee voorbeeldsites op de groene tafel (een installateur op de computer, een kapper op de telefoon) en een strook met de elf vakken die naar de voorbeelden leiden.
+- **Wat ik voor je maak**: de drie pakketten met prijzen en wat erin zit. Alle mogelijkheden, het onderhoud en de kleine klussen staan in uitklappers.
+- **Mijn werk**: Campo International groot, Handelsplan en Koersplan klein (met voorbeelddata).
+- **Werkwijze** en **Waar je op kunt rekenen**, **Vragen** en **Contact**: het formulier slaat aanvragen op in Postgres en stuurt een melding.
+
+**Voorbeelden (`/voorbeelden`)**, gemaakt uit `templates/voorbeelden.html` en `public/js/vakken.js`:
+
+- **Voorbeeldsite per vak**: kies een van de elf vakken, typ de naam van je zaak en zie de site op een telefoon of computer, met wat je klanten ermee doen en wat het jou achter de schermen scheelt. *Kopieer link naar dit voorbeeld* maakt een link als `/voorbeelden?vak=kapper&zaak=Barbershop%20Noor#voorbeeld`, handig voor een appje of een QR-code. Oude links (`/?vak=…`) sturen hierheen door.
+- **Handige links per vak**: brancheverenigingen, regels en sites om klanten naar te verwijzen, gemarkeerd met *Voor jou* of *Voor je klanten*. Daaronder links voor elke ondernemer. Links gecontroleerd in november 2026; ze staan in `vakken.js` (`links` per vak en `HANDIG`).
+- **Dashboard**: een demo die zes mails van het gekozen vak leest: facturen worden gecontroleerd (bedrag, btw, nieuw rekeningnummer, dubbele factuur), een vraag van een klant krijgt een concept-antwoord, een herinnering blijkt al betaald.
 - **Websitecheck**: vul een webadres in en de server beoordeelt die pagina op veiligheid, telefoon, vindbaarheid, snelheid, actualiteit (zoals een oud jaartal of nog 19% btw) en contact. Met *Vraag een voorstel* gaat de bezoeker naar het contactformulier, met de check erbij.
-- **Mijn werk**: schermafbeeldingen van Campo International, Handelsplan en Koersplan (met voorbeelddata).
-- **Contact**: het formulier slaat aanvragen op in Postgres en stuurt een melding.
-- **/beheer**: alle aanvragen (met status en notitie, en als CSV te downloaden) en alle websitechecks.
 
-Eén Node-server (`server.js`) met Postgres, zonder framework. De lettertypen (Bricolage Grotesque en IBM Plex, open source onder de OFL) worden door de site zelf geserveerd; er wordt niets van andere sites geladen.
+**Per soort bedrijf (`/voor/<slug>`)**: de plattegrond met wat AI per plek kan doen, gemaakt uit `templates/branche.html`, `public/js/plannen.js` en `public/js/voorbeelden.js`.
+
+**/beheer**: alle aanvragen (met status en notitie, en als CSV te downloaden) en alle websitechecks.
+
+Eén Node-server (`server.js`) met Postgres, zonder framework. De lettertypen (Cormorant Garamond, Source Sans 3 en IBM Plex Mono, open source onder de OFL) worden door de site zelf geserveerd; er wordt niets van andere sites geladen.
 
 ## Op Railway zetten
 
