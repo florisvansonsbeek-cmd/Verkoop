@@ -83,6 +83,71 @@
     };
     for (var key in v) el.style.setProperty(key, v[key]);
   }
+  /* De boekmodule op de voorbeeldsite: afspraak, opname, pakket of prijs. Tijden en datums rekenen mee met vandaag,
+     zodat het er echt uitziet. De aantekening eronder (noot) vertelt waar het op aansluit, zoals een maatlijn op een tekening. */
+  var DAG_KORT = ["ma", "di", "wo", "do", "vr", "za", "zo"];
+  var MAAND = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+  var MAAND_LANG = ["januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktober", "november", "december"];
+  var STEKKER = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.6 1.5v3.2M10.4 1.5v3.2M3.6 4.7h8.8v2.6a4.4 4.4 0 0 1-8.8 0zM8 11.7v2.8"/></svg>';
+  function zaad(s) { var h = 7; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 9973; return h; }
+  // de eerstvolgende open dagen; vandaag alleen als er nog genoeg tijd over is
+  function openDagen(uren, n, vanMorgen, stap, tot) {
+    var nu = new Date(), uur = nu.getHours() + nu.getMinutes() / 60, res = [];
+    for (var i = vanMorgen ? 1 : 0; i < 21 && res.length < n; i++) {
+      var d = new Date(nu.getFullYear(), nu.getMonth(), nu.getDate() + i), w = (d.getDay() + 6) % 7, slot = uren[w];
+      if (!slot) continue;
+      var van = slot[0], eind = Math.min(slot[1], tot || slot[1]);
+      if (i === 0) van = Math.max(van, Math.ceil((uur + 1) / stap) * stap);
+      if (i === 0 && eind - van < stap * 4) continue;
+      res.push({ d: d, i: i, w: w, van: van, tot: eind, open: slot });
+    }
+    return res;
+  }
+  function dagNaam(dg) { return dg.i === 0 ? "Vandaag" : dg.i === 1 ? "Morgen" : DAGEN[dg.w]; }
+  function dagKort(dg) { return DAG_KORT[dg.w] + " " + dg.d.getDate() + " " + MAAND[dg.d.getMonth()]; }
+  function boekHtml(id, b, s, breed) {
+    if (!b) return "";
+    var z = zaad(id), keuze = b.keuze ? '<div class="ms-keuze">' + b.keuze.map(function (k, i) { return "<span" + (i === 0 ? ' class="is-aan"' : "") + ">" + esc(k) + "</span>"; }).join("") + "</div>" : "";
+    var kaart = "", samen = "";
+    if (b.soort === "tijden" || b.soort === "kenteken") {
+      var stap = b.stap || 0.5, dagen = openDagen(s.uren, breed ? 4 : 3, false, stap, b.tot), eerste = dagen[0];
+      var tijden = [];
+      for (var t = eerste.van; t <= eerste.tot - stap + 1e-9; t += stap) tijden.push(t);
+      if (tijden.length > 8) { var gekozen = []; for (var k = 0; k < 8; k++) gekozen.push(tijden[Math.round(k * (tijden.length - 1) / 7)]); tijden = gekozen; }
+      if (tijden.length > 4 && tijden.length < 8) tijden = tijden.slice(0, 4);     // hele rijen van vier
+      var bezet = tijden.map(function (t, i) { return (i * 5 + z) % 4 === 0; }), aan = bezet.indexOf(false);
+      kaart = (b.soort === "kenteken" ? '<div class="ms-kenteken"><span class="ms-plaat"><i>NL</i>' + esc(b.kenteken) + '</span><span class="ms-auto"><b>' + esc(b.auto) + "</b><span>" + esc(b.apk) + "</span></span></div>" : "") +
+        keuze +
+        '<div class="ms-dagen">' + dagen.map(function (dg, i) { return "<span" + (i === 0 ? ' class="is-aan"' : "") + "><b>" + esc(dagNaam(dg)) + "</b><i>" + esc(dg.d.getDate() + " " + MAAND[dg.d.getMonth()]) + "</i></span>"; }).join("") + "</div>" +
+        '<ul class="ms-tijden">' + tijden.map(function (t, i) { return '<li class="' + (bezet[i] ? "is-bezet" : i === aan ? "is-aan" : "") + '">' + tijd(t) + "</li>"; }).join("") + "</ul>";
+      samen = b.keuze[0] + ", " + dagNaam(eerste).toLowerCase() + " om " + tijd(tijden[aan]);
+    } else if (b.soort === "dagdeel") {
+      var dd = openDagen(s.uren, 3, true, 0.5), keus = null;
+      kaart = keuze + '<ul class="ms-dagdelen">' + dd.map(function (dg, r) {
+        var delen = [["ochtend", dg.open[0], 12], ["middag", 12, dg.open[1]]];
+        return "<li><b>" + esc(hoofdletter(dagKort(dg))) + "</b>" + delen.map(function (dl, c) {
+          var vol = (r * 3 + c * 2 + z) % 5 === 0, kies = !vol && !keus;
+          if (kies) keus = { dg: dg, dl: dl };
+          return '<span class="' + (vol ? "is-vol" : kies ? "is-aan" : "") + '"><b>' + dl[0] + "</b><i>" + (vol ? "vol" : tijd(dl[1]) + "–" + tijd(dl[2])) + "</i></span>";
+        }).join("") + "</li>";
+      }).join("") + "</ul>";
+      samen = b.keuze[0] + ", " + dagKort(keus.dg) + ", " + keus.dl[0];
+    } else if (b.soort === "pakket") {
+      var nu = new Date(), w = (nu.getDay() + 6) % 7, plus = (b.ophalen[0] - w + 7) % 7;
+      if (w > 3) plus += 7;                                       // na donderdag is het pakket voor volgende week
+      var dag = new Date(nu.getFullYear(), nu.getMonth(), nu.getDate() + plus);
+      kaart = '<ul class="ms-opties">' + b.opties.map(function (o, i) { return "<li" + (i === 0 ? ' class="is-aan"' : "") + "><i></i><span>" + esc(o[0]) + "</span><b>" + esc(euro(o[1])) + "</b></li>"; }).join("") + "</ul>" +
+        '<p class="ms-ophalen"><span>Ophalen</span><b>' + DAGEN[b.ophalen[0]].toLowerCase() + " " + dag.getDate() + " " + MAAND_LANG[dag.getMonth()] + ", " + tijd(b.ophalen[1]) + "–" + tijd(b.ophalen[2]) + "</b></p>";
+      samen = "Totaal <b>" + esc(euro(b.opties[0][1])) + "</b>";
+    } else if (b.soort === "prijs") {
+      kaart = '<dl class="ms-velden">' + b.velden.map(function (v) { return "<div><dt>" + esc(v[0]) + "</dt><dd>" + esc(v[1]) + "</dd></div>"; }).join("") + "</dl>" +
+        '<p class="ms-uitkomst"><span>Richtprijs</span><b>' + esc(euro(b.prijs).replace(/,00$/, "")) + "</b><i>" + esc(b.per) + "</i></p>";
+    }
+    return '<section class="ms-sectie ms-boek"><div class="ms-boek-tekst"><p class="ms-h2">' + esc(b.kop) + '</p><p class="ms-boek-sub">' + esc(b.sub) + "</p></div>" +
+      '<div class="ms-boek-kaart">' + kaart + '<div class="ms-boek-voet">' + (samen ? '<span class="ms-boek-samen">' + (b.soort === "pakket" ? samen : esc(samen)) + "</span>" : "") +
+      '<span class="ms-knop">' + esc(b.knop) + "</span></div></div>" +
+      '<p class="ms-koppel">' + STEKKER + "<span>" + esc(b.noot) + "</span></p></section>";
+  }
   function mockHtml(id, naam, breed) {
     var s = V[id].site, info = openInfo(s.uren), vandaag = (new Date().getDay() + 6) % 7, G = window.GEVELS;
     var prijzen = s.prijzen.map(function (p) {
@@ -105,6 +170,7 @@
       '<p class="ms-open ms-open--los' + (info.open ? "" : " is-dicht") + '"><i></i>' + esc(info.tekst) + "</p></div>" +
       '<figure class="ms-blad"><div class="ms-tek">' + tekening + '</div><figcaption><span>Gevel ' + esc(s.plek || s.adres) + "</span><span>schaal 1:100</span></figcaption></figure></section>" +
       lijst(s.feiten, "ms-feiten") +
+      boekHtml(id, s.boek, s, breed) +
       '<section class="ms-sectie"><div class="ms-sectie-kop"><p class="ms-h2">' + esc(s.dienstKop || "Wat we doen") + "</p></div>" + lijst(s.diensten, "ms-diensten") + "</section>" +
       '<section class="ms-sectie ms-sectie--twee"><div><p class="ms-h2">' + esc(s.prijsKop) + '</p><ul class="ms-lijst">' + prijzen + "</ul>" + (metBedrag ? '<p class="ms-fijn">Voorbeeldprijzen</p>' : "") + "</div>" +
       '<div><p class="ms-h2">Openingstijden</p><ul class="ms-lijst">' + uren + "</ul></div></section>" +
@@ -210,6 +276,11 @@
     $("#vb-groep").textContent = hoofdletter(tt(pl.groep));
     $("#vb-site").innerHTML = v.k.map(function (i) { var p = pl.punten[i]; return "<li><b>" + esc(tt(p.t)) + "</b><span>" + esc(tt(p.u)) + "</span></li>"; }).join("");
     $("#vb-achter").innerHTML = v.j.map(function (i) { return "<li>" + esc(tt(pl.punten[i].t)) + "</li>"; }).join("");
+    var kp = pl.koppel, kt = $("#vb-koppel-tekst"), kl = $("#vb-koppel");
+    if (kp && kt && kl) {
+      kt.textContent = tt(kp.t);
+      kl.innerHTML = kp.namen.map(function (n) { return "<li>" + esc(tt(n)) + "</li>"; }).join("");
+    }
     var a = $("#vb-plan"); a.href = "/voor/" + pl.slug; a.textContent = T("vbPlan", { groep: tt(pl.groep) });
     $("#vb-links-kop").textContent = T("vbLinksKop", { groep: tt(pl.groep) });
     $("#vb-links").innerHTML = linksHtml(v.links, true);
@@ -570,6 +641,21 @@
     window.addEventListener("resize", kleur);
     kleur();
   }
+
+  /* ---------------- Aansluitschema op de voorpagina ----------------
+     De leidingen tekenen zich één keer, als het schema in beeld komt. "Vraag het na" zet een vraag klaar in het formulier. */
+  var schema = $("#schema");
+  if (schema && !reduce && "IntersectionObserver" in window) {
+    schema.classList.add("schema--anim");
+    var schemaKijker = new IntersectionObserver(function (items) {
+      items.forEach(function (it) { if (it.isIntersecting) { schema.classList.add("is-aan"); schemaKijker.disconnect(); } });
+    }, { threshold: 0.15 });
+    schemaKijker.observe(schema);
+  }
+  var koppelVraag = $("#koppel-vraag");
+  if (koppelVraag) koppelVraag.addEventListener("click", function (e) {
+    if ($("#contact-form")) { e.preventDefault(); vulFormulier({ bericht: T("wensKoppel") }); }
+  });
 
   /* ---------------- Start ---------------- */
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { $$(".ms").forEach(pasNamen); });

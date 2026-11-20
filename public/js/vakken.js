@@ -1,6 +1,7 @@
 /* Voorbeeldsites per vak (dezelfde elf als de plattegronden) en handige links.
    site: de inhoud van de voorbeeldsite; die blijft Nederlands, net als de zaak zelf.
    k en j: welke punten van de plattegrond (PLANNEN[...].punten, vanaf 0) je klant ziet (k) en welke jou achter de schermen helpen (j).
+   site.boek: de boekmodule op de voorbeeldsite, met in noot hoe die op het eigen systeem van de zaak aansluit.
    mail: de demo-inbox van het dashboard.
    links: wie "j" = handig voor de ondernemer zelf, "k" = handig om je klanten naar te verwijzen.
    Links gecontroleerd in november 2026. */
@@ -24,6 +25,7 @@ window.VAKKEN = {
       slot: "Bestel voor donderdag, haal zaterdag op.",
       menu: ["Aanbod", "Deze week", "Route", "Contact"],
       kaart: { straat: "Brinkweg", dwars: "Kerkweg", land: 1, perceel: [150, 84, 80, 68] },
+      boek: { soort: "pakket", kop: "Bestel je pakket", sub: "Bestel tot donderdag, haal zaterdag op.", opties: [["Groentepakket voor twee", 14.95], ["Groentepakket voor vier", 24.95]], ophalen: [5, 8, 17], knop: "Betaal met iDEAL", noot: "Betaling via Mollie, de bestelling staat meteen in je kassa" },
       plek: "Brinkweg 12" },
     k: [0, 1, 4], j: [2, 3, 6],
     mail: { lev1: "Zuivelhandel Van Dam", lev2: "Verpakkingen Kuipers", klant: "Ahmed", vraag: "Kan ik voor zaterdag twee groentepakketten bestellen?", antwoord: "Hoi Ahmed, staat genoteerd: twee pakketten, zaterdag vanaf 8.00 uur klaar.", promo: "fruitkratten" },
@@ -56,6 +58,7 @@ window.VAKKEN = {
       slot: "Storing? We komen vandaag nog.",
       menu: ["Diensten", "Tarieven", "Werkgebied", "Contact"],
       kaart: { water: "Merwedekanaal", dwars: "Kanaalweg", perceel: [212, 86, 44, 66] },
+      boek: { soort: "dagdeel", kop: "Plan een monteur", sub: "Kies wat er speelt en wanneer het uitkomt.", keuze: ["Lekkage", "Cv-ketel", "Onderhoud"], knop: "Bevestig je afspraak", noot: "Tijdvakken uit je eigen planning, bevestiging via WhatsApp" },
       plek: "Kanaalweg 14" },
     k: [0, 1, 3], j: [2, 4, 5],
     mail: { lev1: "Installatiegroothandel Midden", lev2: "Sanitair Kuipers", klant: "Mirjam", vraag: "Mijn cv-ketel geeft een storingscode. Kunnen jullie morgen langskomen?", antwoord: "Hoi Mirjam, morgen tussen 8.00 en 10.00 uur komt Ruud bij je langs. Tot dan!", promo: "knelkoppelingen" },
@@ -92,6 +95,7 @@ window.VAKKEN = {
       slot: "Tijd voor een nieuwe kleur?",
       menu: ["Diensten", "Prijzen", "Werkwijze", "Contact"],
       kaart: { straat: "Kanaalstraat", dwars: "Damstraat" },
+      boek: { soort: "dagdeel", kop: "Plan een gratis opname", sub: "We komen kijken en maken een offerte op maat.", keuze: ["Buiten", "Binnen", "Houtrot"], knop: "Plan je opname", noot: "Opnames in je eigen agenda, de offerte later in je boekhouding" },
       plek: "Kanaalstraat 120" },
     k: [0, 1, 5], j: [2, 3, 4],
     mail: { lev1: "Verfgroothandel Midden", lev2: "Steigerverhuur Kuipers", klant: "Joost", vraag: "Kunnen jullie in april onze kozijnen buiten schilderen?", antwoord: "Hoi Joost, dat kan. Ik kom volgende week kijken en stuur je daarna een offerte.", promo: "afplaktape" },
@@ -124,6 +128,7 @@ window.VAKKEN = {
       slot: "Plannen voor een verbouwing?",
       menu: ["Wat we bouwen", "Werkwijze", "Projecten", "Contact"],
       kaart: { straat: "Atoomweg", dwars: "Isotopenweg" },
+      boek: { soort: "dagdeel", kop: "Plan een gesprek op locatie", sub: "We bekijken samen wat er kan, vrijblijvend.", keuze: ["Aanbouw", "Dakkapel", "Renovatie"], knop: "Plan je gesprek", noot: "Tijden uit je eigen Google- of Outlook-agenda" },
       plek: "Atoomweg 6" },
     k: [0, 3, 5], j: [1, 2, 4],
     mail: { lev1: "Bouwmaterialen Midden", lev2: "Steigerbouw Kuipers", klant: "Femke", vraag: "Wat kost ongeveer een aanbouw van 3 bij 4 meter?", antwoord: "Hoi Femke, dat hangt af van de fundering en de afwerking. Zullen we volgende week bij je langskomen?", promo: "isolatieplaten" },
@@ -164,6 +169,7 @@ window.VAKKEN = {
       slot: "Stuur een foto van je dak of tuin.",
       menu: ["Dak", "Tuin", "Prijzen", "Contact"],
       kaart: { straat: "Vleutenseweg", dwars: "Cartesiusweg", park: 2 },
+      boek: { soort: "dagdeel", kop: "Plan een inspectie", sub: "We komen kijken en sturen dezelfde dag een prijs.", keuze: ["Dak", "Tuin"], knop: "Plan je inspectie", noot: "Afspraak in je agenda, bevestiging via WhatsApp" },
       plek: "Vleutenseweg 301" },
     k: [0, 1, 4], j: [2, 3],
     mail: { lev1: "Dakmaterialen Midden", lev2: "Kwekerij Kuipers", klant: "Henk", vraag: "Mijn dakgoot lekt bij de voordeur. Kunnen jullie komen kijken?", antwoord: "Hoi Henk, dank voor je foto. Donderdagochtend kunnen we langskomen.", promo: "sierbestrating" },
@@ -200,6 +206,7 @@ window.VAKKEN = {
       slot: "Loop binnen of plan je afspraak.",
       menu: ["Wat we doen", "Prijzen", "Openingstijden", "Route"],
       kaart: { water: "Oudegracht", dwars: "Twijnstraat", perceel: [214, 70, 42, 54] },
+      boek: { soort: "tijden", kop: "Maak een afspraak", sub: "Kies wat je wilt en een tijd die je past.", keuze: ["Knippen", "Baard", "Kinderen"], stap: 0.5, knop: "Bevestig je afspraak", noot: "Vrije tijden uit je eigen agenda, zoals Salonized of Treatwell" },
       plek: "Twijnstraat 42" },
     k: [0, 1, 2, 3], j: [4, 5],
     mail: { lev1: "Haarwerk Groothandel", lev2: "Barbier Supplies Kuipers", klant: "Youssef", vraag: "Kan ik zaterdag om 11.00 uur terecht voor knippen en baard?", antwoord: "Hoi Youssef, zaterdag om 11.00 uur kan. Je staat erin voor knippen en baard. Tot dan!", promo: "kappersscharen" },
@@ -232,6 +239,7 @@ window.VAKKEN = {
       slot: "APK of onderhoud nodig?",
       menu: ["Diensten", "Prijzen", "Afspraak", "Contact"],
       kaart: { straat: "Kruisstraat", dwars: "Biltstraat" },
+      boek: { soort: "kenteken", kop: "Plan je APK of onderhoud", sub: "Vul je kenteken in en kies een tijd om te brengen.", kenteken: "PA-482-L", auto: "Volkswagen Polo, benzine, 2019", apk: "APK geldig tot 14 maart 2027", keuze: ["APK", "Onderhoud", "Banden"], stap: 0.5, tot: 11, knop: "Plan je afspraak", noot: "Merk, model en APK-datum uit het open kentekenregister van de RDW" },
       plek: "Kruisstraat 9" },
     k: [0, 1, 2, 5], j: [3, 4],
     mail: { lev1: "Auto-onderdelen Midden", lev2: "Bandengroothandel Kuipers", klant: "Sanne", vraag: "Kan mijn auto volgende week voor APK en een kleine beurt?", antwoord: "Hoi Sanne, dinsdag om 8.00 uur kan. Je auto is dezelfde middag klaar.", promo: "winterbanden" },
@@ -264,6 +272,7 @@ window.VAKKEN = {
       slot: "Klachten? Je bent welkom zonder verwijzing.",
       menu: ["Behandelingen", "Tarieven", "Team", "Contact"],
       kaart: { straat: "Biltstraat", dwars: "Kruisstraat", park: 3 },
+      boek: { soort: "tijden", kop: "Maak een afspraak", sub: "Een intake of een vervolgafspraak, zonder te bellen.", keuze: ["Intake", "Vervolg"], stap: 0.5, knop: "Bevestig je afspraak", noot: "Via het patiëntportaal van je praktijksoftware, zoals Intramed" },
       plek: "Biltstraat 156" },
     k: [0, 1, 2, 3], j: [4],
     mail: { lev1: "Medische Groothandel Midden", lev2: "Oefenmaterialen Kuipers", klant: "Mark", vraag: "Ik heb last van mijn knie na het hardlopen. Kan ik deze week nog terecht?", antwoord: "Hoi Mark, donderdag om 17.30 uur is er plek. Neem makkelijk zittende kleding mee.", promo: "oefenbanden" },
@@ -300,6 +309,7 @@ window.VAKKEN = {
       slot: "Benieuwd wat het kost?",
       menu: ["Diensten", "Prijzen", "Werkwijze", "Contact"],
       kaart: { straat: "Europalaan", dwars: "Waterlinieweg" },
+      boek: { soort: "prijs", kop: "Bereken je prijs", sub: "Een richtprijs in een paar tellen, de offerte volgt.", velden: [["Wat", "Kantoor"], ["Oppervlakte", "180 m²"], ["Hoe vaak", "Elke week"]], prijs: 96, per: "per keer, excl. btw", knop: "Vraag een offerte", noot: "De aanvraag komt in je planning, de offerte in je boekhouding" },
       plek: "Europalaan 40" },
     k: [0, 1, 3], j: [2, 4],
     mail: { lev1: "Schoonmaakmiddelen Midden", lev2: "Werkkleding Kuipers", klant: "Linda", vraag: "Wat kost het om ons kantoor van 250 m² twee keer per week schoon te maken?", antwoord: "Hoi Linda, dat is ongeveer € 640 per maand. Zal ik langskomen voor een offerte op maat?", promo: "microvezeldoeken" },
@@ -332,6 +342,7 @@ window.VAKKEN = {
       slot: "Nieuwe patiënten zijn welkom.",
       menu: ["Behandelingen", "Goed om te weten", "Spoed", "Contact"],
       kaart: { straat: "Prins Hendriklaan", dwars: "Ruysdaelstraat", park: 1 },
+      boek: { soort: "tijden", kop: "Maak een afspraak", sub: "Voor patiënten die al bij ons staan ingeschreven.", keuze: ["Controle", "Mondhygiëne"], stap: 0.5, knop: "Bevestig je afspraak", noot: "Via de online agenda van je praktijksoftware, zoals Uw Zorg Online" },
       plek: "Prins Hendriklaan 23" },
     k: [0, 1, 2], j: [3, 4],
     mail: { lev1: "Tandtechnisch Lab Midden", lev2: "Dental Kuipers", klant: "Priya", vraag: "Kan ik me met mijn twee kinderen inschrijven als nieuwe patiënt?", antwoord: "Hoi Priya, welkom! Vul het inschrijfformulier in, dan plannen we jullie eerste controle.", promo: "handschoenen" },
@@ -364,6 +375,7 @@ window.VAKKEN = {
       slot: "Zullen we kennismaken?",
       menu: ["Diensten", "Pakketten", "Werkwijze", "Contact"],
       kaart: { water: "Oudegracht", dwars: "Vinkenburgstraat", perceel: [150, 108, 44, 44] },
+      boek: { soort: "tijden", kop: "Plan een kennismaking", sub: "Een half uur, vrijblijvend en zonder kosten.", keuze: ["Op kantoor", "Bellen", "Video"], stap: 1, knop: "Plan je kennismaking", noot: "Vrije tijden uit je eigen Outlook- of Google-agenda" },
       plek: "Oudegracht 203" },
     k: [0, 1, 4], j: [2, 3],
     mail: { lev1: "Kantoorartikelen Midden", lev2: "Software Kuipers", klant: "Erik", vraag: "Kunnen jullie mijn btw-aangifte over het derde kwartaal nog doen?", antwoord: "Hoi Erik, dat lukt. Stuur je bonnetjes vóór vrijdag, dan dienen we de aangifte op tijd in.", promo: "ordners" },

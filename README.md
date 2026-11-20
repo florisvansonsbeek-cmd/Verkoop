@@ -5,6 +5,7 @@ De site waarmee ik kleine zaken laat zien wat ik voor ze kan bouwen. Twee tabbla
 **Voorpagina (`/`)**, kort gehouden:
 
 - **Begin**: twee voorbeeldsites op de groene tafel (een installateur op de computer, een kapper op de telefoon) en een strook met de elf vakken die naar de voorbeelden leiden.
+- **Aangesloten op wat je al gebruikt**: een aansluitschema op de donkere tafel. De site is de stam; agenda en boekingen, betalen, boekhouding, kassa en webshop, mail en WhatsApp, Google en software voor je vak hangen er elk met een aftakking aan, met de namen van systemen waarvan de koppeling is nagezocht (november 2026). Een gestippelde reserve-aansluiting voor *iets anders*, en drie eerlijke noten: eerst uitzoeken, je gegevens blijven waar ze zijn, geen verrassingen in de kosten. De lijnen tekenen zich één keer als het schema in beeld komt (niet bij minder beweging).
 - **Wat ik voor je maak**: de drie pakketten met prijzen en wat erin zit. Alle mogelijkheden, het onderhoud en de kleine klussen staan in uitklappers.
 - **Mijn werk**: Campo International groot, Handelsplan en Koersplan klein (met voorbeelddata).
 - **Werkwijze** en **Waar je op kunt rekenen**, **Vragen** en **Contact**: het formulier slaat aanvragen op in Postgres en stuurt een melding.
@@ -16,7 +17,9 @@ De site waarmee ik kleine zaken laat zien wat ik voor ze kan bouwen. Twee tabbla
 - **Dashboard**: een demo die zes mails van het gekozen vak leest: facturen worden gecontroleerd (bedrag, btw, nieuw rekeningnummer, dubbele factuur), een vraag van een klant krijgt een concept-antwoord, een herinnering blijkt al betaald.
 - **Websitecheck**: vul een webadres in en de server beoordeelt die pagina op veiligheid, telefoon, vindbaarheid, snelheid, actualiteit (zoals een oud jaartal of nog 19% btw) en contact. Met *Vraag een voorstel* gaat de bezoeker naar het contactformulier, met de check erbij.
 
-**Per soort bedrijf (`/voor/<slug>`)**: de plattegrond met wat AI per plek kan doen, gemaakt uit `templates/branche.html`, `public/js/plannen.js` en `public/js/voorbeelden.js`.
+**Per soort bedrijf (`/voor/<slug>`)**: de plattegrond met wat AI per plek kan doen en de systemen waar dat vak op aansluit, gemaakt uit `templates/branche.html`, `public/js/plannen.js` en `public/js/voorbeelden.js`.
+
+**Koppelingen per vak** staan in `public/js/plannen.js` (`koppel`: namen en een zin in drie talen) en worden gebruikt op `/voorbeelden` en `/voor/<slug>`. Elke voorbeeldsite heeft een boekmodule (`site.boek` in `public/js/vakken.js`: tijden, dagdelen, kenteken, pakket of prijs) met een aantekening waar die op aansluit. Tijden en datums rekenen mee met vandaag en de openingstijden van de zaak. Zet hier alleen systemen bij waarvan je hebt nagekeken dat ze een koppeling bieden (API, widget of open data).
 
 **/beheer**: alle aanvragen (met status en notitie, en als CSV te downloaden) en alle websitechecks.
 

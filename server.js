@@ -321,6 +321,8 @@ function stuk(html, begin, eindTag) {
 }
 const naarVoorpagina = (h) => h.replace(/href="#/g, 'href="/#');
 const hoofdletter = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+// de systemen waar een vak op aansluit, als lijstjes (namen zijn soms per taal anders, zoals Google Agenda)
+const koppelNamen = (pl) => ((pl.koppel && pl.koppel.namen) || []).map((n) => `<li>${esc(typeof n === "string" ? n : n.nl)}</li>`).join("");
 function inkorten(t, n) { if (t.length <= n) return t; const k = t.slice(0, n - 1); return k.slice(0, k.lastIndexOf(" ")) + "…"; }
 function loadBranches() {
   const ctx = { window: {} };
@@ -356,6 +358,7 @@ function loadBranches() {
       LEAD: esc(`Ik bouw websites en slimme systemen voor ${groep} in Utrecht en omgeving. Hieronder zie je wat dat in de praktijk kan betekenen.`),
       GROEP_HOOFD: esc(hoofdletter(groep)), PLAN_TITEL: esc(pl.titel.nl), PLAN_INTRO: esc(pl.intro.nl), BLAD: `${i + 1} van ${PLANNEN.length}`,
       LEGENDA: legenda, ANDERE: andere, APPKNOP: appKnop(), APPZWEEF: appZweef(),
+      KOPPEL_TEKST: esc(pl.koppel ? pl.koppel.t.nl : ""), KOPPEL_NAMEN: koppelNamen(pl),
     };
     const html = tpl.replace(/\{\{([A-Z0-9_]+)\}\}/g, (m, k) => (k === "ORIGIN" ? m : k in waarden ? waarden[k] : m));
     BRANCHES.set(pl.slug, html);
@@ -401,6 +404,8 @@ function voorbeeldenHtml(vak) {
   return voorbeeldenTpl.replace(/\{\{(CHIPS|GROEP|LINKSKOP)\}\}/g, (m, k) => waarden[k])
     .replace('<ul class="vb-site" id="vb-site"></ul>', () => `<ul class="vb-site" id="vb-site">${v.k.map((i) => `<li><b>${esc(pl.punten[i].t.nl)}</b><span>${esc(pl.punten[i].u.nl)}</span></li>`).join("")}</ul>`)
     .replace('<ul class="vb-achter" id="vb-achter"></ul>', () => `<ul class="vb-achter" id="vb-achter">${v.j.map((i) => `<li>${esc(pl.punten[i].t.nl)}</li>`).join("")}</ul>`)
+    .replace('<p class="vb-koppel-tekst" id="vb-koppel-tekst"></p>', () => `<p class="vb-koppel-tekst" id="vb-koppel-tekst">${esc(pl.koppel ? pl.koppel.t.nl : "")}</p>`)
+    .replace('<ul class="vb-koppel" id="vb-koppel"></ul>', () => `<ul class="vb-koppel" id="vb-koppel">${koppelNamen(pl)}</ul>`)
     .replace('<ul class="links" id="vb-links"></ul>', () => `<ul class="links" id="vb-links">${linksLijst(v.links, true)}</ul>`)
     .replace('href="/voor/kappers-en-barbiers" id="vb-plan">Bekijk de plattegrond</a>', () => `href="/voor/${esc(pl.slug)}" id="vb-plan">Bekijk de plattegrond voor ${esc(pl.groep.nl)}</a>`);
 }

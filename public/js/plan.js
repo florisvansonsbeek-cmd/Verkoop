@@ -297,6 +297,9 @@
       var kopEl = $("#br-titel"), lead = $("#br-lead");
       if (kopEl) kopEl.textContent = T("brTitel", { groep: tt(pl.groep) });
       if (lead) lead.textContent = T("brLead", { groep: tt(pl.groep) });
+      var kz = $("#br-koppel-zin"), kn = $("#br-koppel-namen");
+      if (pl.koppel && kz) kz.textContent = tt(pl.koppel.t);
+      if (pl.koppel && kn) kn.innerHTML = pl.koppel.namen.map(function (n) { return "<li>" + esc(typeof n === "string" ? n : tt(n)) + "</li>"; }).join("");
       document.title = T("brDocTitel", { groep: tt(pl.groep) });
       var md = $('meta[name="description"]'); if (md) md.setAttribute("content", tt(pl.intro));
     }
