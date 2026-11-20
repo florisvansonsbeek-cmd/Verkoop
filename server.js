@@ -28,6 +28,7 @@ const zlib = require("node:zlib");
 const crypto = require("node:crypto");
 const vm = require("node:vm");
 const { checkWebsite, CheckError } = require("./lib/check");
+const QR = require("./public/js/qr.js");
 
 const PORT = Number(process.env.PORT) || 3000;
 const APP_PASSWORD = process.env.APP_PASSWORD || "";
@@ -51,7 +52,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /* ---------------- Database ---------------- */
 let pool = null;
-const mem = { aanvragen: [], checks: [], id: 0 };
+const mem = { aanvragen: [], checks: [], links: [], id: 0 };
 if (process.env.DATABASE_URL) {
   const { Pool } = require("pg");
   pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 5, ssl: /sslmode=require/.test(process.env.DATABASE_URL) ? { rejectUnauthorized: false } : undefined });
@@ -75,6 +76,12 @@ async function migrate() {
           host text NOT NULL, url text NOT NULL, score int, oordeel text, details jsonb
         );
         CREATE TABLE IF NOT EXISTS app_meta (sleutel text PRIMARY KEY, waarde text NOT NULL);
+        ALTER TABLE checks ADD COLUMN IF NOT EXISTS fout text;
+        CREATE TABLE IF NOT EXISTS links (
+          code text PRIMARY KEY, aangemaakt timestamptz NOT NULL DEFAULT now(),
+          zaak text NOT NULL, vak text NOT NULL, notitie text,
+          opens int NOT NULL DEFAULT 0, eerst_geopend timestamptz, laatst_geopend timestamptz
+        );
       `);
       dbReady = true; log("Database klaar"); return;
     } catch (e) { log(`Database nog niet bereikbaar (poging ${i}): ${e.message}`); await sleep(Math.min(1000 * i, 8000)); }
@@ -91,10 +98,11 @@ async function saveAanvraag(a) {
   mem.aanvragen.unshift({ id, ontvangen: new Date(), status: "nieuw", notitie: "", ...a });
   return id;
 }
+// een gelukte check, of een mislukte met r.fout ("CODE: uitleg") en zonder score
 async function saveCheck(r) {
-  const details = { groepen: r.groepen, ms: r.ms, titel: r.titel };
-  if (pool && dbReady) return pool.query("INSERT INTO checks (host, url, score, oordeel, details) VALUES ($1,$2,$3,$4,$5)", [r.host, r.url, r.score, r.oordeel, details]);
-  mem.checks.unshift({ gecheckt: new Date(), host: r.host, url: r.url, score: r.score, oordeel: r.oordeel });
+  const details = r.fout ? null : { groepen: r.groepen, ms: r.ms, titel: r.titel };
+  if (pool && dbReady) return pool.query("INSERT INTO checks (host, url, score, oordeel, details, fout) VALUES ($1,$2,$3,$4,$5,$6)", [r.host, r.url, r.score ?? null, r.oordeel ?? null, details, r.fout || null]);
+  mem.checks.unshift({ gecheckt: new Date(), host: r.host, url: r.url, score: r.score ?? null, oordeel: r.oordeel ?? null, fout: r.fout || null });
   mem.checks.length = Math.min(mem.checks.length, 200);
 }
 async function listAanvragen() {
@@ -102,8 +110,48 @@ async function listAanvragen() {
   return mem.aanvragen;
 }
 async function listChecks() {
-  if (pool && dbReady) return (await pool.query("SELECT gecheckt, host, url, score, oordeel FROM checks ORDER BY gecheckt DESC LIMIT 150")).rows;
+  if (pool && dbReady) return (await pool.query("SELECT gecheckt, host, url, score, oordeel, fout FROM checks ORDER BY gecheckt DESC LIMIT 150")).rows;
   return mem.checks;
+}
+
+/* Langsgaan: per zaak een eigen voorbeeldlink, /v/<code>. Vijf tekens zonder 0, 1, i, l en o, omdat die op elkaar lijken. */
+const CODE_TEKENS = "23456789abcdefghjkmnpqrstuvwxyz";
+const CODE_RE = /^[23456789abcdefghjkmnpqrstuvwxyz]{5}$/;
+function nieuweCode() { let c = ""; for (let i = 0; i < 5; i++) c += CODE_TEKENS[crypto.randomInt(CODE_TEKENS.length)]; return c; }
+async function maakLink(zaak, vak, notitie) {
+  for (let poging = 0; poging < 8; poging++) {
+    const code = nieuweCode();
+    if (pool && dbReady) {
+      const r = await pool.query("INSERT INTO links (code, zaak, vak, notitie) VALUES ($1,$2,$3,$4) ON CONFLICT (code) DO NOTHING RETURNING code", [code, zaak, vak, notitie || null]);
+      if (r.rowCount) return code;
+    } else if (!mem.links.some((l) => l.code === code)) {
+      mem.links.unshift({ code, aangemaakt: new Date(), zaak, vak, notitie: notitie || null, opens: 0, eerst_geopend: null, laatst_geopend: null });
+      return code;
+    }
+  }
+  throw new Error("Geen vrije code gevonden");
+}
+async function listLinks() {
+  if (pool && dbReady) return (await pool.query("SELECT * FROM links ORDER BY aangemaakt DESC LIMIT 300")).rows;
+  return mem.links;
+}
+async function vindLink(code) {
+  if (pool && dbReady) return (await pool.query("SELECT * FROM links WHERE code = $1", [code])).rows[0] || null;
+  return mem.links.find((l) => l.code === code) || null;
+}
+async function telOpen(code) {
+  if (pool && dbReady) return pool.query("UPDATE links SET opens = opens + 1, eerst_geopend = COALESCE(eerst_geopend, now()), laatst_geopend = now() WHERE code = $1", [code]);
+  const l = mem.links.find((x) => x.code === code);
+  if (l) { l.opens++; l.eerst_geopend = l.eerst_geopend || new Date(); l.laatst_geopend = new Date(); }
+}
+async function linkNotitie(code, notitie) {
+  if (pool && dbReady) return pool.query("UPDATE links SET notitie = $2 WHERE code = $1", [code, notitie || null]);
+  const l = mem.links.find((x) => x.code === code);
+  if (l) l.notitie = notitie || null;
+}
+async function wisLink(code) {
+  if (pool && dbReady) return pool.query("DELETE FROM links WHERE code = $1", [code]);
+  mem.links = mem.links.filter((x) => x.code !== code);
 }
 async function updateStatus(id, status, notitie) {
   if (pool && dbReady) return pool.query("UPDATE aanvragen SET status = $2, notitie = $3, bijgewerkt = now() WHERE id = $1", [id, status, notitie]);
@@ -441,7 +489,7 @@ function sitemap(req, res) {
   res.end(req.method === "HEAD" ? undefined : xml);
 }
 function robots(req, res) {
-  const txt = `User-agent: *\nDisallow: /beheer\n\nSitemap: ${originOf(req)}/sitemap.xml\n`;
+  const txt = `User-agent: *\nDisallow: /beheer\nDisallow: /v/\n\nSitemap: ${originOf(req)}/sitemap.xml\n`;
   res.writeHead(200, { "Content-Type": TYPES[".txt"], "Cache-Control": "public, max-age=3600" });
   res.end(req.method === "HEAD" ? undefined : txt);
 }
@@ -483,8 +531,8 @@ const LOGO = '<span class="logo"><svg aria-hidden="true" class="logo-mark" viewB
 function page(title, body, opts = {}) {
   return `<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex"><title>${esc(title)}</title><link rel="icon" href="/favicon.svg?v=${VERSION}" type="image/svg+xml">
-<link rel="stylesheet" href="/css/site.css?v=${VERSION}">${opts.beheer ? `<link rel="stylesheet" href="/css/beheer.css?v=${VERSION}">` : ""}</head>
-<body${opts.beheer ? ' class="beheer"' : ""}><header class="top"><div class="wrap top-in"><a class="brand" href="/" aria-label="Van Sonsbeek, naar de voorpagina">${LOGO}</a>${opts.beheer ? '<span class="muted small">beheer</span>' : ""}${opts.right || ""}</div></header>
+<link rel="stylesheet" href="/css/site.css?v=${VERSION}">${opts.beheer ? `<link rel="stylesheet" href="/css/beheer.css?v=${VERSION}"><script src="/js/beheer.js?v=${VERSION}" defer></script>` : ""}</head>
+<body${opts.beheer ? ` class="beheer${opts.klasse ? " " + opts.klasse : ""}"` : ""}><header class="top"><div class="wrap top-in"><a class="brand" href="/" aria-label="Van Sonsbeek, naar de voorpagina">${LOGO}</a>${opts.beheer ? '<span class="muted small">beheer</span>' : ""}${opts.right || ""}</div></header>
 ${body}</body></html>`;
 }
 
@@ -561,10 +609,49 @@ async function apiCheck(req, res) {
     log(`Websitecheck ${r.host}: ${r.score}`);
     sendJson(res, 200, r);
   } catch (e) {
-    if (e instanceof CheckError) return sendJson(res, 422, { message: e.message, code: e.code });
+    // ook een mislukte check bewaren, met de reden: daar wordt de check beter van
+    const host = (() => { try { return new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(input) ? input : "https://" + input).host.toLowerCase() || input.slice(0, 80); } catch { return input.slice(0, 80) || "?"; } })();
+    if (e instanceof CheckError) {
+      if (e.code !== "EMPTY") {
+        log(`Websitecheck ${host} mislukt (${e.code})`);
+        saveCheck({ host, url: input, fout: `${e.code}: ${e.message}` }).catch((x) => log("Check opslaan mislukt:", x.message));
+      }
+      return sendJson(res, 422, { message: e.message, code: e.code });
+    }
     log("Websitecheck mislukt:", e.message);
+    saveCheck({ host, url: input, fout: "FOUT: " + String(e.message).slice(0, 200) }).catch((x) => log("Check opslaan mislukt:", x.message));
     sendJson(res, 500, { message: "De check lukte niet. Probeer het zo nog eens." });
   } finally { checksBusy--; }
+}
+
+/* ---------------- /v/<code>: de eigen voorbeeldlink van een zaak ----------------
+   Stuurt door naar het voorbeeld met de naam van de zaak erin en telt hoe vaak dat gebeurt.
+   Linkvoorbeelden (WhatsApp, iMessage), zoekmachines, vooraf laden en je eigen browser (ingelogd op /beheer)
+   tellen niet mee, en dezelfde bezoeker telt hooguit één keer per half uur. Er wordt niets over de bezoeker bewaard. */
+const GEEN_MENS = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|telegram|slack|discord|skype|signal|linkedin|embedly|pinterest|headless|lighthouse|curl|wget|python|java\/|okhttp|go-http|node-fetch|axios|httpclient/i;
+const gezien = new Map();
+setInterval(() => { const nu = Date.now(); for (const [k, t] of gezien) if (nu - t > 30 * 60e3) gezien.delete(k); }, 600e3).unref();
+function teltMee(req, code) {
+  if (req.method !== "GET") return false;
+  const ua = String(req.headers["user-agent"] || "");
+  if (!ua || GEEN_MENS.test(ua.replace(/cubot/gi, ""))) return false;   // Cubot is een telefoonmerk, geen bot
+  const doel = [req.headers["sec-purpose"], req.headers.purpose, req.headers["x-purpose"], req.headers["x-moz"]].join(" ");
+  if (/prefetch|prerender|preview/i.test(doel)) return false;
+  try { if (cookies(req).vs_zelf === "1") return false; } catch { /* rare cookie: gewoon tellen */ }
+  const sleutel = code + ":" + crypto.createHash("sha256").update(clientIp(req) + "|" + ua).digest("base64url").slice(0, 16);
+  const nu = Date.now(), vorige = gezien.get(sleutel);
+  gezien.set(sleutel, nu);
+  return !vorige || nu - vorige > 30 * 60e3;
+}
+async function serveLink(req, res, p) {
+  res.setHeader("X-Robots-Tag", "noindex, nofollow");
+  const code = p.replace(/^\/v\/?/, "").replace(/\/+$/, "").toLowerCase();
+  const l = CODE_RE.test(code) ? await vindLink(code) : null;
+  // onbekende of verwijderde link: gewoon naar de voorbeelden
+  const naar = l ? "/voorbeelden?" + new URLSearchParams({ vak: l.vak, zaak: l.zaak }) + "#voorbeeld" : "/voorbeelden";
+  if (l && teltMee(req, code)) telOpen(code).catch((e) => log("Open tellen mislukt:", e.message));
+  res.writeHead(302, { Location: naar, "Cache-Control": "no-store" });
+  res.end();
 }
 
 /* ---------------- /beheer ---------------- */
@@ -572,6 +659,97 @@ const fmtDatum = new Intl.DateTimeFormat("nl-NL", { timeZone: "Europe/Amsterdam"
 // namen van de vakken; de oude ids staan erbij voor aanvragen van voor november 2026
 const VAK_LABEL = { schoenmaker: "Schoenmaker", stomerij: "Stomerij", bakkerij: "Bakkerij", ijzerwaren: "IJzerwaren", lijstenmaker: "Lijstenmaker", kleding: "Kledingwinkel", streek: "Streekproducten", anders: "Iets anders" };
 function cookieOpts(req, maxAge) { return `Path=/beheer; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${isHttps(req) ? "; Secure" : ""}`; }
+// voor de hele site: zo tellen je eigen bezoeken aan /v/… niet mee. Zegt verder niets over wie je bent.
+function zelfCookie(req) { return `vs_zelf=1; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000${isHttps(req) ? "; Secure" : ""}`; }
+const fmtDag = new Intl.DateTimeFormat("nl-NL", { timeZone: "Europe/Amsterdam", weekday: "short", day: "numeric", month: "short" });
+const fmtIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit" });
+const fmtTijd = new Intl.DateTimeFormat("nl-NL", { timeZone: "Europe/Amsterdam", hour: "2-digit", minute: "2-digit" });
+function wanneer(d, metTijd = true) {
+  if (!d) return "";
+  d = new Date(d);
+  const dag = fmtIso.format(d), t = metTijd ? " " + fmtTijd.format(d) : "";
+  if (dag === fmtIso.format(new Date())) return "vandaag" + t;
+  if (dag === fmtIso.format(new Date(Date.now() - 864e5))) return "gisteren" + t;
+  return fmtDag.format(d) + t;
+}
+const geopend = (l) => (l.opens ? `${l.opens}× geopend, laatst ${wanneer(l.laatst_geopend)}` : "Nog niet geopend");
+const voorbeeldPad = (l) => "/voorbeelden?" + new URLSearchParams({ vak: l.vak, zaak: l.zaak }) + "#voorbeeld";
+const zelfde = (a, b) => !!a && !!b && a.trim().toLowerCase() === b.trim().toLowerCase();
+// heeft deze zaak het formulier al ingevuld? (op naam van de zaak of het voorbeeld dat ze bekeken)
+const aanvraagVan = (l, aanvragen) => aanvragen.find((a) => zelfde(a.voorbeeld, l.zaak) || zelfde(a.zaak, l.zaak));
+function vakOpties(gekozen) {
+  return `<option value="" disabled${gekozen ? "" : " selected"}>Kies een vak</option>` +
+    VAKKEN.map((v) => `<option value="${esc(v)}"${v === gekozen ? " selected" : ""}>${esc(VAK_LABEL[v] || v)}</option>`).join("");
+}
+function kopieerVeld(id, waarde, label) {
+  return `<div class="bh-kopieer"><label class="sr" for="${id}">${esc(label)}</label><input class="field" id="${id}" readonly value="${esc(waarde)}">` +
+    `<button class="btn btn--small btn--licht" type="button" data-kopieer="${id}">Kopieer</button></div>`;
+}
+
+/* De pagina per link: groot de QR-code, om in de zaak te laten scannen, en verder alles over die link */
+function linkPagina(req, l, aanvragen) {
+  const url = originOf(req) + "/v/" + l.code;
+  const app = `Hoi! Hierbij de voorbeeldsite van ${l.zaak} waar we het over hadden: ${url}\n\nGroet, Floris`;
+  const aanvraag = aanvraagVan(l, aanvragen);
+  return `<main class="wrap bh bh-detail">
+<p class="bh-terug"><a class="textlink textlink--small" href="/beheer#langsgaan">Terug naar Langsgaan</a></p>
+<div class="bh-qr-blok">
+  <figure class="bh-qr">${QR.svg(url, { titel: "QR-code naar het voorbeeld van " + l.zaak, kleur: "#16261d" })}
+    <figcaption>Laat de code scannen met de camera van een telefoon. Zo heeft de eigenaar het voorbeeld meteen zelf.</figcaption></figure>
+  <div class="bh-qr-info">
+    <h1>${esc(l.zaak)}</h1>
+    <p class="muted">${esc(VAK_LABEL[l.vak] || l.vak)} · gemaakt ${esc(wanneer(l.aangemaakt))}</p>
+    <p><span class="bh-chip${l.opens ? " is-open" : ""}">${esc(geopend(l))}</span>${aanvraag ? ` <a class="bh-chip is-aanvraag" href="/beheer#a${esc(aanvraag.id)}">Heeft het formulier ingevuld</a>` : ""}</p>
+    ${kopieerVeld("link-url", url, "Link naar het voorbeeld")}
+    <div class="bh-knoppen">
+      <a class="btn btn--small" href="${esc(voorbeeldPad(l))}" target="_blank" rel="noopener">Bekijk het voorbeeld</a>
+      <a class="btn btn--small btn--licht" href="/beheer/kaartjes?code=${esc(l.code)}">Print een kaartje</a>
+      <a class="btn btn--small btn--licht" href="https://wa.me/?text=${encodeURIComponent(app)}" target="_blank" rel="noopener">Stuur via WhatsApp</a>
+    </div>
+    <p class="small muted">Je eigen bezoeken tellen niet mee, en linkvoorbeelden in WhatsApp ook niet.</p>
+    <form class="bh-form" method="post" action="/beheer/link/${esc(l.code)}/notitie">
+      <label class="bh-notitie"><span class="sr">Notitie</span><input class="field" name="notitie" maxlength="200" placeholder="Notitie, bijvoorbeeld adres of met wie je sprak" value="${esc(l.notitie || "")}"></label>
+      <button class="btn btn--small" type="submit">Opslaan</button>
+    </form>
+    <details class="bh-wis"><summary>Link verwijderen</summary>
+      <form method="post" action="/beheer/link/${esc(l.code)}/wis"><p class="small muted">De link werkt daarna niet meer: wie hem opent, komt bij de gewone voorbeelden.</p>
+      <button class="btn btn--small btn--rood" type="submit">Verwijder deze link</button></form>
+    </details>
+  </div>
+</div>
+</main>`;
+}
+
+/* Kaartjes om achter te laten: visitekaartjes van 85 bij 55 mm, tien op een A4, elk met de QR-code van één zaak */
+function kaartjesPagina(req, lijst, n) {
+  const t = telefoon(), mail = (process.env.CONTACT_EMAIL || "").trim(), origin = originOf(req);
+  const host = origin.replace(/^https?:\/\//, "");
+  const contact = [t && esc(t.tel), mail && esc(mail)].filter(Boolean).join(" · ") || esc(host);
+  const kaart = (l) => {
+    const url = origin + "/v/" + l.code;
+    return `<article class="kaart">
+  <div class="kaart-tekst">
+    ${LOGO}
+    <h2>Zo kan <b>${esc(l.zaak)}</b> eruitzien</h2>
+    <p>Scan de code en bekijk je eigen voorbeeldsite op je telefoon.</p>
+    <p class="kaart-wie"><b>Floris van Sonsbeek</b><span>${contact}</span><span class="kaart-url">${esc(host)}/v/${esc(l.code)}</span></p>
+  </div>
+  <div class="kaart-qr">${QR.svg(url, { kleur: "#111", rand: 2 })}</div>
+</article>`;
+  };
+  const kaarten = [];
+  lijst.forEach((l) => { for (let i = 0; i < n; i++) kaarten.push(kaart(l)); });
+  const vellen = [];
+  for (let i = 0; i < kaarten.length; i += 10) vellen.push(`<div class="vel">${kaarten.slice(i, i + 10).join("")}</div>`);
+  const namen = lijst.map((l) => l.zaak);
+  return `<main class="wrap bh bh-print">
+<div class="bh-print-kop">
+  <div><h1>Kaartjes</h1><p class="muted">${kaarten.length} ${kaarten.length === 1 ? "kaartje" : "kaartjes"} voor ${esc(namen.length > 3 ? namen.slice(0, 3).join(", ") + " en nog " + (namen.length - 3) : namen.join(" en "))}. Print op A4, op ware grootte (100%), en knip langs de lijntjes.</p></div>
+  <div class="bh-knoppen"><button class="btn btn--small" type="button" data-print>Printen</button><a class="btn btn--small btn--licht" href="/beheer#langsgaan">Terug</a></div>
+</div>
+${vellen.join("\n")}
+</main>`;
+}
 function contactLink(c) {
   if (c.includes("@")) return `<a href="mailto:${esc(c)}">${esc(c)}</a>`;
   const d = c.replace(/[^\d+]/g, ""); const intl = d.startsWith("0") ? "+31" + d.slice(1) : d;
@@ -599,7 +777,7 @@ async function beheer(req, res, url) {
     if (limited("login:" + ip, 5, 15 * 60e3)) return sendHtml(res, 429, loginPage("Te veel pogingen. Probeer het over een kwartier opnieuw."));
     const f = await readForm(req, 2048);
     if (!passwordOk(f.wachtwoord)) { await sleep(400); return sendHtml(res, 401, loginPage("Dat wachtwoord klopt niet.")); }
-    return redirect(res, "/beheer", { "Set-Cookie": `vs_sessie=${makeToken()}; ${cookieOpts(req, 12 * 3600)}` });
+    return redirect(res, "/beheer", { "Set-Cookie": [`vs_sessie=${makeToken()}; ${cookieOpts(req, 12 * 3600)}`, zelfCookie(req)] });
   }
   if (p === "/beheer/uitloggen" && req.method === "POST") return redirect(res, "/beheer", { "Set-Cookie": `vs_sessie=; ${cookieOpts(req, 0)}` });
   if (!authed) {
@@ -622,14 +800,63 @@ async function beheer(req, res, url) {
     res.writeHead(200, { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": 'attachment; filename="aanvragen.csv"', "Cache-Control": "no-store" });
     return res.end("﻿" + [head.map(q).join(";"), ...lines].join("\r\n"));
   }
+  const uitKnop = `<form class="bh-uit" method="post" action="/beheer/uitloggen"><button class="textlink" type="submit">Uitloggen</button></form>`;
+  // Langsgaan: een link maken, bekijken, een notitie zetten, verwijderen en kaartjes printen
+  if (p === "/beheer/links" && req.method === "POST") {
+    if (!sameOrigin(req)) return sendHtml(res, 403, loginPage("Dit verzoek komt niet van deze site."));
+    const f = await readForm(req, 4096);
+    const zaak = clean(f.zaak, 40).replace(/\s+/g, " "), vak = VAKKEN.includes(f.vak) ? f.vak : "";
+    if (!zaak || !vak) return redirect(res, "/beheer#langsgaan");
+    const code = await maakLink(zaak, vak, clean(f.notitie, 200));
+    log(`Nieuwe voorbeeldlink ${code}`);
+    return redirect(res, "/beheer/link/" + code);
+  }
+  const linkPad = p.match(/^\/beheer\/link\/([a-z0-9]{5})(?:\/(notitie|wis))?$/);
+  if (linkPad) {
+    const l = CODE_RE.test(linkPad[1]) ? await vindLink(linkPad[1]) : null;
+    if (!l) return redirect(res, "/beheer#langsgaan");
+    if (linkPad[2] && req.method === "POST") {
+      if (!sameOrigin(req)) return sendHtml(res, 403, loginPage("Dit verzoek komt niet van deze site."));
+      if (linkPad[2] === "wis") { await wisLink(l.code); return redirect(res, "/beheer#langsgaan"); }
+      const f = await readForm(req, 4096);
+      await linkNotitie(l.code, clean(f.notitie, 200));
+      return redirect(res, "/beheer/link/" + l.code);
+    }
+    if (linkPad[2]) return redirect(res, "/beheer/link/" + l.code);
+    return sendHtml(res, 200, page(l.zaak + " · Langsgaan", linkPagina(req, l, await listAanvragen()), { beheer: true, right: uitKnop }), { "Set-Cookie": zelfCookie(req) });
+  }
+  if (p === "/beheer/kaartjes" && req.method === "GET") {
+    const codes = [...new Set(url.searchParams.getAll("code").filter((c) => CODE_RE.test(c)))].slice(0, 30);
+    const lijst = (await Promise.all(codes.map(vindLink))).filter(Boolean);
+    if (!lijst.length) return redirect(res, "/beheer#langsgaan");
+    const n = Math.min(10, Math.max(1, parseInt(url.searchParams.get("n"), 10) || 1));
+    return sendHtml(res, 200, page("Kaartjes", kaartjesPagina(req, lijst, n), { beheer: true, klasse: "is-print", right: uitKnop }));
+  }
   if (p !== "/beheer") return sendHtml(res, 404, loginPage("Deze pagina bestaat niet."));
 
-  const [aanvragen, checks] = await Promise.all([listAanvragen(), listChecks()]);
-  const nieuw = aanvragen.filter((a) => a.status === "nieuw").length;
+  const [aanvragen, checks, links] = await Promise.all([listAanvragen(), listChecks(), listLinks()]);
+  const nieuw = aanvragen.filter((a) => a.status === "nieuw");
+
+  /* Vandaag: wat er nu te doen is, en wat er nog ingesteld moet worden */
+  const weekGeleden = Date.now() - 7 * 864e5;
+  const recent = links.filter((l) => l.laatst_geopend && new Date(l.laatst_geopend) > weekGeleden)
+    .sort((a, b) => new Date(b.laatst_geopend) - new Date(a.laatst_geopend));
+  const taken = [];
+  if (nieuw.length) taken.push(`<li class="bh-taak is-nu"><b>${nieuw.length === 1 ? "1 nieuwe aanvraag" : nieuw.length + " nieuwe aanvragen"}</b><span>${nieuw.slice(0, 3).map((a) => `<a href="#a${esc(a.id)}">${esc(a.zaak || a.naam)}</a>`).join(", ")}${nieuw.length > 3 ? " en meer" : ""}. Bel of app ze terug; zet daarna de status op Contact gehad.</span></li>`);
+  if (recent.length) taken.push(`<li class="bh-taak is-nu"><b>Deze week hun voorbeeld geopend</b><span>${recent.slice(0, 5).map((l) => `<a href="/beheer/link/${esc(l.code)}">${esc(l.zaak)}</a> <span class="muted">(${esc(l.opens)}×, ${esc(wanneer(l.laatst_geopend))})</span>`).join(", ")}${recent.length > 5 ? " en meer" : ""}. Een mooi moment om even langs te gaan of te bellen.</span></li>`);
+  if (!taken.length) taken.push(`<li class="bh-taak"><b>Niets dat nu wacht</b><span>Geen nieuwe aanvragen, en deze week opende niemand zijn voorbeeld.</span></li>`);
+  const ontbreekt = [];
+  if (!(process.env.NTFY_TOPIC || (process.env.RESEND_API_KEY && process.env.MAIL_TO))) ontbreekt.push(["Meldingen", "Bij een nieuwe aanvraag krijg je nog geen seintje. Zet <code>NTFY_TOPIC</code> (app ntfy) of <code>RESEND_API_KEY</code> met <code>MAIL_TO</code>."]);
+  if (!telefoon()) ontbreekt.push(["Telefoonnummer", "Er staat geen nummer op de site, dus ook geen bel- en app-knop. Zet <code>CONTACT_PHONE</code>."]);
+  if (!(process.env.CONTACT_EMAIL || "").trim()) ontbreekt.push(["E-mailadres", "Er staat geen e-mailadres op de site en op je kaartjes. Zet <code>CONTACT_EMAIL</code> als je dat wilt."]);
+  if (!(pool && dbReady)) ontbreekt.unshift(["Database", "Aanvragen en links verdwijnen bij een herstart. Zet <code>DATABASE_URL</code>."]);
+  const instellingen = ontbreekt.length ? `<div class="bh-instellen"><h2>Nog in te stellen <span class="muted">in Railway, bij Variables</span></h2><ul>${ontbreekt.map(([k, t]) => `<li><b>${k}</b><span>${t}</span></li>`).join("")}</ul></div>` : "";
+
+  /* Aanvragen */
   const items = aanvragen.map((a) => {
     const voorbeeld = a.vak ? `<a href="/voorbeelden?${new URLSearchParams({ vak: a.vak, zaak: a.voorbeeld || "" })}#voorbeeld" target="_blank" rel="noopener">${esc(a.voorbeeld || "zonder naam")} (${esc(VAK_LABEL[a.vak] || a.vak)})</a>` : "";
     return `<article class="bh-item${a.status === "nieuw" ? " is-nieuw" : ""}" id="a${a.id}">
-  <div class="bh-kop"><h2>${esc(a.naam)}${a.zaak ? ` <span class="muted">van ${esc(a.zaak)}</span>` : ""}</h2><time>${esc(fmtDatum.format(new Date(a.ontvangen)))}</time></div>
+  <div class="bh-kop"><h3>${esc(a.naam)}${a.zaak ? ` <span class="muted">van ${esc(a.zaak)}</span>` : ""}</h3><time>${esc(fmtDatum.format(new Date(a.ontvangen)))}</time></div>
   <dl class="bh-dl">
     <div><dt>Contact</dt><dd>${contactLink(a.contact)}</dd></div>
     ${(a.wensen || []).length ? `<div><dt>Wil</dt><dd>${esc(a.wensen.join(", "))}</dd></div>` : ""}
@@ -645,16 +872,57 @@ async function beheer(req, res, url) {
   </form>
 </article>`;
   }).join("\n");
-  const checkRows = checks.map((c) => `<tr><td>${esc(fmtDatum.format(new Date(c.gecheckt)))}</td><td><a href="${esc(c.url)}" target="_blank" rel="noopener noreferrer">${esc(c.host)}</a></td><td class="num">${esc(c.score)}</td><td>${esc(c.oordeel)}</td></tr>`).join("");
-  const opslag = pool && dbReady ? "" : `<p class="bh-waarschuwing">Er is geen database gekoppeld: aanvragen verdwijnen bij een herstart. Zet DATABASE_URL in Railway.</p>`;
-  const right = `<form class="bh-uit" method="post" action="/beheer/uitloggen"><button class="textlink" type="submit">Uitloggen</button></form>`;
-  sendHtml(res, 200, page("Beheer: aanvragen", `<main class="wrap bh">
-${opslag}
-<div class="bh-titel"><h1>Aanvragen</h1><p class="muted">${aanvragen.length} in totaal, ${nieuw} nieuw. <a href="/beheer/aanvragen.csv">Download als CSV</a></p></div>
+
+  /* Langsgaan */
+  const linkItems = links.map((l) => {
+    const aanvraag = aanvraagVan(l, aanvragen);
+    return `<li class="bh-link${l.opens ? " is-open" : ""}">
+  <label class="bh-vink"><input type="checkbox" name="code" value="${esc(l.code)}"><span class="sr">Kaartje printen voor ${esc(l.zaak)}</span></label>
+  <div class="bh-link-tekst"><a class="bh-link-naam" href="/beheer/link/${esc(l.code)}">${esc(l.zaak)}</a>
+    <span class="muted small">${esc(VAK_LABEL[l.vak] || l.vak)} · gemaakt ${esc(wanneer(l.aangemaakt, false))}${l.notitie ? " · " + esc(l.notitie) : ""}</span></div>
+  <div class="bh-link-stand"><span class="bh-chip${l.opens ? " is-open" : ""}">${esc(geopend(l))}</span>${aanvraag ? `<a class="bh-chip is-aanvraag" href="#a${esc(aanvraag.id)}">Formulier ingevuld</a>` : ""}</div>
+  <a class="btn btn--small btn--licht bh-link-qr" href="/beheer/link/${esc(l.code)}">QR-code</a>
+</li>`;
+  }).join("\n");
+  const langsgaan = `<section class="bh-sectie" id="langsgaan" aria-labelledby="bh-langsgaan">
+<div class="bh-titel"><h2 id="bh-langsgaan">Langsgaan</h2><p class="muted">Per zaak een eigen voorbeeldlink met QR-code. Laat de code in de zaak scannen of laat een kaartje achter. Hier zie je daarna of het voorbeeld geopend is.</p></div>
+<form class="bh-maak" method="post" action="/beheer/links">
+  <div class="f"><label class="field-label" for="lk-zaak">Naam van de zaak</label><input class="field" id="lk-zaak" name="zaak" maxlength="40" required placeholder="Bijvoorbeeld Barbershop Noor" autocomplete="off"></div>
+  <div class="f"><label class="field-label" for="lk-vak">Vak</label><select class="field" id="lk-vak" name="vak" required>${vakOpties("")}</select></div>
+  <div class="f f--breed"><label class="field-label" for="lk-notitie">Notitie <span class="muted">(mag leeg)</span></label><input class="field" id="lk-notitie" name="notitie" maxlength="200" placeholder="Adres, met wie je sprak, wanneer je terugkomt" autocomplete="off"></div>
+  <button class="btn" type="submit">Maak link en QR-code</button>
+</form>
+${links.length ? `<form class="bh-links" method="get" action="/beheer/kaartjes">
+<ul class="bh-linklijst">${linkItems}</ul>
+<div class="bh-printbalk"><label class="small" for="lk-n">Kaartjes per zaak</label><select class="field" id="lk-n" name="n"><option value="1">1</option><option value="2">2</option><option value="5">5</option><option value="10">10, een vol vel</option></select>
+<button class="btn btn--small" type="submit">Print kaartjes van de aangevinkte zaken</button></div>
+</form>` : `<p class="muted">Nog geen links. Maak er een voor de eerste zaak waar je langsgaat.</p>`}
+</section>`;
+
+  /* Websitechecks, ook de mislukte: daar leer je het meest van */
+  const checkRows = checks.map((c) => {
+    const uitkomst = c.fout ? `<span class="bh-fout">Mislukt: ${esc(String(c.fout).replace(/^[A-Z_0-9]+:\s*/, ""))}</span>` : esc(c.oordeel);
+    return `<tr${c.fout ? ' class="is-fout"' : ""}><td>${esc(fmtDatum.format(new Date(c.gecheckt)))}</td><td><a href="${esc(/^https?:\/\//i.test(c.url) ? c.url : "https://" + c.host)}" target="_blank" rel="noopener noreferrer">${esc(c.host)}</a></td><td class="num">${c.score == null ? "–" : esc(c.score)}</td><td>${uitkomst}</td></tr>`;
+  }).join("");
+  const mislukt = checks.filter((c) => c.fout).length;
+
+  sendHtml(res, 200, page("Beheer", `<main class="wrap bh">
+<section class="bh-vandaag" aria-labelledby="bh-vandaag">
+  <h1 id="bh-vandaag">Vandaag</h1>
+  <ul class="bh-taken">${taken.join("")}</ul>
+  ${instellingen}
+</section>
+<nav class="bh-nav" aria-label="Onderdelen"><a href="#aanvragen">Aanvragen <span>${aanvragen.length}</span></a><a href="#langsgaan">Langsgaan <span>${links.length}</span></a><a href="#checks">Websitechecks <span>${checks.length}</span></a></nav>
+<section class="bh-sectie" id="aanvragen" aria-labelledby="bh-aanvragen">
+<div class="bh-titel"><h2 id="bh-aanvragen">Aanvragen</h2><p class="muted">${aanvragen.length} in totaal, ${nieuw.length} nieuw. <a href="/beheer/aanvragen.csv">Download als CSV</a></p></div>
 <div class="bh-lijst">${items || `<p class="muted">Nog geen aanvragen. Zodra iemand het formulier invult, staat het hier.</p>`}</div>
-<h2 class="bh-h2">Websitechecks</h2>
-${checks.length ? `<div class="bh-scroll"><table class="bh-table"><thead><tr><th>Wanneer</th><th>Site</th><th class="num">Score</th><th>Oordeel</th></tr></thead><tbody>${checkRows}</tbody></table></div>` : `<p class="muted">Nog geen checks gedaan.</p>`}
-</main>`, { beheer: true, right }));
+</section>
+${langsgaan}
+<section class="bh-sectie" id="checks" aria-labelledby="bh-checks">
+<div class="bh-titel"><h2 id="bh-checks">Websitechecks</h2><p class="muted">${checks.length ? `${checks.length} gedaan${mislukt ? `, waarvan ${mislukt} mislukt` : ""}.` : ""}</p></div>
+${checks.length ? `<div class="bh-scroll"><table class="bh-table"><thead><tr><th>Wanneer</th><th>Site</th><th class="num">Score</th><th>Uitkomst</th></tr></thead><tbody>${checkRows}</tbody></table></div>` : `<p class="muted">Nog geen checks gedaan.</p>`}
+</section>
+</main>`, { beheer: true, right: uitKnop }), { "Set-Cookie": zelfCookie(req) });
 }
 
 /* ---------------- Server ---------------- */
@@ -677,6 +945,7 @@ const server = http.createServer(async (req, res) => {
     if (p === "/beheer" || p.startsWith("/beheer/")) return await beheer(req, res, url);
     if (req.method !== "GET" && req.method !== "HEAD") { res.writeHead(405, { Allow: "GET, HEAD" }); return res.end(); }
     if (p === "/voorbeelden" || p === "/voorbeelden/") return serveVoorbeelden(req, res, url);
+    if (p.startsWith("/v/")) return await serveLink(req, res, p);
     // oude links naar een voorbeeld op de voorpagina (/?vak=…&zaak=…#voorbeeld) staan nu op /voorbeelden
     if (p === "/" && url.searchParams.has("vak")) {
       res.writeHead(301, { Location: "/voorbeelden" + url.search, "Cache-Control": "public, max-age=86400" });

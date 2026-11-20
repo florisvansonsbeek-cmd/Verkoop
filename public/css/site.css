@@ -1453,3 +1453,11 @@ textarea.field { resize: vertical; min-height: 100px; }
   .duo a:hover { transform: none; }
   .plan-label::after { transform: none; }
 }
+
+/* ---------- QR-code bij een voorbeeld: openen op je telefoon ---------- */
+.qr-dialoog { border: 0; padding: 0; border-radius: 18px; background: var(--blad); color: var(--inkt); width: min(92vw, 380px); box-shadow: var(--schaduw-blad); }
+.qr-dialoog::backdrop { background: rgba(18, 30, 22, .55); }
+.qr-binnen { display: grid; gap: 14px; justify-items: center; padding: 26px 24px 22px; text-align: center; }
+.qr-binnen h2 { font-size: 1.55rem; line-height: 1.1; }
+.qr-binnen svg { width: min(100%, 260px); height: auto; display: block; }
+.qr-binnen p { margin: 0; color: var(--inkt-2); font-size: .95rem; max-width: 32ch; }
