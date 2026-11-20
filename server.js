@@ -479,10 +479,10 @@ function serveStatic(req, res, p) {
   const cache = /\.(woff2|webp|png|jpg|svg|ico)$/.test(p) ? "public, max-age=2592000" : versioned ? "public, max-age=31536000, immutable" : "public, max-age=300";
   serveFile(req, res, f, cache);
 }
-const LOGO = '<span class="logo"><svg aria-hidden="true" class="logo-mark" viewBox="0 0 48 48"><path d="M11 41V22a13 13 0 0 1 26 0v19" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M6 41.5h36" stroke="currentColor" stroke-linecap="round" stroke-width="2.6"/><path d="M24 40V25" stroke="#a8742f" stroke-linecap="round" stroke-width="2.2"/><path d="M24 33c-6 0-8.5-3.6-8.5-8 5.4 0 8.5 3.2 8.5 8z" fill="#a8742f"/><path d="M24 28.5c5.2 0 7.8-3.2 7.8-7.2-5 0-7.8 2.9-7.8 7.2z" fill="#7d8f68"/></svg><span class="logo-txt"><b>VAN SONSBEEK</b><i>WEBSITES &amp; SLIMME SYSTEMEN</i></span></span>';
+const LOGO = '<span class="logo"><svg aria-hidden="true" class="logo-mark" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6"><path d="M12.5 41V22.5a11.5 11.5 0 0 1 23 0V41"/><path d="M6 41.5h36"/><path d="M12.5 22.5h23" stroke-width="2.2"/></g><g class="logo-messing"><path d="M21.23 20.90L15.12 17.38M22.40 19.73L18.87 13.62M24.00 19.30L24.00 12.25M25.60 19.73L29.12 13.62M26.77 20.90L32.88 17.37" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.4"/><path d="M20.6 22.5a3.4 3.4 0 0 1 6.8 0z" fill="currentColor"/></g></svg><span class="logo-txt"><b>VAN SONSBEEK</b><i>WEBSITES &amp; SLIMME SYSTEMEN</i></span></span>';
 function page(title, body, opts = {}) {
   return `<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex"><title>${esc(title)}</title><link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="robots" content="noindex"><title>${esc(title)}</title><link rel="icon" href="/favicon.svg?v=${VERSION}" type="image/svg+xml">
 <link rel="stylesheet" href="/css/site.css?v=${VERSION}">${opts.beheer ? `<link rel="stylesheet" href="/css/beheer.css?v=${VERSION}">` : ""}</head>
 <body${opts.beheer ? ' class="beheer"' : ""}><header class="top"><div class="wrap top-in"><a class="brand" href="/" aria-label="Van Sonsbeek, naar de voorpagina">${LOGO}</a>${opts.beheer ? '<span class="muted small">beheer</span>' : ""}${opts.right || ""}</div></header>
 ${body}</body></html>`;

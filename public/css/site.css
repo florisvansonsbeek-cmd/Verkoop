@@ -127,9 +127,11 @@ p { margin: 0; text-wrap: pretty; }
 .top.is-donker .btn:hover { background: #fffaf0; }
 .top.is-donker :focus-visible { outline-color: var(--warm-zacht); }
 
-/* logo: beeldmerk met de naam in kapitalen, in de lijn van Campo */
+/* logo: een voordeur met waaierlicht (de spaken komen samen in één punt) en de naam in kapitalen */
 .logo { display: inline-flex; align-items: center; gap: 11px; color: var(--sein); }
 .logo-mark { width: 40px; height: 40px; flex: none; }
+.logo-messing { color: var(--warm); }                     /* het waaierlicht boven de deur */
+.top.is-donker .logo-messing { color: var(--warm-zacht); }
 .logo-txt { display: grid; gap: 5px; line-height: 1; }
 .logo-txt b { font: 600 1.42rem/.8 var(--f-display); letter-spacing: .12em; color: var(--sein-diep); white-space: nowrap; transition: color .3s; }
 .logo-txt i { font: 600 .56rem/1 var(--f-tekst); letter-spacing: .26em; color: var(--warm); font-style: normal; white-space: nowrap; }
