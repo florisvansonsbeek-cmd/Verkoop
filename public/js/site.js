@@ -326,19 +326,59 @@
       });
     });
     var deel = $("#deel-link");
+    var voorbeeldLink = function () {
+      var p = new URLSearchParams();
+      p.set("vak", state.vak);
+      if (state.naam.trim()) p.set("zaak", state.naam.trim());
+      return location.origin + "/voorbeelden?" + p.toString() + "#voorbeeld";
+    };
     if (deel) {
       if (voorvertoning) deel.hidden = true;
       deel.addEventListener("click", function () {
-        var p = new URLSearchParams();
-        p.set("vak", state.vak);
-        if (state.naam.trim()) p.set("zaak", state.naam.trim());
-        var link = location.origin + "/voorbeelden?" + p.toString() + "#voorbeeld";
+        var link = voorbeeldLink();
         var klaar = function (ok) {
           deel.textContent = ok ? T("gekopieerd") : link;
           setTimeout(function () { deel.textContent = T("kopieer"); }, ok ? 2200 : 8000);
         };
         if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(link).then(function () { klaar(true); }, function () { klaar(false); });
         else klaar(false);
+      });
+    }
+    /* QR-code naar dit voorbeeld: op de computer kijken en op je telefoon openen, of in de zaak laten scannen.
+       De QR-maker (/js/qr.js) laadt pas bij de eerste klik. */
+    if (deel && !voorvertoning && window.HTMLDialogElement) {
+      var qrKnop = document.createElement("button"), qrDialoog = null;
+      qrKnop.type = "button";
+      qrKnop.className = "textlink textlink--small";
+      qrKnop.id = "qr-knop";
+      qrKnop.setAttribute("aria-haspopup", "dialog");
+      qrKnop.textContent = T("qrKnop");
+      deel.insertAdjacentElement("afterend", qrKnop);
+      document.addEventListener("taal", function () { qrKnop.textContent = T("qrKnop"); });
+      var toonQR = function () {
+        if (!qrDialoog) {
+          qrDialoog = document.createElement("dialog");
+          qrDialoog.className = "qr-dialoog";
+          qrDialoog.setAttribute("aria-labelledby", "qr-titel");
+          document.body.appendChild(qrDialoog);
+          // sluiten met de knop of door naast het venster te tikken; Esc doet de browser zelf
+          qrDialoog.addEventListener("click", function (e) { if (e.target === qrDialoog || e.target.closest("[data-sluit]")) qrDialoog.close(); });
+          qrDialoog.addEventListener("close", function () { qrKnop.focus(); });
+        }
+        var naam = state.naam.trim() || V[state.vak].site.zaak;
+        qrDialoog.innerHTML = '<div class="qr-binnen"><h2 id="qr-titel">' + esc(T("qrTitel", { zaak: naam })) + "</h2>" +
+          window.QR.svg(voorbeeldLink(), { titel: T("qrTitel", { zaak: naam }), kleur: "#1f3628" }) +
+          "<p>" + esc(T("qrUitleg")) + '</p><button type="button" class="btn btn--small" data-sluit>' + esc(T("qrSluit")) + "</button></div>";
+        qrDialoog.showModal();
+      };
+      qrKnop.addEventListener("click", function () {
+        if (window.QR) return toonQR();
+        var s = document.createElement("script"), eigen = $('script[src*="/js/site.js"]');
+        var v = eigen ? (eigen.getAttribute("src").split("?")[1] || "") : "";
+        s.src = "/js/qr.js" + (v ? "?" + v : "");
+        s.onload = toonQR;
+        s.onerror = function () { qrKnop.hidden = true; };
+        document.head.appendChild(s);
       });
     }
     var vraag = $("#vb-vraag");

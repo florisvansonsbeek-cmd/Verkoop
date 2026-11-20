@@ -21,7 +21,14 @@ De site waarmee ik kleine zaken laat zien wat ik voor ze kan bouwen. Twee tabbla
 
 **Koppelingen per vak** staan in `public/js/plannen.js` (`koppel`: namen en een zin in drie talen) en worden gebruikt op `/voorbeelden` en `/voor/<slug>`. Elke voorbeeldsite heeft een boekmodule (`site.boek` in `public/js/vakken.js`: tijden, dagdelen, kenteken, pakket of prijs) met een aantekening waar die op aansluit. Tijden en datums rekenen mee met vandaag en de openingstijden van de zaak. Zet hier alleen systemen bij waarvan je hebt nagekeken dat ze een koppeling bieden (API, widget of open data).
 
-**/beheer**: alle aanvragen (met status en notitie, en als CSV te downloaden) en alle websitechecks.
+**/beheer** (met `APP_PASSWORD`), van boven naar beneden:
+
+- **Vandaag**: nieuwe aanvragen, zaken die deze week hun voorbeeld openden, en welke instellingen in Railway nog ontbreken (meldingen, telefoon, e-mail, database).
+- **Aanvragen**: met status en notitie, en als CSV te downloaden.
+- **Langsgaan**: maak per zaak een eigen voorbeeldlink, zoals `/v/k7m2p`. Die stuurt door naar het voorbeeld met de naam van de zaak erin. Per link een grote QR-code om in de zaak te laten scannen, een knop om hem via WhatsApp te sturen, en kaartjes om achter te laten (85 × 55 mm, tien op een A4, met crop-lijntjes; vink de zaken aan en kies hoeveel per zaak). Je ziet per link hoe vaak en wanneer hij geopend is, en of de zaak daarna het formulier invulde. Linkvoorbeelden (WhatsApp, iMessage), zoekmachines, vooraf laden en je eigen browser tellen niet mee (na inloggen op /beheer zet de site daarvoor het cookie `vs_zelf`), en dezelfde bezoeker telt hooguit één keer per half uur. Over de bezoeker zelf wordt niets bewaard.
+- **Websitechecks**: ook de mislukte, met de reden, zodat je ziet waar de check nog tekortschiet.
+
+De QR-codes maakt de site zelf (`public/js/qr.js`, voor de server en de browser), dus ook hier wordt niets van een andere site geladen. Op `/voorbeelden` staat naast *Kopieer link naar dit voorbeeld* ook een knop *QR-code*: handig om het voorbeeld van de computer op je telefoon te openen, of om iemand in de zaak te laten scannen.
 
 Eén Node-server (`server.js`) met Postgres, zonder framework. De lettertypen (Cormorant Garamond, Source Sans 3 en IBM Plex Mono, en voor de voorbeeldsites Fraunces en Barlow Condensed; allemaal open source onder de OFL) worden door de site zelf geserveerd; er wordt niets van andere sites geladen.
 
@@ -62,3 +69,4 @@ Open dan http://localhost:3000.
 - Het contactformulier heeft een onzichtbaar veld en een minimale invultijd tegen spam, en hooguit 5 berichten per kwartier per bezoeker.
 - `/beheer` gebruikt een wachtwoord met een sessie van 12 uur; na 5 foute pogingen per kwartier gaat inloggen even dicht. Wijzig je `APP_PASSWORD`, dan moet iedereen opnieuw inloggen.
 - Strikte Content-Security-Policy: de site laadt alleen bestanden van zichzelf.
+- Voorbeeldlinks (`/v/…`) hebben vijf willekeurige tekens en staan in robots.txt onder *Disallow*. Een onbekende of verwijderde link stuurt gewoon door naar /voorbeelden.
